@@ -44,7 +44,7 @@ CREATE TABLE instruments (
     instrument_type text NOT NULL CHECK (instrument_type IN ('STOCK','ETF','GOVT_BOND','FX_SPOT','OPTION')),
     currency        char(3) NOT NULL DEFAULT 'USD',
     multiplier      numeric(18,6) NOT NULL DEFAULT 1,
-    meta            jsonb NOT NULL DEFAULT '{}'      -- GOVT_BOND: {"coupon":0.04,"maturity_years":10}
+    meta            jsonb NOT NULL DEFAULT '{}'      -- GOVT_BOND rows carry coupon + maturity_years
 );
 
 -- normalized instrument->factor sensitivities (DELTA for linear, DV01 for bonds, VEGA later)
@@ -177,9 +177,20 @@ DROP TABLE IF EXISTS dq_issues, limits, scenario_results, scenario_shocks, scena
 """
 
 
+def _execute_statements(sql: str) -> None:
+    # psycopg3 rejects multiple commands in one parameterized execute, so run each
+    # top-level statement separately. Line comments are stripped first: they may
+    # contain ';' or ':'-tokens that would confuse the split / bind-param parsing.
+    # (Safe here: no string literal in this DDL contains '--'.)
+    stripped = "\n".join(line.split("--", 1)[0] for line in sql.splitlines())
+    for stmt in stripped.split(";"):
+        if stmt.strip():
+            op.execute(stmt)
+
+
 def upgrade() -> None:
-    op.execute(SCHEMA_SQL)
+    _execute_statements(SCHEMA_SQL)
 
 
 def downgrade() -> None:
-    op.execute(DROP_SQL)
+    _execute_statements(DROP_SQL)
