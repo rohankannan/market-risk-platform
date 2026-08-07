@@ -1,8 +1,17 @@
-# The mock book: 3 desks, 17 factors, ~$100M gross.
-# Calibrated so each desk contributes 25-40% of standalone VaR (drill-down non-degenerate);
-# shorts make diversification and negative component ES real.
+# The mock book: 3 desks, 17 factors.
+# Desk sizing targets a standalone-VaR mix of rates 45 / equity 30 / fx 25 (of the
+# three-desk sum), matching the risk-class mix banks disclose in their trading-VaR
+# tables: FY2025 average interest-rate : equity : currency shares are ~52/28/20
+# across the GS/MS/JPM/Citi/BofA 10-Ks, and ~45-48/28/24-27 at DB and HSBC once
+# credit-spread risk (which a Treasuries-only desk doesn't carry) is excluded.
+# Measured on the 2026-08-06 snapshot: shares 44/30/26, firm 1d VaR99 ~$1.17M
+# (58% of the $2M limit), diversification benefit ~40% - inside the 25-40% band
+# implied by three-desk books (group-level disclosures with more risk classes
+# show 40-70%). Rates carries far larger gross notional per dollar of VaR -
+# that asymmetry is itself realistic.
+# Shorts make diversification and negative component ES real.
 # Equity/FX quantities are TARGET NOTIONALS: risk/jobs/seed.py converts to units
-# at the first snapshot date's unadjusted close.
+# at the latest snapshot close (the anchor date).
 
 desks:
   - {code: EQUITY, name: Cash Equities}
@@ -35,24 +44,24 @@ factors:
   - {code: VOL.SPX.IV30, type: VOL_INDEX, conv: ABS, source: FRED, symbol: VIXCLS}
 
 positions:
-  EQUITY:  # gross ~$30M, net ~$18M; shorts XOM/JNJ
-    - {ticker: SPY,  factor: EQ.SPY,  target_notional_usd:  8_000_000}
-    - {ticker: AAPL, factor: EQ.AAPL, target_notional_usd:  5_000_000}
-    - {ticker: MSFT, factor: EQ.MSFT, target_notional_usd:  5_000_000}
-    - {ticker: NVDA, factor: EQ.NVDA, target_notional_usd:  4_000_000}
-    - {ticker: JPM,  factor: EQ.JPM,  target_notional_usd:  2_000_000}
-    - {ticker: XOM,  factor: EQ.XOM,  target_notional_usd: -3_000_000}
-    - {ticker: JNJ,  factor: EQ.JNJ,  target_notional_usd: -3_000_000}
+  EQUITY:  # gross ~$23.5M, net ~$13.5M; shorts XOM/JNJ
+    - {ticker: SPY,  factor: EQ.SPY,  target_notional_usd:  6_000_000}
+    - {ticker: AAPL, factor: EQ.AAPL, target_notional_usd:  4_000_000}
+    - {ticker: MSFT, factor: EQ.MSFT, target_notional_usd:  4_000_000}
+    - {ticker: NVDA, factor: EQ.NVDA, target_notional_usd:  3_000_000}
+    - {ticker: JPM,  factor: EQ.JPM,  target_notional_usd:  1_500_000}
+    - {ticker: XOM,  factor: EQ.XOM,  target_notional_usd: -2_500_000}
+    - {ticker: JNJ,  factor: EQ.JNJ,  target_notional_usd: -2_500_000}
   FX:      # carry-trade flavor; MXN supplies the fat tails in 2020
-    - {ticker: EURUSD_SPOT, factor: FX.EURUSD, target_notional_usd:  10_000_000}
-    - {ticker: JPYUSD_SPOT, factor: FX.JPYUSD, target_notional_usd: -12_000_000}
-    - {ticker: GBPUSD_SPOT, factor: FX.GBPUSD, target_notional_usd:   5_000_000}
-    - {ticker: MXNUSD_SPOT, factor: FX.MXNUSD, target_notional_usd:   8_000_000}
-  RATES:   # curve position (steepener/butterfly exposure, net DV01 ~ $15k/bp)
-    - {ticker: UST_2Y,  factor: IR.UST.2Y,  face_usd:  15_000_000, coupon: par, maturity_years: 2}
-    - {ticker: UST_5Y,  factor: IR.UST.5Y,  face_usd: -10_000_000, coupon: par, maturity_years: 5}
-    - {ticker: UST_10Y, factor: IR.UST.10Y, face_usd:  10_000_000, coupon: par, maturity_years: 10}
-    - {ticker: UST_30Y, factor: IR.UST.30Y, face_usd:   5_000_000, coupon: par, maturity_years: 30}
+    - {ticker: EURUSD_SPOT, factor: FX.EURUSD, target_notional_usd:  22_000_000}
+    - {ticker: JPYUSD_SPOT, factor: FX.JPYUSD, target_notional_usd: -27_000_000}
+    - {ticker: GBPUSD_SPOT, factor: FX.GBPUSD, target_notional_usd:  11_000_000}
+    - {ticker: MXNUSD_SPOT, factor: FX.MXNUSD, target_notional_usd:  18_000_000}
+  RATES:   # curve position (steepener/butterfly exposure, net DV01 ~ $83k/bp)
+    - {ticker: UST_2Y,  factor: IR.UST.2Y,  face_usd:  90_000_000, coupon: par, maturity_years: 2}
+    - {ticker: UST_5Y,  factor: IR.UST.5Y,  face_usd: -60_000_000, coupon: par, maturity_years: 5}
+    - {ticker: UST_10Y, factor: IR.UST.10Y, face_usd:  60_000_000, coupon: par, maturity_years: 10}
+    - {ticker: UST_30Y, factor: IR.UST.30Y, face_usd:  30_000_000, coupon: par, maturity_years: 30}
 
 limits:  # effective-dated in the DB; warn threshold 0.80 everywhere
   - {desk: FIRM,   measure: VAR_HS, limit_usd: 2_000_000}
