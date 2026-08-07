@@ -46,7 +46,8 @@ The equal-weight 500-day window makes plain historical sim slow in both directio
 | 750-day out-of-sample backfill + backtest chart and stats | ✅ (`risk/jobs/backfill.py`) |
 | EOD batch: ingestion w/ fallbacks, DQ gate (`dq_issues`, PARTIAL on blocks), risk + exception writes, scenario runs, idempotent run claims, DB backfill mode | ✅ (`risk/jobs/eod.py`) |
 | Stress replays (GFC 2008, COVID 2020) + hypothetical shocks, written per run | ✅ |
-| FastAPI result endpoints, Streamlit dashboard, Neon deploy + nightly cron | 🔜 milestone 3 (by Oct 15) |
+| FastAPI read layer over the results tables: meta, risk summary w/ limit utilization + diversification, history, backtest stats, scenario results; typed response models, immutable caching on pinned `as_of` | ✅ (`api/`) |
+| Streamlit dashboard, Neon deploy + nightly cron | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
 
 ## Quickstart
@@ -54,8 +55,8 @@ The equal-weight 500-day window makes plain historical sim slow in both directio
 ```bash
 make venv        # python3.11+ virtualenv, editable install
 make test        # known-answer test suite (no network, no DB needed)
-make db-up       # local Postgres 16 via docker compose
-make migrate     # apply the schema
+make demo        # db-up + migrate + seed + 300-day backfill + EOD run, all offline
+make api         # serve the API; interactive docs at http://localhost:8000/docs
 ```
 
 ## Design rules
