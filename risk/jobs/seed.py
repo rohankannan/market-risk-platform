@@ -47,6 +47,28 @@ class SeedBundle:
     anchor_date: dt.date | None = None
 
 
+def to_positions_frame(bundle: SeedBundle) -> pd.DataFrame:
+    """The engine's positions-frame contract (see risk_engine.engine), built from a
+    seed bundle. The DB path assembles the identical frame with one JOIN query."""
+    meta_of = {i["ticker"]: i["meta"] for i in bundle.instruments}
+    itype_of = {i["ticker"]: i["instrument_type"] for i in bundle.instruments}
+    rows = []
+    for p in bundle.positions:
+        # ticker -> factor via the sensitivity rows (one factor per instrument in MVP)
+        factor = next(s["factor_code"] for s in bundle.instrument_factors
+                      if s["ticker"] == p["ticker"])
+        meta = meta_of[p["ticker"]]
+        rows.append({
+            "ticker": p["ticker"], "desk_code": p["desk_code"], "factor_code": factor,
+            "quantity": p["quantity"], "instrument_type": itype_of[p["ticker"]],
+            "coupon": meta.get("coupon"), "maturity_years": meta.get("maturity_years"),
+        })
+    df = pd.DataFrame(rows)
+    conv_of = {f["factor_code"]: f["return_conv"] for f in bundle.factors}
+    df["return_conv"] = df["factor_code"].map(conv_of)
+    return df
+
+
 def latest_by_factor(snap: pd.DataFrame) -> pd.DataFrame:
     """Last observation per factor: columns obs_date, value, value_unadjusted."""
     idx = snap.groupby("factor_code")["obs_date"].idxmax()
