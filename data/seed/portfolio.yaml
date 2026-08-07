@@ -1,0 +1,61 @@
+# The mock book: 3 desks, 17 factors, ~$100M gross.
+# Calibrated so each desk contributes 25-40% of standalone VaR (drill-down non-degenerate);
+# shorts make diversification and negative component ES real.
+# Equity/FX quantities are TARGET NOTIONALS: risk/jobs/seed.py converts to units
+# at the first snapshot date's unadjusted close.
+
+desks:
+  - {code: EQUITY, name: Cash Equities}
+  - {code: FX, name: FX Spot}
+  - {code: RATES, name: US Rates}
+  - {code: FIRM, name: Firm Aggregate, is_aggregate: true}
+
+factors:
+  # equities - yfinance primary, Stooq fallback; returns from ADJUSTED close only
+  - {code: EQ.SPY,  type: PRICE, conv: LOG, source: YFINANCE, symbol: SPY,  fallback: {source: STOOQ, symbol: spy.us}}
+  - {code: EQ.AAPL, type: PRICE, conv: LOG, source: YFINANCE, symbol: AAPL, fallback: {source: STOOQ, symbol: aapl.us}}
+  - {code: EQ.MSFT, type: PRICE, conv: LOG, source: YFINANCE, symbol: MSFT, fallback: {source: STOOQ, symbol: msft.us}}
+  - {code: EQ.NVDA, type: PRICE, conv: LOG, source: YFINANCE, symbol: NVDA, fallback: {source: STOOQ, symbol: nvda.us}}
+  - {code: EQ.JPM,  type: PRICE, conv: LOG, source: YFINANCE, symbol: JPM,  fallback: {source: STOOQ, symbol: jpm.us}}
+  - {code: EQ.XOM,  type: PRICE, conv: LOG, source: YFINANCE, symbol: XOM,  fallback: {source: STOOQ, symbol: xom.us}}
+  - {code: EQ.JNJ,  type: PRICE, conv: LOG, source: YFINANCE, symbol: JNJ,  fallback: {source: STOOQ, symbol: jnj.us}}
+  # FX - FRED H.10 backbone (weekly publication lag -> ffill_limit 7, yfinance top-up),
+  # everything normalized at ingest to USD per 1 unit of foreign currency
+  - {code: FX.EURUSD, type: FX_RATE, conv: LOG, source: FRED, symbol: DEXUSEU, ffill_limit: 7}
+  - {code: FX.GBPUSD, type: FX_RATE, conv: LOG, source: FRED, symbol: DEXUSUK, ffill_limit: 7}
+  - {code: FX.JPYUSD, type: FX_RATE, conv: LOG, source: FRED, symbol: DEXJPUS, invert: true, ffill_limit: 7}
+  - {code: FX.MXNUSD, type: FX_RATE, conv: LOG, source: FRED, symbol: DEXMXUS, invert: true, ffill_limit: 7}
+  # rates - FRED constant-maturity par yields, percent; shocks in bp
+  - {code: IR.UST.3M,  type: YIELD, conv: ABS_BP, source: FRED, symbol: DGS3MO}
+  - {code: IR.UST.2Y,  type: YIELD, conv: ABS_BP, source: FRED, symbol: DGS2}
+  - {code: IR.UST.5Y,  type: YIELD, conv: ABS_BP, source: FRED, symbol: DGS5}
+  - {code: IR.UST.10Y, type: YIELD, conv: ABS_BP, source: FRED, symbol: DGS10}
+  - {code: IR.UST.30Y, type: YIELD, conv: ABS_BP, source: FRED, symbol: DGS30}
+  # implied vol - parametric-VaR input (winter); ABS convention, points
+  - {code: VOL.SPX.IV30, type: VOL_INDEX, conv: ABS, source: FRED, symbol: VIXCLS}
+
+positions:
+  EQUITY:  # gross ~$30M, net ~$18M; shorts XOM/JNJ
+    - {ticker: SPY,  factor: EQ.SPY,  target_notional_usd:  8_000_000}
+    - {ticker: AAPL, factor: EQ.AAPL, target_notional_usd:  5_000_000}
+    - {ticker: MSFT, factor: EQ.MSFT, target_notional_usd:  5_000_000}
+    - {ticker: NVDA, factor: EQ.NVDA, target_notional_usd:  4_000_000}
+    - {ticker: JPM,  factor: EQ.JPM,  target_notional_usd:  2_000_000}
+    - {ticker: XOM,  factor: EQ.XOM,  target_notional_usd: -3_000_000}
+    - {ticker: JNJ,  factor: EQ.JNJ,  target_notional_usd: -3_000_000}
+  FX:      # carry-trade flavor; MXN supplies the fat tails in 2020
+    - {ticker: EURUSD_SPOT, factor: FX.EURUSD, target_notional_usd:  10_000_000}
+    - {ticker: JPYUSD_SPOT, factor: FX.JPYUSD, target_notional_usd: -12_000_000}
+    - {ticker: GBPUSD_SPOT, factor: FX.GBPUSD, target_notional_usd:   5_000_000}
+    - {ticker: MXNUSD_SPOT, factor: FX.MXNUSD, target_notional_usd:   8_000_000}
+  RATES:   # curve position (steepener/butterfly exposure, net DV01 ~ $15k/bp)
+    - {ticker: UST_2Y,  factor: IR.UST.2Y,  face_usd:  15_000_000, coupon: par, maturity_years: 2}
+    - {ticker: UST_5Y,  factor: IR.UST.5Y,  face_usd: -10_000_000, coupon: par, maturity_years: 5}
+    - {ticker: UST_10Y, factor: IR.UST.10Y, face_usd:  10_000_000, coupon: par, maturity_years: 10}
+    - {ticker: UST_30Y, factor: IR.UST.30Y, face_usd:   5_000_000, coupon: par, maturity_years: 30}
+
+limits:  # effective-dated in the DB; warn threshold 0.80 everywhere
+  - {desk: FIRM,   measure: VAR_HS, limit_usd: 2_000_000}
+  - {desk: EQUITY, measure: VAR_HS, limit_usd: 1_200_000}
+  - {desk: FX,     measure: VAR_HS, limit_usd:   900_000}
+  - {desk: RATES,  measure: VAR_HS, limit_usd: 1_200_000}

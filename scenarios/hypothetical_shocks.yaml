@@ -1,0 +1,35 @@
+# MVP canned hypothetical shocks (instantaneous, applied by stress.apply_scenario).
+# CCAR-style macro scenarios with beta fill_rules are a winter deliverable -
+# the Fed publishes macro paths, not factor shocks; the mapping is the exercise.
+
+- code: RATES_UP_100
+  name: Parallel rates +100bp
+  type: HYPOTHETICAL
+  shocks:
+    IR.UST.3M:  {type: ABSOLUTE_BP, value: 100}
+    IR.UST.2Y:  {type: ABSOLUTE_BP, value: 100}
+    IR.UST.5Y:  {type: ABSOLUTE_BP, value: 100}
+    IR.UST.10Y: {type: ABSOLUTE_BP, value: 100}
+    IR.UST.30Y: {type: ABSOLUTE_BP, value: 100}
+
+- code: EQUITY_DOWN_20
+  name: Equities -20%
+  type: HYPOTHETICAL
+  shocks:
+    EQ.SPY:  {type: RELATIVE, value: -0.223}   # ln(0.8)
+    EQ.AAPL: {type: RELATIVE, value: -0.223}
+    EQ.MSFT: {type: RELATIVE, value: -0.223}
+    EQ.NVDA: {type: RELATIVE, value: -0.223}
+    EQ.JPM:  {type: RELATIVE, value: -0.223}
+    EQ.XOM:  {type: RELATIVE, value: -0.223}
+    EQ.JNJ:  {type: RELATIVE, value: -0.223}
+    VOL.SPX.IV30: {type: ABSOLUTE, value: 20}
+
+- code: USD_UP_10
+  name: Broad USD +10%
+  type: HYPOTHETICAL
+  shocks:
+    FX.EURUSD: {type: RELATIVE, value: -0.105}  # ln(0.9)
+    FX.GBPUSD: {type: RELATIVE, value: -0.105}
+    FX.JPYUSD: {type: RELATIVE, value: -0.105}
+    FX.MXNUSD: {type: RELATIVE, value: -0.105}

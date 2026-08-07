@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16-alpine     # matches Neon's major version in prod
+    environment:
+      POSTGRES_USER: riskdesk
+      POSTGRES_PASSWORD: riskdesk
+      POSTGRES_DB: riskdesk
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U riskdesk"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # milestone 3 (Sep 15-28): api + scheduler services
+  # api:
+  #   build: .
+  #   command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+  #   ports: ["8000:8000"]
+  #   depends_on: {db: {condition: service_healthy}}
+  # scheduler:
+  #   build: .
+  #   command: python -m risk.jobs.scheduler   # APScheduler, 18:30 America/New_York
+  #   depends_on: {db: {condition: service_healthy}}
+
+volumes:
+  pgdata:
