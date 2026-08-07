@@ -116,7 +116,7 @@ CREATE TABLE backtest_exceptions (
     measure   text NOT NULL,
     var_value numeric(18,2) NOT NULL,
     pnl_value numeric(18,2) NOT NULL,
-    run_id    bigint REFERENCES risk_runs,
+    run_id    bigint REFERENCES risk_runs ON DELETE SET NULL,  -- exceptions are per-date facts; run_id is provenance
     PRIMARY KEY (desk_id, obs_date, measure)
 );
 
@@ -159,7 +159,7 @@ CREATE TABLE limits (
 
 CREATE TABLE dq_issues (
     issue_id   bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    run_id     bigint REFERENCES risk_runs,
+    run_id     bigint REFERENCES risk_runs ON DELETE CASCADE,  -- issues are per-run artifacts
     factor_id  integer REFERENCES risk_factors,
     obs_date   date,
     check_name text NOT NULL,                         -- 'GAP','FFILL_LIMIT','OUTLIER_RETURN','STALE','UNIT_BOUND','SOURCE_DIVERGENCE'

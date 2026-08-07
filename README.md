@@ -44,8 +44,9 @@ The equal-weight 500-day window makes plain historical sim slow in both directio
 | Committed 2007+ market snapshot (17 factors), snapshot pipeline w/ source fallbacks | ✅ (`risk/jobs/snapshot.py`) |
 | Seed loader (COPY-based, idempotent), portfolio revaluation engine (full reval + delta-gamma) | ✅ |
 | 750-day out-of-sample backfill + backtest chart and stats | ✅ (`risk/jobs/backfill.py`) |
-| Nightly EOD ingestion, DQ gate writing `dq_issues`, batch orchestration | 🔜 milestone 3 (by Oct 15) |
-| Stress replays (GFC 2008, COVID 2020), FastAPI result endpoints, dashboard | 🔜 milestone 3 (by Oct 15) |
+| EOD batch: ingestion w/ fallbacks, DQ gate (`dq_issues`, PARTIAL on blocks), risk + exception writes, scenario runs, idempotent run claims, DB backfill mode | ✅ (`risk/jobs/eod.py`) |
+| Stress replays (GFC 2008, COVID 2020) + hypothetical shocks, written per run | ✅ |
+| FastAPI result endpoints, Streamlit dashboard, Neon deploy + nightly cron | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
 
 ## Quickstart

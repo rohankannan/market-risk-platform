@@ -16,4 +16,5 @@ JOIN desks  d USING (desk_id)
 JOIN limits l ON l.desk_id = r.desk_id AND l.measure = r.measure
              AND lr.run_date >= l.effective_from
              AND (l.effective_to IS NULL OR lr.run_date <= l.effective_to)
+WHERE r.horizon_days = 1          -- limits are 1-day; the 10d rows would read as phantom breaches
 ORDER BY pressure_rank;

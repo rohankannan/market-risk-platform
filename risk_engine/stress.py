@@ -27,6 +27,15 @@ def compute_replay_shock(returns: pd.DataFrame, start: dt.date, end: dt.date) ->
     return window.sum()
 
 
-def apply_scenario(positions: pd.DataFrame, levels: pd.Series, shock: pd.Series) -> pd.DataFrame:
-    """Instantaneous full-reval P&L under a single shock vector, per desk and total."""
-    raise NotImplementedError("milestone 3: reuses engine.revalue with a 1-row shock matrix")
+def apply_scenario(positions: pd.DataFrame, levels: pd.Series, shock: pd.Series) -> pd.Series:
+    """Instantaneous full-reval P&L under one shock vector, per desk plus FIRM.
+
+    Factors absent from `shock` are shocked by zero (the documented fill rule);
+    shock values are in each factor's own return convention.
+    """
+    from .engine import aggregate, revalue
+
+    full = pd.Series(0.0, index=levels.index)
+    full[shock.index] = shock.astype(float)
+    one_row = pd.DataFrame([full], index=[0])
+    return aggregate(revalue(positions, levels, one_row), positions).iloc[0]
