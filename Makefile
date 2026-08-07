@@ -6,7 +6,7 @@ DEMO_BF_START ?= 2025-05-01
 DEMO_BF_END   ?= 2026-08-05
 DEMO_DATE     ?= 2026-08-06
 
-.PHONY: venv test lint db-up db-down migrate seed backfill eod api demo
+.PHONY: venv test lint db-up db-down migrate seed backfill eod api dashboard demo
 
 venv:
 	python3.11 -m venv .venv
@@ -39,6 +39,9 @@ eod:
 
 api:
 	.venv/bin/uvicorn api.main:app --reload
+
+dashboard:
+	.venv/bin/streamlit run dashboard/app.py
 
 # offline end-to-end demo from the committed snapshot; re-runnable (resume/force)
 demo: db-up migrate seed backfill eod

@@ -47,7 +47,8 @@ The equal-weight 500-day window makes plain historical sim slow in both directio
 | EOD batch: ingestion w/ fallbacks, DQ gate (`dq_issues`, PARTIAL on blocks), risk + exception writes, scenario runs, idempotent run claims, DB backfill mode | ✅ (`risk/jobs/eod.py`) |
 | Stress replays (GFC 2008, COVID 2020) + hypothetical shocks, written per run | ✅ |
 | FastAPI read layer over the results tables: meta, risk summary w/ limit utilization + diversification, history, backtest stats, scenario results; typed response models, immutable caching on pinned `as_of` | ✅ (`api/`) |
-| Streamlit dashboard, Neon deploy + nightly cron | 🔜 milestone 3 (by Oct 15) |
+| Streamlit dashboard, 3 pages reading the API (Overview w/ tiles + limit table + P&L-vs-VaR chart, Backtesting w/ Kupiec/Christoffersen/zone, Stress w/ per-desk scenario P&L) | ✅ (`dashboard/`) |
+| Neon deploy + nightly cron | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
 
 ## Quickstart
@@ -57,6 +58,7 @@ make venv        # python3.11+ virtualenv, editable install
 make test        # known-answer test suite (no network, no DB needed)
 make demo        # db-up + migrate + seed + 300-day backfill + EOD run, all offline
 make api         # serve the API; interactive docs at http://localhost:8000/docs
+make dashboard   # Streamlit UI on http://localhost:8501 (needs the API running)
 ```
 
 ## Design rules

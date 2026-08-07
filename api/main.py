@@ -44,12 +44,14 @@ def _cache(response: Response, pinned: bool) -> None:
         "public, max-age=31536000, immutable" if pinned else "no-cache")
 
 
-def _run_or_404(conn: Connection, as_of: dt.date | None, **kw) -> dict:
-    run = queries.resolve_run(conn, as_of=as_of, **kw)
+def _run_or_404(conn: Connection, as_of: dt.date | None,
+                require_scenarios: bool = False) -> dict:
+    run = queries.resolve_run(conn, as_of=as_of, require_scenarios=require_scenarios)
     if run is None:
+        what = "scenario run" if require_scenarios else "completed run"
         raise HTTPException(status_code=404, detail=(
-            f"no completed run on or before {as_of.isoformat()}" if as_of
-            else "no completed runs yet"))
+            f"no {what} on or before {as_of.isoformat()}" if as_of
+            else f"no {what}s yet"))
     return run
 
 
