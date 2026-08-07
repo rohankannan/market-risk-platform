@@ -63,6 +63,20 @@ def equity_fx_pnl(quantity_units: float, level: float, log_shock: np.ndarray) ->
     return quantity_units * level * (np.exp(log_shock) - 1.0)
 
 
+def _bond_price_vec(coupon: float, maturity_years: float, ytm: np.ndarray,
+                    face: float) -> np.ndarray:
+    """Vectorized closed-form price over an array of yields (backfill hot path).
+
+    Same formula as bond_price; unit-tested for exact agreement with the scalar
+    version. Callers guarantee ytm > 0 (bond_pnl floors at 1bp).
+    """
+    y = np.asarray(ytm, dtype=float)
+    n_periods = int(round(2 * maturity_years))
+    y2 = y / 2.0
+    df = (1.0 + y2) ** (-n_periods)
+    return face * (coupon / y) * (1.0 - df) + face * df
+
+
 def bond_pnl(coupon: float, maturity_years: float, ytm: float, face: float,
              shock_bp: np.ndarray) -> np.ndarray:
     """Full-revaluation P&L for a par-bond proxy under yield shocks in basis points.
@@ -71,4 +85,4 @@ def bond_pnl(coupon: float, maturity_years: float, ytm: float, face: float,
     """
     base = bond_price(coupon, maturity_years, ytm, face)
     shocked_y = np.maximum(ytm + np.asarray(shock_bp, dtype=float) / 1e4, 1e-4)
-    return np.array([bond_price(coupon, maturity_years, y, face) for y in shocked_y]) - base
+    return _bond_price_vec(coupon, maturity_years, shocked_y, face) - base

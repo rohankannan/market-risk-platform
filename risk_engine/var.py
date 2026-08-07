@@ -92,3 +92,18 @@ def ewma_vol_forecast(returns: pd.DataFrame, lam: float = 0.94,
     last_sig2 = np.square(vols.iloc[-1].to_numpy(dtype=float))
     last_r2 = np.square(np.nan_to_num(returns.iloc[-1].to_numpy(dtype=float), nan=0.0))
     return pd.Series(np.sqrt(lam * last_sig2 + (1.0 - lam) * last_r2), index=returns.columns)
+
+
+def ewma_vol_forecast_series(returns: pd.DataFrame, lam: float = 0.94,
+                             seed_window: int = 30) -> pd.DataFrame:
+    """Per-date next-day vol forecast, aligned to `returns.index`.
+
+    Row t holds sigma_{t+1} = sqrt(lam * sigma^2_t + (1-lam) * r^2_t) - the vol the
+    FHS devol/revol uses when running AS-OF date t. Identity (unit-tested):
+    forecast.iloc[t] == ewma_volatility(...).iloc[t+1] wherever both exist.
+    """
+    vols = ewma_volatility(returns, lam=lam, seed_window=seed_window)
+    sig2 = np.square(vols.to_numpy(dtype=float))
+    r2 = np.square(np.nan_to_num(returns.to_numpy(dtype=float), nan=0.0))
+    return pd.DataFrame(np.sqrt(lam * sig2 + (1.0 - lam) * r2),
+                        index=returns.index, columns=returns.columns)

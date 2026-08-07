@@ -25,6 +25,25 @@ _CONVENTIONS = (LOG, ABS_BP, ABS)
 AsOf = dt.date | pd.Timestamp | str
 
 
+def align_levels(levels: pd.DataFrame, ffill_limits: Mapping[str, int]
+                 ) -> tuple[pd.DataFrame, pd.Series]:
+    """Forward-fill each factor up to its own cap (data-quality policy).
+
+    Filled days produce zero returns downstream - a mild, measured vol damping,
+    never a hidden one: the second return value is the per-factor count of
+    filled cells, which the batch job records as a data-quality metric.
+    Gaps beyond the cap remain NaN (callers drop or BLOCK them loudly).
+    """
+    out = {}
+    fill_counts = {}
+    for col in levels.columns:
+        limit = int(ffill_limits.get(col, 3))
+        filled = levels[col].ffill(limit=limit)
+        fill_counts[col] = int((filled.notna() & levels[col].isna()).sum())
+        out[col] = filled
+    return pd.DataFrame(out, index=levels.index), pd.Series(fill_counts, name="ffilled_cells")
+
+
 def to_returns(levels: pd.DataFrame, conventions: Mapping[str, str]) -> pd.DataFrame:
     """Per-factor daily returns using each factor's convention.
 

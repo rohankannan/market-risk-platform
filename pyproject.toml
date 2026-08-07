@@ -23,6 +23,7 @@ dependencies = [
     "tenacity>=8.2",
     "yfinance>=0.2.40",
     "pyarrow>=15",
+    "matplotlib>=3.8",
 ]
 
 [project.optional-dependencies]

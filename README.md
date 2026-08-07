@@ -20,6 +20,19 @@ flowchart LR
   PG --> API[FastAPI] --> FE[dashboard]
 ```
 
+## The backtest
+
+750 trading days of out-of-sample 1-day 99% VaR on the firm book, against next-day clean P&L:
+
+![Firm VaR backtest: historical sim vs EWMA-filtered](docs/img/backtest_firm.png)
+
+| method | days | exceptions | expected | Kupiec p | Christoffersen CC p | Basel zone (250d) |
+|---|---|---|---|---|---|---|
+| Historical sim | 750 | 5 | 7.5 | 0.33 | 0.60 | GREEN |
+| Filtered HS (EWMA) | 750 | 10 | 7.5 | 0.38 | 0.60 | GREEN |
+
+The equal-weight 500-day window makes plain historical sim slow in both directions: it stays wide through the calm late-2025 regime (capital inefficiency) and only steps up months after the April 2025 vol spike, once those scenarios finally enter the window. The EWMA-filtered VaR tracks the regime — wider into stress, tighter in calm — with coverage near the nominal 1%. Regenerate with `python -m risk.jobs.backfill`.
+
 ## What's implemented (honest status)
 
 | Component | Status |
@@ -27,8 +40,11 @@ flowchart LR
 | Risk engine core: HS VaR, EWMA filtering + FHS scenarios, ES 97.5, bond pricer (DV01/convexity by bump-and-reprice) | ✅ implemented, known-answer tested |
 | Backtesting stats: Kupiec POF, Christoffersen (independence + conditional coverage), Basel traffic light with multiplier add-ons | ✅ implemented, known-answer tested |
 | Postgres schema (13 tables) + Alembic migration + showcase analytics SQL | ✅ |
-| Portfolio / factor definitions, hypothetical shock catalog | ✅ (`data/seed/`, `scenarios/`) |
-| Ingestion, DQ gate, batch orchestration, `backfill_var` | 🔜 milestone 2 (by Sep 14) |
+| Portfolio / factor definitions (desk mix calibrated to disclosed bank VaR risk-class shares), hypothetical shock catalog | ✅ (`data/seed/`, `scenarios/`) |
+| Committed 2007+ market snapshot (17 factors), snapshot pipeline w/ source fallbacks | ✅ (`risk/jobs/snapshot.py`) |
+| Seed loader (COPY-based, idempotent), portfolio revaluation engine (full reval + delta-gamma) | ✅ |
+| 750-day out-of-sample backfill + backtest chart and stats | ✅ (`risk/jobs/backfill.py`) |
+| Nightly EOD ingestion, DQ gate writing `dq_issues`, batch orchestration | 🔜 milestone 3 (by Oct 15) |
 | Stress replays (GFC 2008, COVID 2020), FastAPI result endpoints, dashboard | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
 
