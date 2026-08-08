@@ -574,6 +574,48 @@ def test_factors_latest_endpoint(client, monkeypatch):
     assert body["ticks"][0]["unit"] == "%"
 
 
+def test_whatif_endpoint_and_validation(client, monkeypatch):
+    from api import sandbox
+
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(queries, "risk_rows", lambda conn, run_id: ROWS)
+    computed = {"desks": [{"desk_code": "FIRM", "is_aggregate": True,
+                           "var_hs_1d": 90.0, "es_975_1d": 110.0}],
+                "positions": [], "zeroed": ["NVDA"]}
+    monkeypatch.setattr(sandbox, "compute_whatif",
+                        lambda conn, run_id, d, scales: computed)
+
+    r = client.post("/api/v1/whatif",
+                    json={"adjustments": [{"ticker": "NVDA", "scale": 0.0}]})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["hypothetical"] is True
+    assert r.headers["cache-control"] == "no-store"          # sandbox output never caches
+    firm = body["desks"][0]
+    assert firm["var_hs_1d"] == 90.0
+    assert firm["official_var_hs_1d"] == 100.0               # from ROWS
+    assert firm["var_delta"] == pytest.approx(-10.0)
+    assert body["zeroed"] == ["NVDA"]
+
+    dup = client.post("/api/v1/whatif", json={"adjustments": [
+        {"ticker": "SPY", "scale": 2.0}, {"ticker": "SPY", "scale": 0.5}]})
+    assert dup.status_code == 422 and "duplicate" in dup.json()["detail"]
+
+    def _raise(conn, run_id, d, scales):
+        raise sandbox.WhatIfInputError("tickers not in the book: ['NOPE']")
+    monkeypatch.setattr(sandbox, "compute_whatif", _raise)
+    bad = client.post("/api/v1/whatif",
+                      json={"adjustments": [{"ticker": "NOPE", "scale": 2.0}]})
+    assert bad.status_code == 422 and "NOPE" in bad.json()["detail"]
+
+    # data-integrity failures are the server's fault, never a 422
+    def _integrity(conn, run_id, d, scales):
+        raise RuntimeError("no aligned market data")
+    monkeypatch.setattr(sandbox, "compute_whatif", _integrity)
+    with pytest.raises(RuntimeError):
+        client.post("/api/v1/whatif", json={"adjustments": []})
+
+
 def test_desk_positions_endpoint(client, monkeypatch):
     monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
     monkeypatch.setattr(queries, "desk_row", _desk_row_stub)

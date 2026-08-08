@@ -28,3 +28,5 @@ export type ScenarioShock = components["schemas"]["ScenarioShock"];
 export type ScenarioResults = components["schemas"]["ScenarioResults"];
 export type ScenarioResult = components["schemas"]["ScenarioResult"];
 export type ModelDoc = components["schemas"]["ModelDoc"];
+export type WhatIfResult = components["schemas"]["WhatIfResult"];
+export type WhatIfDesk = components["schemas"]["WhatIfDesk"];

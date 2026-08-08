@@ -87,6 +87,7 @@ const NAV = [
   { to: "/desks/RATES", label: "DESKS", end: false },
   { to: "/scenarios", label: "SCENARIOS", end: false },
   { to: "/backtesting", label: "BACKTESTING", end: false },
+  { to: "/whatif", label: "WHAT-IF", end: false },
   { to: "/docs", label: "MODEL DOC", end: false },
 ];
 

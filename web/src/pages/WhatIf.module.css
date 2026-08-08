@@ -1,0 +1,126 @@
+.badgeRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.whatifBadge {
+  background: var(--rd-gold-rush);
+  color: var(--rd-bg);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 3px 8px;
+}
+
+.hint {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--rd-muted);
+}
+
+.reset {
+  margin-left: auto;
+  font: inherit;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  padding: 4px 10px;
+  background: transparent;
+  color: var(--rd-muted);
+  border: 1px solid var(--rd-divider);
+  cursor: pointer;
+}
+
+.reset:hover {
+  color: var(--rd-text);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--rd-divider);
+  border: 1px solid var(--rd-divider);
+  margin-bottom: 16px;
+}
+
+.tile {
+  background: var(--rd-panel);
+  padding: 8px 12px;
+}
+
+.tileLabel {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--rd-muted);
+}
+
+.tileValue {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.tileDelta {
+  font-size: 10px;
+  margin-top: 1px;
+}
+
+.panel {
+  background: var(--rd-panel);
+  border: 1px solid var(--rd-divider);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.panelTitle {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--rd-gold);
+  font-weight: 700;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--rd-divider);
+}
+
+.scaleInput {
+  width: 64px;
+  font: inherit;
+  font-size: 12px;
+  text-align: right;
+  padding: 2px 6px;
+  background: var(--rd-bg);
+  color: var(--rd-text);
+  border: 1px solid var(--rd-divider);
+}
+
+.scaleInput:focus-visible {
+  outline: 2px solid var(--rd-gold-rush);
+  outline-offset: 0;
+}
+
+.quick {
+  font: inherit;
+  font-size: 10px;
+  padding: 2px 6px;
+  margin-left: 4px;
+  background: transparent;
+  color: var(--rd-muted);
+  border: 1px solid var(--rd-divider);
+  cursor: pointer;
+}
+
+.quick:hover {
+  color: var(--rd-text);
+}
+
+.stale {
+  opacity: 0.55;
+}
+
+.error {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--rd-down);
+}

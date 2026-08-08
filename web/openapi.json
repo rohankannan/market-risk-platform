@@ -1499,6 +1499,189 @@
         ],
         "title": "VegaExposure",
         "type": "object"
+      },
+      "WhatIfAdjustment": {
+        "properties": {
+          "scale": {
+            "title": "Scale",
+            "type": "number"
+          },
+          "ticker": {
+            "title": "Ticker",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticker",
+          "scale"
+        ],
+        "title": "WhatIfAdjustment",
+        "type": "object"
+      },
+      "WhatIfDesk": {
+        "properties": {
+          "desk_code": {
+            "title": "Desk Code",
+            "type": "string"
+          },
+          "es_975_1d": {
+            "title": "Es 975 1D",
+            "type": "number"
+          },
+          "is_aggregate": {
+            "title": "Is Aggregate",
+            "type": "boolean"
+          },
+          "official_var_hs_1d": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Official Var Hs 1D"
+          },
+          "var_delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var Delta"
+          },
+          "var_hs_1d": {
+            "title": "Var Hs 1D",
+            "type": "number"
+          }
+        },
+        "required": [
+          "desk_code",
+          "is_aggregate",
+          "var_hs_1d",
+          "es_975_1d",
+          "official_var_hs_1d",
+          "var_delta"
+        ],
+        "title": "WhatIfDesk",
+        "type": "object"
+      },
+      "WhatIfPosition": {
+        "properties": {
+          "component_es": {
+            "title": "Component Es",
+            "type": "number"
+          },
+          "desk_code": {
+            "title": "Desk Code",
+            "type": "string"
+          },
+          "factor_class": {
+            "title": "Factor Class",
+            "type": "string"
+          },
+          "marginal_var": {
+            "title": "Marginal Var",
+            "type": "number"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "number"
+          },
+          "scale": {
+            "title": "Scale",
+            "type": "number"
+          },
+          "standalone_var": {
+            "title": "Standalone Var",
+            "type": "number"
+          },
+          "ticker": {
+            "title": "Ticker",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticker",
+          "desk_code",
+          "factor_class",
+          "quantity",
+          "scale",
+          "standalone_var",
+          "component_es",
+          "marginal_var"
+        ],
+        "title": "WhatIfPosition",
+        "type": "object"
+      },
+      "WhatIfRequest": {
+        "properties": {
+          "adjustments": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfAdjustment"
+            },
+            "title": "Adjustments",
+            "type": "array"
+          }
+        },
+        "required": [
+          "adjustments"
+        ],
+        "title": "WhatIfRequest",
+        "type": "object"
+      },
+      "WhatIfResult": {
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "desks": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfDesk"
+            },
+            "title": "Desks",
+            "type": "array"
+          },
+          "hypothetical": {
+            "const": true,
+            "title": "Hypothetical",
+            "type": "boolean"
+          },
+          "positions": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfPosition"
+            },
+            "title": "Positions",
+            "type": "array"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "integer"
+          },
+          "zeroed": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Zeroed",
+            "type": "array"
+          }
+        },
+        "required": [
+          "as_of",
+          "run_id",
+          "hypothetical",
+          "desks",
+          "positions",
+          "zeroed"
+        ],
+        "title": "WhatIfResult",
+        "type": "object"
       }
     }
   },
@@ -2188,6 +2371,66 @@
           }
         },
         "summary": "Scenarios Results"
+      }
+    },
+    "/api/v1/whatif": {
+      "post": {
+        "description": "Hypothetical risk for a scaled book - the API's documented exception to\nthe reads-only rule. Revalues client-edited positions against the resolved\nrun's stored HS scenario set; nothing is persisted, every response says\nhypothetical, and the official numbers ride along for the delta. Identity\ncheck: all scales at 1.0 reproduces the batch's VaR to the cent.",
+        "operationId": "whatif_api_v1_whatif_post",
+        "parameters": [
+          {
+            "description": "Pin to a run date (default: latest completed batch)",
+            "in": "query",
+            "name": "as_of",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pin to a run date (default: latest completed batch)",
+              "title": "As Of"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatIfRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatIfResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Whatif"
       }
     },
     "/healthz": {

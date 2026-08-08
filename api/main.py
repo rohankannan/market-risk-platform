@@ -21,7 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
-from api import queries, schemas
+from api import queries, sandbox, schemas
 from api.deps import get_conn, get_settings
 from risk.db import make_engine
 
@@ -41,9 +41,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# GET-only read API: no credentials, no cookies - allowlist is all CORS needs
+# reads plus the what-if sandbox POST: no credentials, no cookies - the
+# origin allowlist is all CORS needs
 app.add_middleware(CORSMiddleware, allow_origins=get_settings().cors_origins,
-                   allow_methods=["GET"], allow_headers=["*"])
+                   allow_methods=["GET", "POST"], allow_headers=["*"])
 
 
 def _cache(response: Response, pinned: bool) -> None:
@@ -253,6 +254,32 @@ def scenarios_catalog(response: Response,
     dashboard formats dominant-move strings from these)."""
     _cache(response, pinned=False)
     return schemas.build_scenario_catalog(queries.scenario_catalog_rows(conn))
+
+
+@app.post("/api/v1/whatif", response_model=schemas.WhatIfResult)
+def whatif(body: schemas.WhatIfRequest, response: Response,
+           as_of: dt.date | None = AsOf,
+           conn: Connection = Depends(get_conn)) -> schemas.WhatIfResult:
+    """Hypothetical risk for a scaled book - the API's documented exception to
+    the reads-only rule. Revalues client-edited positions against the resolved
+    run's stored HS scenario set; nothing is persisted, every response says
+    hypothetical, and the official numbers ride along for the delta. Identity
+    check: all scales at 1.0 reproduces the batch's VaR to the cent."""
+    run = _run_or_404(conn, as_of)
+    response.headers["Cache-Control"] = "no-store"
+    scales: dict[str, float] = {}
+    for adj in body.adjustments:
+        if adj.ticker in scales:
+            raise HTTPException(status_code=422,
+                                detail=f"duplicate adjustment for {adj.ticker!r}")
+        scales[adj.ticker] = adj.scale
+    try:
+        computed = sandbox.compute_whatif(conn, run["run_id"], run["run_date"], scales)
+    except sandbox.WhatIfInputError as exc:
+        # only input faults map to 422; a data-integrity failure stays a 500
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return schemas.build_whatif_result(run, computed,
+                                       queries.risk_rows(conn, run["run_id"]))
 
 
 @app.get("/api/v1/modeldoc", response_model=schemas.ModelDoc)

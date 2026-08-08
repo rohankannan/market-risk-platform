@@ -279,6 +279,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/whatif": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Whatif
+         * @description Hypothetical risk for a scaled book - the API's documented exception to
+         *     the reads-only rule. Revalues client-edited positions against the resolved
+         *     run's stored HS scenario set; nothing is persisted, every response says
+         *     hypothetical, and the official numbers ride along for the delta. Identity
+         *     check: all scales at 1.0 reproduces the batch's VaR to the cent.
+         */
+        post: operations["whatif_api_v1_whatif_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/healthz": {
         parameters: {
             query?: never;
@@ -814,6 +838,73 @@ export interface components {
             /** Value */
             value: number;
         };
+        /** WhatIfAdjustment */
+        WhatIfAdjustment: {
+            /** Scale */
+            scale: number;
+            /** Ticker */
+            ticker: string;
+        };
+        /** WhatIfDesk */
+        WhatIfDesk: {
+            /** Desk Code */
+            desk_code: string;
+            /** Es 975 1D */
+            es_975_1d: number;
+            /** Is Aggregate */
+            is_aggregate: boolean;
+            /** Official Var Hs 1D */
+            official_var_hs_1d: number | null;
+            /** Var Delta */
+            var_delta: number | null;
+            /** Var Hs 1D */
+            var_hs_1d: number;
+        };
+        /** WhatIfPosition */
+        WhatIfPosition: {
+            /** Component Es */
+            component_es: number;
+            /** Desk Code */
+            desk_code: string;
+            /** Factor Class */
+            factor_class: string;
+            /** Marginal Var */
+            marginal_var: number;
+            /** Quantity */
+            quantity: number;
+            /** Scale */
+            scale: number;
+            /** Standalone Var */
+            standalone_var: number;
+            /** Ticker */
+            ticker: string;
+        };
+        /** WhatIfRequest */
+        WhatIfRequest: {
+            /** Adjustments */
+            adjustments: components["schemas"]["WhatIfAdjustment"][];
+        };
+        /** WhatIfResult */
+        WhatIfResult: {
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Desks */
+            desks: components["schemas"]["WhatIfDesk"][];
+            /**
+             * Hypothetical
+             * @constant
+             */
+            hypothetical: true;
+            /** Positions */
+            positions: components["schemas"]["WhatIfPosition"][];
+            /** Run Id */
+            run_id: number;
+            /** Zeroed */
+            zeroed: string[];
+        };
     };
     responses: never;
     parameters: never;
@@ -1209,6 +1300,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScenarioResults"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    whatif_api_v1_whatif_post: {
+        parameters: {
+            query?: {
+                /** @description Pin to a run date (default: latest completed batch) */
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WhatIfRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhatIfResult"];
                 };
             };
             /** @description Validation Error */

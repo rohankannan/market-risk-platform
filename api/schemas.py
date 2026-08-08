@@ -11,7 +11,7 @@ import datetime as dt
 import math
 from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from risk_engine.backtest import (
     LikelihoodRatioTest,
@@ -572,6 +572,65 @@ def build_scenario_catalog(rows: list[dict]) -> ScenarioCatalog:
                      window_end=g["meta"]["window_end"],
                      description=g["meta"]["description"], shocks=g["shocks"])
         for code, g in sorted(grouped.items())])
+
+
+# ---------------------------------------------------------------- what-if
+
+class WhatIfAdjustment(BaseModel):
+    ticker: str
+    scale: float                            # multiplier on the booked quantity
+
+
+class WhatIfRequest(BaseModel):
+    # unlisted positions stay at 1.0; the bound is far above any real book
+    # and keeps the unauthenticated compute path from swallowing huge bodies
+    adjustments: list[WhatIfAdjustment] = Field(max_length=64)
+
+
+class WhatIfDesk(BaseModel):
+    desk_code: str
+    is_aggregate: bool
+    var_hs_1d: float
+    es_975_1d: float
+    official_var_hs_1d: float | None        # the batch's number for the delta
+    var_delta: float | None
+
+
+class WhatIfPosition(BaseModel):
+    ticker: str
+    desk_code: str
+    factor_class: str
+    quantity: float                         # after scaling
+    scale: float
+    standalone_var: float
+    component_es: float
+    marginal_var: float
+
+
+class WhatIfResult(BaseModel):
+    as_of: dt.date
+    run_id: int
+    hypothetical: Literal[True]             # what-if numbers are never official
+    desks: list[WhatIfDesk]
+    positions: list[WhatIfPosition]
+    zeroed: list[str]
+
+
+def build_whatif_result(run: dict, computed: dict,
+                        official_rows: list[dict]) -> WhatIfResult:
+    official = {r["desk_code"]: r["value"] for r in official_rows
+                if r["measure"] == "VAR_HS" and r["horizon_days"] == 1}
+    desks = []
+    for d in computed["desks"]:
+        base = official.get(d["desk_code"])
+        desks.append(WhatIfDesk(
+            **d, official_var_hs_1d=base,
+            var_delta=round(d["var_hs_1d"] - base, 2) if base is not None else None))
+    desks.sort(key=lambda x: (not x.is_aggregate, x.desk_code))
+    return WhatIfResult(as_of=run["run_date"], run_id=run["run_id"], hypothetical=True,
+                        desks=desks,
+                        positions=[WhatIfPosition(**p) for p in computed["positions"]],
+                        zeroed=computed["zeroed"])
 
 
 # ---------------------------------------------------------------- model doc

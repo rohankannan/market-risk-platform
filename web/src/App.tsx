@@ -9,6 +9,7 @@ import DeskPage from "./pages/DeskPage";
 import ModelDocPage from "./pages/ModelDocPage";
 import Overview from "./pages/Overview";
 import Scenarios from "./pages/Scenarios";
+import WhatIf from "./pages/WhatIf";
 
 // retries would just re-hit an immutable batch result; fail fast and show the
 // error (exported so tests can clear the cache between cases). Focus refetch
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="/desks/:deskCode" element={page(<DeskPage />)} />
             <Route path="/backtesting" element={page(<Backtesting />)} />
             <Route path="/scenarios" element={page(<Scenarios />)} />
+            <Route path="/whatif" element={page(<WhatIf />)} />
             <Route path="/docs" element={page(<ModelDocPage />)} />
           </Route>
         </Routes>

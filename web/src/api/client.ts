@@ -60,6 +60,30 @@ function loadSnapshot(): Promise<Record<string, unknown>> {
   return snapshotPromise;
 }
 
+// POST for the what-if sandbox: compute requests never fall back to the
+// snapshot (a frozen day cannot answer a hypothetical book)
+export async function postJson<T>(path: string, body: unknown, params?: Params): Promise<T> {
+  const url = new URL(path, API_URL);
+  for (const k of Object.keys(params ?? {}).sort()) {
+    url.searchParams.set(k, String((params as Params)[k]));
+  }
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      detail = ((await res.json()) as { detail?: string }).detail ?? detail;
+    } catch {
+      // non-JSON error body: keep the status text
+    }
+    throw new ApiError(res.status, detail);
+  }
+  return (await res.json()) as T;
+}
+
 export async function getJson<T>(path: string, params?: Params): Promise<T> {
   const url = new URL(path, API_URL);
   for (const k of Object.keys(params ?? {}).sort()) {
