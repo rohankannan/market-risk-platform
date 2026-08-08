@@ -1624,6 +1624,7 @@
             "items": {
               "$ref": "#/components/schemas/WhatIfAdjustment"
             },
+            "maxItems": 64,
             "title": "Adjustments",
             "type": "array"
           }
