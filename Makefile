@@ -8,7 +8,7 @@ DEMO_BF_START ?= 2025-05-01
 DEMO_BF_END   ?= 2026-08-05
 DEMO_DATE     ?= 2026-08-06
 
-.PHONY: venv test lint db-up db-down migrate seed backfill eod api dashboard demo
+.PHONY: venv test lint db-up db-down migrate seed backfill eod api dashboard demo openapi fixtures
 
 venv:
 	python3.11 -m venv .venv
@@ -41,6 +41,14 @@ eod:
 
 api:
 	.venv/bin/uvicorn api.main:app --reload
+
+# committed typegen input for web/; CI regenerates and fails on drift
+openapi:
+	$(PY) -m api.openapi_export
+
+# MSW fixtures + the offline snapshot fallback, from a running seeded stack
+fixtures:
+	$(PY) web/scripts/record_fixtures.py
 
 dashboard:
 	.venv/bin/streamlit run dashboard/app.py

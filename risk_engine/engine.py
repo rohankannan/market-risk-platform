@@ -33,6 +33,7 @@ import pandas as pd
 
 from .options import bs_delta, bs_gamma, bs_price, bs_vega
 from .pricing import bond_pnl, dollar_convexity, dv01
+from .var import var_es_from_pnl
 
 _LINEAR_TYPES = {"STOCK", "ETF", "FX_SPOT"}
 VOL_POINTS_PER_UNIT = 100.0          # vol factors store points; sigma is decimal
@@ -123,3 +124,43 @@ def component_es(desk_pnl: pd.DataFrame, alpha_es: float = 0.975) -> pd.Series:
     q = np.quantile(firm.to_numpy(dtype=float), 1.0 - alpha_es, method="linear")
     tail_idx = firm[firm <= q].index
     return -desk_pnl.loc[tail_idx].mean()
+
+
+def position_components(positions: pd.DataFrame, pnl_matrix: pd.DataFrame,
+                        alpha_var: float = 0.99, alpha_es: float = 0.975) -> pd.DataFrame:
+    """Per-position risk decomposition on one scenario set, one row per position:
+
+    - standalone_var: the position's own P&L column through the VaR quantile.
+    - component_es: Euler allocation of the DESK's ES over the desk's own tail
+      scenarios, so a desk's components sum exactly to its ES (negative for
+      intra-desk hedges).
+    - marginal_var: exact, no linearization - desk VaR minus the VaR of the
+      desk without the position (a column subtraction, not a re-reval).
+    - factor_class: the primary factor's prefix. Options classify by their
+      delta leg, so the shipped book emits EQ / FX / IR; a position primarily
+      mapped to a vol factor would emit VOL (none booked).
+
+    pnl_matrix is revalue()'s output for the same positions frame. quantity
+    and instrument_type ride along so the run's book facts are frozen with
+    the run (the live positions table can be reseeded out from under it).
+    """
+    rows = []
+    for desk_code, grp in positions.groupby("desk_code", sort=True):
+        tickers = list(grp["ticker"])
+        desk_col = pnl_matrix[tickers].sum(axis=1)
+        desk_var = var_es_from_pnl(desk_col, alpha_var, alpha_es).var
+        comp = component_es(pnl_matrix[tickers], alpha_es)
+        for pos in grp.itertuples(index=False):
+            without = desk_col - pnl_matrix[pos.ticker]
+            rows.append({
+                "ticker": pos.ticker,
+                "desk_code": desk_code,
+                "factor_class": pos.factor_code.split(".")[0],
+                "quantity": float(pos.quantity),
+                "instrument_type": pos.instrument_type,
+                "standalone_var": var_es_from_pnl(pnl_matrix[pos.ticker],
+                                                  alpha_var, alpha_es).var,
+                "component_es": float(comp[pos.ticker]),
+                "marginal_var": desk_var - var_es_from_pnl(without, alpha_var, alpha_es).var,
+            })
+    return pd.DataFrame(rows)

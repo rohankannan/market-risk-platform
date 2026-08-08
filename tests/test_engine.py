@@ -4,8 +4,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from risk_engine.engine import aggregate, component_es, revalue
+from risk_engine.engine import aggregate, component_es, position_components, revalue
 from risk_engine.pricing import bond_pnl
+from risk_engine.var import var_es_from_pnl
 
 
 def _positions():
@@ -67,6 +68,43 @@ def test_component_es_sums_to_firm_es():
     q = np.quantile(firm, 0.025, method="linear")
     firm_es = -firm[firm <= q].mean()
     assert comp.sum() == pytest.approx(firm_es, rel=1e-12)
+
+
+def test_position_components_identities():
+    rng = np.random.default_rng(7)
+    pos = pd.DataFrame([
+        {"ticker": "AAA", "desk_code": "EQUITY", "factor_code": "EQ.AAA",
+         "quantity": 100.0, "instrument_type": "STOCK"},
+        {"ticker": "BBB", "desk_code": "EQUITY", "factor_code": "EQ.BBB",
+         "quantity": 200.0, "instrument_type": "STOCK"},
+        {"ticker": "VVV", "desk_code": "EQUITY", "factor_code": "VOL.SPX.IV30",
+         "quantity": 10.0, "instrument_type": "OPTION"},
+        {"ticker": "UST", "desk_code": "RATES", "factor_code": "IR.UST.10Y",
+         "quantity": 1_000_000.0, "instrument_type": "GOVT_BOND"},
+    ])
+    pnl = pd.DataFrame(rng.normal(0, 10_000, size=(500, 4)),
+                       columns=["AAA", "BBB", "VVV", "UST"])
+    comp = position_components(pos, pnl)
+    by = comp.set_index("ticker")
+
+    assert dict(zip(comp["ticker"], comp["factor_class"])) == {
+        "AAA": "EQ", "BBB": "EQ", "VVV": "VOL", "UST": "IR"}
+    assert by.loc["BBB", "quantity"] == 200.0                    # book facts ride along
+    assert by.loc["UST", "instrument_type"] == "GOVT_BOND"
+
+    # a desk's Euler components sum exactly to the desk's own ES
+    eq_es = var_es_from_pnl(pnl[["AAA", "BBB", "VVV"]].sum(axis=1)).es
+    assert by.loc[["AAA", "BBB", "VVV"], "component_es"].sum() == pytest.approx(eq_es, rel=1e-12)
+
+    # marginal <= standalone holds on this joint-Gaussian fixture (elliptical
+    # => VaR subadditive); NOT a theorem for empirical VaR - pins the fixture
+    assert (comp["marginal_var"] <= comp["standalone_var"] + 1e-9).all()
+
+    # single-position desk: standalone == marginal == desk VaR, component == its ES
+    ust = var_es_from_pnl(pnl["UST"])
+    assert by.loc["UST", "standalone_var"] == pytest.approx(ust.var, rel=1e-12)
+    assert by.loc["UST", "marginal_var"] == pytest.approx(ust.var, rel=1e-12)
+    assert by.loc["UST", "component_es"] == pytest.approx(ust.es, rel=1e-12)
 
 
 def test_loud_failures():

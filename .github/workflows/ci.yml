@@ -26,6 +26,13 @@ jobs:
             --exclude-dir=.venv . || (echo "possible hardcoded secret" && exit 1)
       - name: Tests
         run: pytest
+      - name: OpenAPI drift check
+        run: |
+          make openapi PY=python
+          git diff --exit-code web/openapi.json
+      - name: Fixture provenance (no dirty-tree stamps)
+        run: |
+          ! grep -rn -- '\-dirty"' web/src/mocks/fixtures web/public/snapshot.json || (echo "fixtures recorded from a dirty tree" && exit 1)
 
   # the README quickstart, executed: migrate -> seed -> backfill -> EOD against
   # a real Postgres, all offline from the committed snapshot, then an API smoke
@@ -68,6 +75,11 @@ jobs:
           curl -sf "http://127.0.0.1:8000/api/v1/scenarios/results" | python -c "import json,sys; s=json.load(sys.stdin); assert len(s['results']) == 5, s; print('scenarios:', [r['scenario_code'] for r in s['results']])"
           curl -sf "http://127.0.0.1:8000/api/v1/risk/exposures" | python -c "import json,sys; s=json.load(sys.stdin); rates=[r for r in s['rows'] if r['desk_code']=='RATES']; assert len(rates) == 5 and s['unit'] == 'USD per 1bp', s; assert any(v['desk_code'] == 'EQUITY' for v in s['vega']), s; print('KRD nodes:', [f\"{r['factor_code']}={r['value']:,.0f}\" for r in rates], '+ vega')"
           curl -sf "http://127.0.0.1:8000/api/v1/backtest/pla?scope=EQUITY" | python -c "import json,sys; s=json.load(sys.stdin); assert s['n_obs'] >= 250 and s['zone'] in ('GREEN','AMBER','RED'), s; print('PLA EQUITY:', s['spearman'], s['ks'], s['zone'])"
+          curl -sf "http://127.0.0.1:8000/api/v1/scenarios" | python -c "import json,sys; s=json.load(sys.stdin); assert len(s['scenarios']) == 5, s; r=[x for x in s['scenarios'] if x['scenario_type']=='HISTORICAL_REPLAY']; assert all(x['window_start'] and not x['shocks'] for x in r), r; print('catalog:', [x['scenario_code'] for x in s['scenarios']])"
+          curl -sf "http://127.0.0.1:8000/api/v1/risk/movers" | python -c "import json,sys; s=json.load(sys.stdin); assert s['rows'] and all(len(r['drivers']) == 3 for r in s['rows']), s; print('movers:', [(r['desk_code'], r['delta_usd']) for r in s['rows']])"
+          curl -sf "http://127.0.0.1:8000/api/v1/desks/RATES/decomposition" | python -c "import json,sys; s=json.load(sys.stdin); t=round(sum(b['standalone_var'] for b in s['buckets'])+s['diversification'],2); assert t == s['var_hs_1d'], (t, s['var_hs_1d']); print('RATES waterfall reconciles to the cent:', t)"
+          curl -sf "http://127.0.0.1:8000/api/v1/desks/EQUITY/positions" | python -c "import json,sys; s=json.load(sys.stdin); assert len(s['positions']) == 9, s; legs=[p for p in s['positions'] if p['instrument_type']=='OPTION']; assert len(legs) == 2 and all(p['option_type'] for p in legs), legs; print('EQUITY positions:', len(s['positions']), 'incl both collar legs')"
+          curl -sf "http://127.0.0.1:8000/api/v1/modeldoc" | python -c "import json,sys; s=json.load(sys.stdin); assert len(s['markdown']) > 10000, len(s['markdown']); print('modeldoc served:', len(s['markdown']), 'chars')"
 
   # the acceptance path: clone -> docker compose up -> both surfaces serve
   compose:

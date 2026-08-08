@@ -170,6 +170,148 @@ def test_pla_builder_green_on_tracking_series():
     assert p.points[0].date == dt.date(2026, 1, 1)
 
 
+DESK_FACTORS = [
+    {"desk_code": "RATES", "factor_code": "IR.UST.10Y"},
+    {"desk_code": "RATES", "factor_code": "VOL.SPX.IV30"},
+    {"desk_code": "FX", "factor_code": "FX.EURUSD"},
+    {"desk_code": "FX", "factor_code": "FX.JPYUSD"},
+]
+
+
+def _move_rows(code, conv, levels):
+    base = dt.date(2026, 8, 3)
+    return [{"factor_code": code, "return_conv": conv,
+             "obs_date": base + dt.timedelta(days=i), "value": v}
+            for i, v in enumerate(levels)]
+
+
+MOVE_ROWS = (
+    _move_rows("IR.UST.10Y", "ABS_BP", [4.00, 4.10, 4.02, 4.20])       # +18bp, typical 9bp
+    + _move_rows("VOL.SPX.IV30", "ABS", [20.0, 21.0, 20.0, 22.1])      # +2.1pt, typical 1pt
+    + _move_rows("FX.EURUSD", "LOG", [100.0, 101.0, 100.0, 97.0])      # -3.0%, typical ~1%
+    + _move_rows("FX.JPYUSD", "LOG", [1.0, 1.0, 1.0, 1.0])             # flat
+)
+MOVERS_PREV_ROWS = [_risk_row("FIRM", "VAR_HS", 90.0, agg=True),
+                    _risk_row("RATES", "VAR_HS", 50.0), _risk_row("FX", "VAR_HS", 45.0)]
+
+
+def test_movers_known_answer():
+    """RATES 60 vs 50 = +10, FX 40 vs 45 = -5; EQUITY absent from the prior run
+    is skipped; drivers rank by move-over-typical-move so a 2.1x vol day
+    outranks a 2.0x rates day across conventions."""
+    m = schemas.build_risk_movers(RUN, ROWS, MOVERS_PREV_ROWS, PREV["run_date"],
+                                  DESK_FACTORS, MOVE_ROWS)
+    assert m.prev_date == PREV["run_date"]
+    assert [r.desk_code for r in m.rows] == ["RATES", "FX"]      # |+10| > |-5|; no EQUITY
+    rates, fx = m.rows
+    assert rates.delta_usd == pytest.approx(10.0)
+    assert rates.delta_pct == pytest.approx(0.2)
+    assert rates.drivers == ["VOL.SPX.IV30 +2.1pt", "IR.UST.10Y +18bp"]
+    assert fx.delta_usd == pytest.approx(-5.0)
+    assert fx.delta_pct == pytest.approx(-0.1111, abs=1e-4)
+    assert fx.drivers == ["FX.EURUSD -3.0%", "FX.JPYUSD +0.0%"]
+
+
+def test_movers_empty_without_prior_run():
+    m = schemas.build_risk_movers(RUN, ROWS, [], None, DESK_FACTORS, MOVE_ROWS)
+    assert m.rows == [] and m.prev_date is None
+
+
+def test_movers_stale_factor_reads_as_zero_move():
+    """A factor with no print on the run date carried its level (the EOD fill
+    row), so its 'day move' is zero and it ranks behind live factors - not its
+    last printed move masquerading as today's."""
+    stale = _move_rows("IR.UST.10Y", "ABS_BP", [4.00, 4.10, 4.02])   # ends 08-05, run is 08-06
+    fresh = _move_rows("VOL.SPX.IV30", "ABS", [20.0, 21.0, 20.0, 20.5])
+    factors = [{"desk_code": "RATES", "factor_code": "IR.UST.10Y"},
+               {"desk_code": "RATES", "factor_code": "VOL.SPX.IV30"}]
+    m = schemas.build_risk_movers(RUN, ROWS, MOVERS_PREV_ROWS, PREV["run_date"],
+                                  factors, stale + fresh)
+    rates = next(r for r in m.rows if r.desk_code == "RATES")
+    assert rates.drivers == ["VOL.SPX.IV30 +0.5pt", "IR.UST.10Y +0bp"]
+
+
+CATALOG_ROWS = [
+    {"scenario_code": "GFC_2008", "scenario_name": "Gfc 2008",
+     "scenario_type": "HISTORICAL_REPLAY", "window_start": dt.date(2008, 9, 12),
+     "window_end": dt.date(2008, 10, 10), "description": None,
+     "factor_code": None, "shock_type": None, "shock_value": None},
+    {"scenario_code": "BEAR_STEEPENER", "scenario_name": "Bear Steepener",
+     "scenario_type": "HYPOTHETICAL", "window_start": None, "window_end": None,
+     "description": "long-end selloff", "factor_code": "IR.UST.10Y",
+     "shock_type": "ABSOLUTE_BP", "shock_value": 75.0},
+    {"scenario_code": "BEAR_STEEPENER", "scenario_name": "Bear Steepener",
+     "scenario_type": "HYPOTHETICAL", "window_start": None, "window_end": None,
+     "description": "long-end selloff", "factor_code": "IR.UST.30Y",
+     "shock_type": "ABSOLUTE_BP", "shock_value": 90.0},
+]
+
+
+def test_scenario_catalog_groups_shocks_replays_stay_empty():
+    c = schemas.build_scenario_catalog(CATALOG_ROWS)
+    assert [s.scenario_code for s in c.scenarios] == ["BEAR_STEEPENER", "GFC_2008"]
+    steep, gfc = c.scenarios
+    assert [sh.factor_code for sh in steep.shocks] == ["IR.UST.10Y", "IR.UST.30Y"]
+    assert steep.shocks[1].shock_value == 90.0
+    assert gfc.shocks == [] and gfc.window_start == dt.date(2008, 9, 12)
+
+
+DESK = {"desk_code": "EQUITY", "desk_name": "Equity", "is_aggregate": False}
+COMP_ROWS = [
+    {"ticker": "SPY", "instrument_type": "ETF", "quantity": 11_800.0, "factor_class": "EQ",
+     "option_type": None, "moneyness": None, "maturity_years": None,
+     "standalone_var": 45.55, "component_es": 60.0, "marginal_var": 40.0},
+    {"ticker": "NVDA", "instrument_type": "STOCK", "quantity": 1_700.0, "factor_class": "EQ",
+     "option_type": None, "moneyness": None, "maturity_years": None,
+     "standalone_var": 30.20, "component_es": 30.0, "marginal_var": 20.0},
+    {"ticker": "SPY_PUT_95", "instrument_type": "OPTION", "quantity": 7_800.0,
+     "factor_class": "EQ", "option_type": "PUT", "moneyness": 0.95,
+     "maturity_years": 0.08333, "standalone_var": 10.10, "component_es": -10.0,
+     "marginal_var": -5.0},
+]
+DESK_EXPOSURES = EXPOSURE_ROWS + [
+    {"desk_code": "EQUITY", "factor_code": "EQ.SPY", "measure": "DELTA_USD",
+     "value": 5_900_000.0}]
+
+
+def test_desk_decomposition_waterfall_identity():
+    """Buckets + diversification reproduce the desk VaR to the cent - the
+    invariant the waterfall chart renders. The collar legs bucket as EQ (their
+    delta leg), so the equity desk folds into one bucket."""
+    d = schemas.build_desk_decomposition(RUN, DESK, ROWS, COMP_ROWS, DESK_EXPOSURES)
+    assert d.var_hs_1d == 50.0
+    assert [(b.factor_class, b.standalone_var) for b in d.buckets] == [("EQ", 85.85)]
+    assert d.diversification == pytest.approx(-35.85)
+    assert round(sum(b.standalone_var for b in d.buckets) + d.diversification, 2) == 50.0
+    assert [(e.measure, e.factor_code) for e in d.exposures] == [
+        ("VEGA", "VOL.SPX.IV30"), ("DELTA_USD", "EQ.SPY")]       # this desk only
+    assert d.exposures[0].tenor_years is None
+
+
+def test_desk_decomposition_buckets_sort_desc():
+    rows = [{"factor_class": "EQ", "standalone_var": 10.0},
+            {"factor_class": "IR", "standalone_var": 70.0},
+            {"factor_class": "IR", "standalone_var": 5.0}]
+    d = schemas.build_desk_decomposition(RUN, DESK, ROWS, rows, [])
+    assert [(b.factor_class, b.standalone_var) for b in d.buckets] == [
+        ("IR", 75.0), ("EQ", 10.0)]                              # summed, then desc
+
+
+def test_desk_decomposition_backfill_run_has_no_buckets():
+    d = schemas.build_desk_decomposition(RUN, DESK, ROWS, [], DESK_EXPOSURES)
+    assert d.buckets == [] and d.diversification is None
+    assert d.var_hs_1d == 50.0                                   # the VaR itself still reports
+
+
+def test_desk_positions_pct_and_order():
+    p = schemas.build_desk_positions(RUN, DESK, COMP_ROWS)
+    assert [x.ticker for x in p.positions] == ["SPY", "NVDA", "SPY_PUT_95"]
+    assert [x.pct_of_desk for x in p.positions] == [0.75, 0.375, -0.125]   # sums to 1
+    put = p.positions[-1]
+    assert put.option_type == "PUT" and put.moneyness == 0.95    # collar metadata surfaced
+    assert put.component_es == -10.0                             # hedge: negative share
+
+
 # ---------------------------------------------------------------- routes
 
 class _FakeResult:
@@ -234,6 +376,21 @@ def test_healthz_503_when_db_down():
     app.state.engine = _FakeEngine(fail=True)
     r = TestClient(app).get("/healthz")
     assert r.status_code == 503 and "unreachable" in r.json()["detail"]
+
+
+def test_routes_503_not_bare_500_when_connect_fails():
+    """Connect-time failures must surface as a handled 503 (which still gets
+    CORS headers), not an unhandled 500 that bypasses CORSMiddleware."""
+    from sqlalchemy.exc import OperationalError
+
+    class _DownEngine:
+        def connect(self):
+            raise OperationalError("SELECT 1", {}, Exception("down"))
+
+    app.state.engine = _DownEngine()
+    r = TestClient(app).get("/api/v1/meta", headers={"Origin": "http://localhost:5173"})
+    assert r.status_code == 503 and "unreachable" in r.json()["detail"]
+    assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
 
 
 def test_meta_empty_db(client, monkeypatch):
@@ -317,3 +474,68 @@ def test_backtest_endpoint_insufficient_history(client, monkeypatch):
     monkeypatch.setattr(queries, "backtest_series",
                         lambda conn, scope, measure, end, window: [])
     assert client.get("/api/v1/backtest/summary").status_code == 404
+
+
+def test_scenario_catalog_endpoint(client, monkeypatch):
+    monkeypatch.setattr(queries, "scenario_catalog_rows", lambda conn: CATALOG_ROWS)
+    r = client.get("/api/v1/scenarios")
+    assert r.status_code == 200 and r.headers["cache-control"] == "no-cache"
+    assert [s["scenario_code"] for s in r.json()["scenarios"]] == [
+        "BEAR_STEEPENER", "GFC_2008"]
+
+
+def test_modeldoc_endpoint_serves_committed_doc(client):
+    body = client.get("/api/v1/modeldoc").json()
+    assert body["markdown"].lstrip().startswith("#")             # the real docs/model_doc.md
+    assert "Model" in body["markdown"][:200]
+
+
+def test_modeldoc_404_when_file_missing(client, monkeypatch):
+    from api import main
+    from api.deps import Settings
+    monkeypatch.setattr(main, "get_settings",
+                        lambda: Settings(model_doc_path="docs/does_not_exist.md"))
+    assert client.get("/api/v1/modeldoc").status_code == 404
+
+
+def test_movers_endpoint_and_cache_pinning(client, monkeypatch):
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(queries, "risk_rows",
+                        lambda conn, run_id: ROWS if run_id == RUN["run_id"] else MOVERS_PREV_ROWS)
+    monkeypatch.setattr(queries, "desk_factor_codes", lambda conn: DESK_FACTORS)
+    monkeypatch.setattr(queries, "factor_move_rows", lambda conn, end, lookback=61: MOVE_ROWS)
+    body = client.get("/api/v1/risk/movers").json()
+    assert body["rows"][0]["desk_code"] == "RATES"
+    assert body["rows"][0]["drivers"][0] == "VOL.SPX.IV30 +2.1pt"
+    pinned = client.get(f"/api/v1/risk/movers?as_of={AS_OF.isoformat()}")
+    assert "immutable" in pinned.headers["cache-control"]
+
+
+def _desk_row_stub(conn, code):
+    if code in ("EQUITY", "FIRM"):
+        return {"desk_code": code, "desk_name": code.title(), "is_aggregate": code == "FIRM"}
+    return None
+
+
+def test_desk_decomposition_endpoint(client, monkeypatch):
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(queries, "desk_row", _desk_row_stub)
+    monkeypatch.setattr(queries, "risk_rows", lambda conn, run_id: ROWS)
+    monkeypatch.setattr(queries, "desk_position_rows",
+                        lambda conn, run_id, desk_code: COMP_ROWS)
+    monkeypatch.setattr(queries, "exposure_rows", lambda conn, run_id: DESK_EXPOSURES)
+    body = client.get("/api/v1/desks/equity/decomposition").json()    # case-insensitive
+    assert body["desk_code"] == "EQUITY" and body["var_hs_1d"] == 50.0
+    assert body["buckets"][0]["factor_class"] == "EQ"
+    assert client.get("/api/v1/desks/CREDIT/decomposition").status_code == 404
+    assert client.get("/api/v1/desks/FIRM/decomposition").status_code == 404   # aggregate
+
+
+def test_desk_positions_endpoint(client, monkeypatch):
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(queries, "desk_row", _desk_row_stub)
+    monkeypatch.setattr(queries, "desk_position_rows",
+                        lambda conn, run_id, desk_code: COMP_ROWS)
+    body = client.get("/api/v1/desks/EQUITY/positions").json()
+    assert [p["ticker"] for p in body["positions"]] == ["SPY", "NVDA", "SPY_PUT_95"]
+    assert body["positions"][2]["option_type"] == "PUT"

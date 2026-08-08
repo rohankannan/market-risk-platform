@@ -9,6 +9,7 @@
 notebooks
 tests
 docs/img
+web
 .env
 .dockerignore
 Dockerfile

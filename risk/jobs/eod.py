@@ -35,10 +35,10 @@ from risk_engine.backfill import run_backfill
 from risk_engine.backtest import basel_traffic_light
 from risk_engine.config import DEFAULT_CONFIG as CFG
 from risk_engine.curve import NODE_TENORS, key_rate_dv01s
-from risk_engine.engine import aggregate, revalue
+from risk_engine.engine import aggregate, position_components, revalue
 from risk_engine.es import stressed_window
 from risk_engine.factors import align_levels, build_scenarios_fhs, build_scenarios_hs, to_returns
-from risk_engine.options import bs_vega
+from risk_engine.options import bs_delta, bs_vega
 from risk_engine.stress import REPLAY_WINDOWS, apply_scenario, compute_replay_shock
 from risk_engine.var import ewma_vol_forecast, ewma_volatility, var_es_from_pnl
 
@@ -217,8 +217,12 @@ def step_risk(ctx: dict) -> None:
             "FHS": build_scenarios_fhs(returns, vols, fc, ts_run, CFG.lookback_days)}
 
     results: list[dict] = []
+    pos_pnl_hs = None
     for method, s in scen.items():
-        desk_pnl = aggregate(revalue(book, lvl_t, s), book)
+        pos_pnl = revalue(book, lvl_t, s)
+        if method == "HS":
+            pos_pnl_hs = pos_pnl
+        desk_pnl = aggregate(pos_pnl, book)
         for scope in desk_pnl.columns:
             r = var_es_from_pnl(desk_pnl[scope], CFG.alpha_var, CFG.alpha_es, method=method)
             for hz in (1, CFG.reporting_horizon_days):
@@ -239,6 +243,17 @@ def step_risk(ctx: dict) -> None:
         results.append({"desk_id": desks[scope], "measure": "ES_STRESSED",
                         "confidence": CFG.alpha_es, "horizon_days": 1, "value": round(r.es, 2)})
     db.write_risk_results(conn, ctx["run_id"], results)
+
+    # per-position decomposition on the HS set (the headline and limit measure):
+    # the desk drill-down waterfall and positions table read these rows
+    comp = position_components(book, pos_pnl_hs, CFG.alpha_var, CFG.alpha_es)
+    db.write_position_components(conn, ctx["run_id"], [
+        {"desk_id": desks[r.desk_code], "ticker": r.ticker, "factor_class": r.factor_class,
+         "quantity": r.quantity, "instrument_type": r.instrument_type,
+         "standalone_var": round(r.standalone_var, 2),
+         "component_es": round(r.component_es, 2),
+         "marginal_var": round(r.marginal_var, 2)}
+        for r in comp.itertuples(index=False)])
 
     # key-rate DV01s off the bootstrapped par curve (curve view is reporting;
     # VaR pricing keeps the documented one-factor proxy - model doc R7)
@@ -271,6 +286,27 @@ def step_risk(ctx: dict) -> None:
     db.write_exposures(conn, ctx["run_id"],
                        [{"desk_id": desks[d], "factor_id": fids[f], "measure": "VEGA",
                          "value": round(v, 2)} for (d, f), v in desk_vega.items()])
+
+    # dollar delta per desk and factor: linear legs are qty * level, options go
+    # through BS delta at today's surface; bonds report through KRD_DV01 instead
+    desk_delta: dict[tuple[str, str], float] = {}
+    for p in book.itertuples(index=False):
+        if p.instrument_type in ("STOCK", "ETF", "FX_SPOT"):
+            d = float(p.quantity) * float(lvl_t[p.factor_code])
+        elif p.instrument_type == "OPTION":
+            spot = float(lvl_t[p.factor_code])
+            sigma = float(lvl_t[p.vol_factor_code]) / 100.0
+            rate = float(lvl_t[p.rate_factor_code]) / 100.0
+            d = float(p.quantity) * spot * float(bs_delta(p.option_type, spot,
+                                                          p.moneyness * spot, sigma,
+                                                          p.maturity_years, rate))
+        else:
+            continue
+        for scope in (p.desk_code, "FIRM"):
+            desk_delta[(scope, p.factor_code)] = desk_delta.get((scope, p.factor_code), 0.0) + d
+    db.write_exposures(conn, ctx["run_id"],
+                       [{"desk_id": desks[s], "factor_id": fids[f], "measure": "DELTA_USD",
+                         "value": round(v, 2)} for (s, f), v in desk_delta.items()])
 
     # flash check on BOTH measures: the headline (HS) and the filtered model
     # (FHS) each explain their own move before publishing. Vol-forecast movers

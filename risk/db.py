@@ -234,6 +234,27 @@ def write_exposures(conn: Connection, run_id: int, rows: list[dict]) -> None:
         [{**r, "run_id": run_id} for r in rows])
 
 
+def write_position_components(conn: Connection, run_id: int, rows: list[dict]) -> None:
+    """rows: desk_id, ticker, factor_class, quantity, instrument_type,
+    standalone_var, component_es, marginal_var."""
+    if not rows:
+        return
+    conn.execute(text("""
+        INSERT INTO position_components (run_id, desk_id, ticker, factor_class,
+                                         quantity, instrument_type,
+                                         standalone_var, component_es, marginal_var)
+        VALUES (:run_id, :desk_id, :ticker, :factor_class, :quantity, :instrument_type,
+                :standalone_var, :component_es, :marginal_var)
+        ON CONFLICT (run_id, desk_id, ticker) DO UPDATE
+        SET factor_class = EXCLUDED.factor_class,
+            quantity = EXCLUDED.quantity,
+            instrument_type = EXCLUDED.instrument_type,
+            standalone_var = EXCLUDED.standalone_var,
+            component_es = EXCLUDED.component_es,
+            marginal_var = EXCLUDED.marginal_var"""),
+        [{**r, "run_id": run_id} for r in rows])
+
+
 def write_pnl(conn: Connection, rows: list[dict]) -> None:
     """rows: desk_id, pnl_date, pnl_type, amount."""
     if not rows:

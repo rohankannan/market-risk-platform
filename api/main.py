@@ -1,10 +1,12 @@
 """RiskDesk API - FastAPI service over the results tables the EOD batch writes.
 
-MVP surface (spec section 6; the full 11-endpoint contract lands with the React
-dashboard): /healthz plus /api/v1 meta, risk/summary, risk/history,
-backtest/summary, scenarios/results. Every route carries a response_model.
-Responses pinned to an explicit as_of are immutable once the batch completes,
-so they ship a long-lived Cache-Control; unpinned responses don't cache.
+Full spec-section-6 surface: /healthz plus /api/v1 meta, risk/summary,
+risk/history, risk/movers, risk/exposures, desks/{code}/decomposition,
+desks/{code}/positions, backtest/summary, backtest/pla, scenarios,
+scenarios/results, modeldoc. Every route carries a response_model (the
+committed OpenAPI document feeds the dashboard's generated types). Responses
+pinned to an explicit as_of are immutable once the batch completes, so they
+ship a long-lived Cache-Control; unpinned responses don't cache.
 """
 
 from __future__ import annotations
@@ -15,6 +17,7 @@ from contextlib import asynccontextmanager
 from typing import Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
@@ -37,6 +40,10 @@ app = FastAPI(
                 "VaR/ES reported as positive potential loss, USD; P&L signed.",
     lifespan=lifespan,
 )
+
+# GET-only read API: no credentials, no cookies - allowlist is all CORS needs
+app.add_middleware(CORSMiddleware, allow_origins=get_settings().cors_origins,
+                   allow_methods=["GET"], allow_headers=["*"])
 
 
 def _cache(response: Response, pinned: bool) -> None:
@@ -126,6 +133,60 @@ def risk_history(response: Response, scope: str = Scope,
                                  queries.exception_rows(conn, code, start, end))
 
 
+@app.get("/api/v1/risk/movers", response_model=schemas.RiskMovers)
+def risk_movers(response: Response, as_of: dt.date | None = AsOf,
+                window: int = Query(1, ge=1, le=30,
+                                    description="Calendar days back for the delta baseline "
+                                                "(drivers always describe the as-of day)"),
+                conn: Connection = Depends(get_conn)) -> schemas.RiskMovers:
+    """Desk VaR moves vs the run `window` days back, with the as-of day's
+    largest factor moves as driver strings - the Overview movers table.
+    Empty rows on the first run."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    prev = queries.resolve_run(conn, as_of=run["run_date"] - dt.timedelta(days=window))
+    return schemas.build_risk_movers(
+        run, queries.risk_rows(conn, run["run_id"]),
+        queries.risk_rows(conn, prev["run_id"]) if prev else [],
+        prev["run_date"] if prev else None,
+        queries.desk_factor_codes(conn),
+        queries.factor_move_rows(conn, run["run_date"]))
+
+
+def _desk_or_404(conn: Connection, desk_code: str) -> dict:
+    desk = queries.desk_row(conn, desk_code.upper())
+    if desk is None or desk["is_aggregate"]:
+        raise HTTPException(status_code=404, detail=f"unknown desk {desk_code!r}")
+    return desk
+
+
+@app.get("/api/v1/desks/{desk_code}/decomposition", response_model=schemas.DeskDecomposition)
+def desk_decomposition(desk_code: str, response: Response, as_of: dt.date | None = AsOf,
+                       conn: Connection = Depends(get_conn)) -> schemas.DeskDecomposition:
+    """VaR-decomposition waterfall (factor-class buckets + diversification) and
+    the desk's factor exposures. Buckets are empty for runs without the position
+    step (backfill runs) - the desk VaR itself is still reported."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    desk = _desk_or_404(conn, desk_code)
+    return schemas.build_desk_decomposition(
+        run, desk, queries.risk_rows(conn, run["run_id"]),
+        queries.desk_position_rows(conn, run["run_id"], desk["desk_code"]),
+        queries.exposure_rows(conn, run["run_id"]))
+
+
+@app.get("/api/v1/desks/{desk_code}/positions", response_model=schemas.DeskPositions)
+def desk_positions(desk_code: str, response: Response, as_of: dt.date | None = AsOf,
+                   conn: Connection = Depends(get_conn)) -> schemas.DeskPositions:
+    """Per-position standalone/component/marginal VaR for one desk (no
+    pagination - the book is under 100 rows by construction)."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    desk = _desk_or_404(conn, desk_code)
+    return schemas.build_desk_positions(
+        run, desk, queries.desk_position_rows(conn, run["run_id"], desk["desk_code"]))
+
+
 @app.get("/api/v1/risk/exposures", response_model=schemas.KeyRateExposures)
 def risk_exposures(response: Response, as_of: dt.date | None = AsOf,
                    conn: Connection = Depends(get_conn)) -> schemas.KeyRateExposures:
@@ -172,6 +233,28 @@ def backtest_pla(response: Response, scope: str = Scope,
     except (ValueError, IndexError) as exc:
         raise HTTPException(status_code=404,
                             detail=f"insufficient paired P&L for {code}: {exc}") from exc
+
+
+@app.get("/api/v1/scenarios", response_model=schemas.ScenarioCatalog)
+def scenarios_catalog(response: Response,
+                      conn: Connection = Depends(get_conn)) -> schemas.ScenarioCatalog:
+    """Scenario definitions: replay windows and hypothetical shock lists (the
+    dashboard formats dominant-move strings from these)."""
+    _cache(response, pinned=False)
+    return schemas.build_scenario_catalog(queries.scenario_catalog_rows(conn))
+
+
+@app.get("/api/v1/modeldoc", response_model=schemas.ModelDoc)
+def modeldoc(response: Response) -> schemas.ModelDoc:
+    """The SR 11-7-structured model document, verbatim markdown."""
+    _cache(response, pinned=False)
+    settings = get_settings()
+    try:
+        with open(settings.model_doc_path, encoding="utf-8") as f:
+            return schemas.ModelDoc(markdown=f.read())
+    except OSError as exc:
+        raise HTTPException(status_code=404,
+                            detail=f"model doc not found at {settings.model_doc_path}") from exc
 
 
 @app.get("/api/v1/scenarios/results", response_model=schemas.ScenarioResults)

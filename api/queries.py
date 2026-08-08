@@ -48,6 +48,13 @@ def desk_exists(conn: Connection, desk_code: str) -> bool:
                        {"c": desk_code}) is not None
 
 
+def desk_row(conn: Connection, desk_code: str) -> dict | None:
+    row = conn.execute(text("""
+        SELECT desk_code, desk_name, is_aggregate FROM desks WHERE desk_code = :c"""),
+        {"c": desk_code}).mappings().first()
+    return dict(row) if row else None
+
+
 def risk_rows(conn: Connection, run_id: int) -> list[dict]:
     return [dict(r) for r in conn.execute(text("""
         SELECT d.desk_code, d.desk_name, d.is_aggregate,
@@ -128,6 +135,58 @@ def exposure_rows(conn: Connection, run_id: int) -> list[dict]:
         ORDER BY re.measure, d.desk_code, rf.factor_code"""), {"r": run_id}).mappings()]
 
 
+def desk_factor_codes(conn: Connection) -> list[dict]:
+    """Distinct (desk_code, factor_code) over booked positions, every mapped
+    sensitivity - an option's vol factor counts as its desk's factor too."""
+    return [dict(r) for r in conn.execute(text("""
+        SELECT DISTINCT d.desk_code, rf.factor_code
+        FROM positions p
+        JOIN desks d USING (desk_id)
+        JOIN instrument_factors f USING (instrument_id)
+        JOIN risk_factors rf USING (factor_id)""")).mappings()]
+
+
+def factor_move_rows(conn: Connection, end: dt.date, lookback: int = 61) -> list[dict]:
+    """Trailing `lookback` observations per factor up to end, date-ordered - the
+    movers builder turns levels into day moves and a typical-move normalizer."""
+    return [dict(r) for r in conn.execute(text("""
+        SELECT factor_code, return_conv, obs_date, value FROM (
+          SELECT rf.factor_code, rf.return_conv, md.obs_date, md.value::float AS value,
+                 row_number() OVER (PARTITION BY md.factor_id ORDER BY md.obs_date DESC) AS rn
+          FROM market_data md JOIN risk_factors rf USING (factor_id)
+          WHERE md.obs_date <= :end) t
+        WHERE rn <= :lb
+        ORDER BY factor_code, obs_date"""), {"end": end, "lb": lookback}).mappings()]
+
+
+def desk_position_rows(conn: Connection, run_id: int, desk_code: str) -> list[dict]:
+    """Per-position component rows for one desk (the decomposition waterfall
+    and the positions table). Empty for runs that skip the position step
+    (backfill runs do). Quantity and instrument type were frozen with the run;
+    instruments joins only for option display metadata - a components row whose
+    instrument has vanished (book reseeded since the run) must fail loudly, not
+    silently lose its option badge."""
+    rows = [dict(r) for r in conn.execute(text("""
+        SELECT pc.ticker, pc.factor_class, pc.quantity::float AS quantity,
+               pc.instrument_type,
+               pc.standalone_var::float AS standalone_var,
+               pc.component_es::float AS component_es, pc.marginal_var::float AS marginal_var,
+               i.ticker IS NULL AS instrument_missing,
+               i.meta->>'option_type' AS option_type,
+               (i.meta->>'moneyness')::float AS moneyness,
+               (i.meta->>'maturity_years')::float AS maturity_years
+        FROM position_components pc
+        JOIN desks d USING (desk_id)
+        LEFT JOIN instruments i ON i.ticker = pc.ticker
+        WHERE pc.run_id = :r AND d.desk_code = :c
+        ORDER BY pc.ticker"""), {"r": run_id, "c": desk_code}).mappings()]
+    dropped = sorted(r["ticker"] for r in rows if r.pop("instrument_missing"))
+    if dropped:
+        raise RuntimeError("position_components rows without an instruments row "
+                           f"(book reseeded since run {run_id}?): {dropped}")
+    return rows
+
+
 def pla_series(conn: Connection, scope: str, end: dt.date, window: int) -> list[dict]:
     """Date-ordered paired daily P&L: hypothetical vs risk-theoretical - the
     two legs of the P&L-attribution test. Only dates carrying both legs count."""
@@ -143,6 +202,19 @@ def pla_series(conn: Connection, scope: str, end: dt.date, window: int) -> list[
         ORDER BY p.pnl_date DESC
         LIMIT :w"""), {"scope": scope, "end": end, "w": window}).mappings()]
     return rows[::-1]
+
+
+def scenario_catalog_rows(conn: Connection) -> list[dict]:
+    """One row per (scenario, shock); replays carry no shocks (their moves are
+    computed from the replay window, not stored) so their factor columns are NULL."""
+    return [dict(r) for r in conn.execute(text("""
+        SELECT s.scenario_code, s.scenario_name, s.scenario_type, s.window_start,
+               s.window_end, s.description, rf.factor_code, ss.shock_type,
+               ss.shock_value::float AS shock_value
+        FROM scenarios s
+        LEFT JOIN scenario_shocks ss USING (scenario_id)
+        LEFT JOIN risk_factors rf USING (factor_id)
+        ORDER BY s.scenario_code, rf.factor_code""")).mappings()]
 
 
 def scenario_rows(conn: Connection, run_id: int) -> list[dict]:

@@ -9,9 +9,10 @@ from __future__ import annotations
 from collections.abc import Iterator
 from functools import lru_cache
 
-from fastapi import Request
+from fastapi import HTTPException, Request
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import Connection
+from sqlalchemy.exc import OperationalError
 
 from risk.db import DEFAULT_DB_URL
 
@@ -22,6 +23,14 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str = DEFAULT_DB_URL
+    # comma-separated allowed origins for the browser dashboard; the default
+    # covers a local Vite dev server, the hosted origin is set on Render
+    api_cors_origins: str = "http://localhost:5173"
+    model_doc_path: str = "docs/model_doc.md"
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [o.strip() for o in self.api_cors_origins.split(",") if o.strip()]
 
 
 @lru_cache(maxsize=1)
@@ -30,5 +39,13 @@ def get_settings() -> Settings:
 
 
 def get_conn(request: Request) -> Iterator[Connection]:
-    with request.app.state.engine.connect() as conn:
+    # connect-time failures become a 503 inside the exception middleware, where
+    # CORS headers still apply - a raw 500 would bypass CORSMiddleware and show
+    # the browser an opaque CORS error instead of "database unreachable"
+    try:
+        cm = request.app.state.engine.connect()
+    except OperationalError as exc:
+        raise HTTPException(status_code=503,
+                            detail=f"database unreachable: {type(exc).__name__}") from exc
+    with cm as conn:
         yield conn
