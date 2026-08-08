@@ -393,7 +393,17 @@ def step_scenarios(ctx: dict) -> None:
         pnl = apply_scenario(book, lvl_t, shock)
         rows += [{"scenario_id": sid[code], "desk_id": desks[s],
                   "pnl_impact": round(float(pnl[s]), 2)} for s in pnl.index]
+    # the catalog's declared shock type must match the factor's own return
+    # convention - a mislabeled shock would otherwise apply silently in the
+    # wrong units (bp read as a log return is a 100x error)
+    expected = {"LOG": "RELATIVE", "ABS_BP": "ABSOLUTE_BP", "ABS": "ABSOLUTE"}
     for h in hypos:
+        for fcode, s in h["shocks"].items():
+            want = expected[convs[fcode]]
+            if s["type"] != want:
+                raise RuntimeError(
+                    f"{h['code']}: {fcode} declares {s['type']} but the factor's "
+                    f"convention {convs[fcode]} requires {want}")
         shock = pd.Series({f: s["value"] for f, s in h["shocks"].items()})
         pnl = apply_scenario(book, lvl_t, shock)
         rows += [{"scenario_id": sid[h["code"]], "desk_id": desks[s],

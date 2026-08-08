@@ -59,7 +59,7 @@ A single-screen terminal over the API — limit utilization with warn thresholds
 | Seed loader (COPY-based, idempotent), portfolio revaluation engine (full reval + delta-gamma) | ✅ |
 | 750-day out-of-sample backfill + backtest chart and stats | ✅ (`risk/jobs/backfill.py`) |
 | EOD batch: ingestion w/ fallbacks, DQ gate (`dq_issues`, PARTIAL on blocks), risk + exception writes, scenario runs, idempotent run claims, DB backfill mode | ✅ (`risk/jobs/eod.py`) |
-| Stress replays (GFC 2008, COVID 2020) + hypothetical shocks, written per run | ✅ |
+| Stress replays (GFC 2008, COVID 2020, 2022 rate selloff) + hypothetical shocks whose magnitudes are measured against the book's own history, not chosen — sensitivity ladders cite their percentile, the correlated risk-off scenario is a conditional tail mean | ✅ (`docs/stress_calibration.md`, regenerable) |
 | FastAPI read layer over the results tables: meta, risk summary w/ limit utilization + diversification, history, day-over-day movers w/ factor-move driver strings, per-desk VaR decomposition (standalone/component/marginal per position), backtest stats, scenario catalog + results, model doc; typed response models (committed OpenAPI spec feeds frontend typegen), immutable caching on pinned `as_of` | ✅ (`api/`) |
 | Streamlit dashboard, 3 pages reading the API (Overview w/ tiles + limit table + P&L-vs-VaR chart, Backtesting w/ Kupiec/Christoffersen/zone, Stress w/ per-desk scenario P&L) | ✅ (`dashboard/`) |
 | One-command Docker Compose stack (bootstrap + API + dashboard + opt-in APScheduler night cycle); CI runs tests, the full pipeline against Postgres, and the compose acceptance path | ✅ (`Dockerfile`, `docker-compose.yml`, `.github/workflows/`) |

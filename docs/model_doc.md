@@ -19,8 +19,9 @@ its nightly cycle. Per desk and firm-wide, the nightly batch produces:
   sqrt-of-time scaling;
 - **97.5% Expected Shortfall**, and a **stressed ES** calibrated on a fixed
   2008–09 window (FRTB-style; see the scope note below);
-- **scenario P&L** for two historical replays (GFC 2008, COVID 2020) and three
-  hypothetical shocks;
+- **scenario P&L** for three historical replays (GFC 2008, COVID 2020, the 2022
+  rate selloff) and four hypothetical shocks whose magnitudes are measured
+  against the book's own history (§3.4);
 - **backtest inputs** against clean P&L — daily hypothetical AND
   risk-theoretical P&L plus exceptions versus the prior run's VaR — from which
   the API computes Kupiec, Christoffersen, the Basel traffic light, and the
@@ -52,7 +53,7 @@ to USD per unit of foreign currency; the weekly publication lag is absorbed by
 a 7-day forward-fill cap), five constant-
 maturity Treasury par yields in percent (FRED: 3M, 2Y, 5Y, 10Y, 30Y), and
 VIX, which prices the options sleeve as its (flat) implied vol. History runs from
-2007 — deep enough to contain both stress windows used in §3.4.
+2007 — deep enough to contain every stress window used in §3.4.
 
 A frozen snapshot of all 17 series (~84k observations) is committed to the
 repository. Tests, CI, and the demo never make a network call: every number in
@@ -243,24 +244,53 @@ a fixed window rot? Show the Euler allocation sums to firm ES.
 ### 3.4 Stress testing
 
 Historical replays are **data-driven**: only the window dates are pinned
-(GFC: 2008-09-12 → 2008-11-20; COVID: 2020-02-19 → 2020-03-23). The shock
-vector is the sum of stored daily returns over the window — additive for both
-log returns and bp changes — applied instantaneously to today's book with full
-revaluation. Sanity anchors are pinned by tests against the committed snapshot
-(GFC window: SPX log return ≈ −0.50, 2Y yield ≈ −118bp, JPY ≈ +12%
-safe-haven move). Three
-hypothetical shocks (+100bp parallel rates, −20% equities, +10% USD) come from
-a YAML catalog; factors absent from a scenario are shocked by zero — the
-documented fill rule, until beta-fill rules arrive with the CCAR-style
-scenarios. Post-shock yields floor at 1bp.
+(GFC: 2008-09-12 → 2008-11-20; COVID: 2020-02-19 → 2020-03-23; 2022 rate
+selloff: 2022-01-03 → 2022-10-31). The shock vector is the sum of stored daily
+returns over the window — additive for both log returns and bp changes —
+applied instantaneously to today's book with full revaluation. Sanity anchors
+are pinned by tests against the committed snapshot (GFC window: SPX log return
+≈ −0.50, 2Y yield ≈ −118bp, JPY ≈ +12% safe-haven move). Factors absent from a
+scenario are shocked by zero — the documented fill rule, until beta-fill rules
+arrive with the CCAR-style scenarios. Post-shock yields floor at 1bp.
 
-On the snapshot book the GFC replay is the worst scenario at ~−$11.0M firm
-P&L. The FX desk drives it (−$11.1M): all four positions lose at once as risk
-currencies fall against USD and the yen rallies into the short — the long-MXN
-position is the single largest loss (~−$3.9M) — while the rates desk *gains*
-~+$4.9M on the yield collapse and the equity desk's protective put claws back
-~$2M of the fall. A concrete illustration that today's book, not 2008's, is
-what gets stressed.
+**Where the hypothetical magnitudes come from.** The catalog separates two
+kinds of row, and the distinction is the answer to "why those numbers":
+
+- *Sensitivity ladders* (+100bp parallel, −20% equities with a +20pt vol bid,
+  +10% broad USD) are round on purpose — they read the book's directional
+  exposure the way a desk quotes it, and are not forecasts. Roundness is not
+  the same as arbitrary: each one's severity is measured against this book's
+  own history and cited in the catalog. On overlapping 20-business-day moves
+  (4,966 windows, 2007–2026) the +100bp shift sits at the 99.64th percentile
+  of 10Y moves and was reached in 18 windows; −20% equities at the 99.52nd
+  percentile of SPY moves, 24 windows; +10% USD at the 99.78th, 11 windows.
+  Because each ladder moves a class uniformly it understates a book that is
+  long high-beta names (NVDA's own p99 is roughly twice SPY's) and short
+  safe-haven currencies.
+- *Correlated scenarios* are calibrated, not chosen. `RISK_OFF` takes the
+  **conditional tail mean**: the average move of every factor over the 50
+  windows where 20-day SPY sat at or below its 1st percentile. That is where
+  the co-movement the ladders cannot express comes from — equities −23% with
+  vol +29pt, a flight-to-quality rally steepening from the front end (3M
+  −56bp, 30Y −29bp), the yen bid +2.3% and the peso sold −15.6%.
+
+`python -m risk.jobs.calibrate_stress` regenerates every number above into
+`docs/stress_calibration.md` from the committed snapshot, and unit tests
+recompute the quantiles and assert the catalog's declared shock types match
+each factor's return convention — a bp value mislabeled as a log return would
+be a 100× error applied silently.
+
+**What the catalog was missing.** Both original replays are flight-to-quality
+episodes in which this long-duration book *gains* on the rates leg, so the
+worst case on record was the GFC replay at ~−$11.0M — FX-driven (−$11.1M, the
+long-MXN position the single largest loss at ~−$3.9M) with rates *up* ~+$4.9M
+and the equity desk's protective put clawing back ~$2M. Adding 2022 — the
+correlated stock-bond selloff, 10Y +258bp with SPY −17.7% over the window —
+produces **−$21.8M, roughly twice the GFC replay and the worst scenario in the
+catalog**, concentrated in rates. A stress program of only 2008 and 2020 was
+systematically blind to this book's adverse regime, which is the practical
+argument for choosing replay windows by what threatens the *current* book
+rather than by which crises are famous.
 
 *Questions an interviewer would ask:* Why is summing daily log returns over
 the window legitimate but summing simple returns is not? An instantaneous
