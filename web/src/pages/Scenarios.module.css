@@ -1,0 +1,80 @@
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.rail {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px;
+  position: sticky;
+  top: 0;
+}
+
+.railTitle {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.railItem {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 5px 0;
+  font-size: 13px;
+}
+
+.railMeta {
+  color: var(--text-dim);
+  font-size: 11px;
+  display: block;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.panelTitle {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.drillButton {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+}
+
+.drillButton:hover {
+  text-decoration-color: var(--text);
+}
+
+.drillButton:focus-visible {
+  outline: 2px solid var(--desk-rates);
+  outline-offset: 2px;
+}
+
+.drillMeta {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+}
