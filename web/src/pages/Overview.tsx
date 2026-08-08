@@ -8,6 +8,7 @@ import {
 } from "../api/queries";
 import type { DeskRisk, HistoryPoint } from "../api/types";
 import { EChart } from "../components/EChart";
+import { HistoryDataTable } from "../components/HistoryDataTable";
 import { KpiTile } from "../components/KpiTile";
 import { Skeleton } from "../components/Skeleton";
 import { Sparkline } from "../components/Sparkline";
@@ -244,39 +245,7 @@ export default function Overview() {
         ) : history.isSuccess ? (
           <>
             <EChart option={pnlVsVarOption(points)} height={300} />
-            <details className={styles.chartData}>
-              <summary>Data table</summary>
-              <table className={table.table}>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th className={table.r}>P&amp;L</th>
-                    <th className={table.r}>-VaR (HS)</th>
-                    <th className={table.r}>-VaR (FHS)</th>
-                    <th>Exception</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {points.map((p) => (
-                    <tr key={p.date}>
-                      <td className="num">{p.date}</td>
-                      <td className={`${table.r} num`}>{fmtMoney(p.pnl)}</td>
-                      <td className={`${table.r} num`}>
-                        {p.var_hs == null ? "-" : fmtMoney(-p.var_hs)}
-                      </td>
-                      <td className={`${table.r} num`}>
-                        {p.var_fhs == null ? "-" : fmtMoney(-p.var_fhs)}
-                      </td>
-                      <td>
-                        {[p.exception_hs && "HS", p.exception_fhs && "FHS"]
-                          .filter(Boolean)
-                          .join("+")}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </details>
+            <HistoryDataTable points={points} />
           </>
         ) : (
           <Skeleton height={300} />

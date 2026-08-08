@@ -35,3 +35,20 @@
 .dim {
   color: var(--text-dim);
 }
+
+/* the collapsed data-table disclosure every chart carries */
+.chartData {
+  border-top: 1px solid var(--border);
+}
+
+.chartData summary {
+  color: var(--text-dim);
+  font-size: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.chartData summary:focus-visible {
+  outline: 2px solid var(--desk-rates);
+  outline-offset: -2px;
+}

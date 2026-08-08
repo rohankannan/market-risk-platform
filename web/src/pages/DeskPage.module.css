@@ -1,0 +1,79 @@
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin: 0 0 16px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.headerVar {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.deskDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.panelTitle {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.exposures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sortHeader {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sortHeader:focus-visible {
+  outline: 2px solid var(--desk-rates);
+  outline-offset: 2px;
+}
+
+.microBarTrack {
+  display: inline-block;
+  width: 56px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.microBarFill {
+  height: 100%;
+}
+
+.optionMeta {
+  color: var(--text-dim);
+  font-size: 11px;
+}
