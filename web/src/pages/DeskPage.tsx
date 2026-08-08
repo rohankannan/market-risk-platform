@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
-import { useDeskDecomposition, useDeskPositions, useRiskHistory } from "../api/queries";
+import {
+  useDeskDecomposition,
+  useDeskPositions,
+  useMeta,
+  useRiskHistory,
+} from "../api/queries";
 import type { DeskDecomposition, DeskPosition } from "../api/types";
 import { EChart } from "../components/EChart";
 import { HistoryDataTable } from "../components/HistoryDataTable";
@@ -173,6 +178,31 @@ function WaterfallPanel({ decomp }: { decomp: DeskDecomposition }) {
   );
 }
 
+function DeskTabs({ current }: { current: string }) {
+  const meta = useMeta();
+  const [search] = useSearchParams();
+  const suffix = search.toString() ? `?${search.toString()}` : "";
+  const desks = (meta.data?.desks ?? []).filter((d) => !d.is_aggregate);
+  if (!desks.length) return null;
+  return (
+    <nav className={styles.deskTabs} aria-label="Desks">
+      {desks.map((d) => (
+        <NavLink
+          key={d.desk_code}
+          to={`/desks/${d.desk_code}${suffix}`}
+          className={d.desk_code === current ? styles.activeTab : undefined}
+        >
+          <span
+            className={styles.tabDot}
+            style={{ background: DESK_HEX[d.desk_code] ?? "var(--rd-muted)" }}
+          />
+          {d.desk_name.toUpperCase()}
+        </NavLink>
+      ))}
+    </nav>
+  );
+}
+
 export default function DeskPage() {
   const { deskCode = "" } = useParams();
   const code = deskCode.toUpperCase();
@@ -183,6 +213,7 @@ export default function DeskPage() {
   if (decomp.isPending) {
     return (
       <>
+        <DeskTabs current={code} />
         <Skeleton height={28} width={320} />
         <div style={{ height: 16 }} />
         <div className={styles.panel}>
@@ -204,6 +235,7 @@ export default function DeskPage() {
 
   return (
     <>
+      <DeskTabs current={code} />
       <StaleBanner resolved={d.as_of} />
       <div className={styles.header}>
         <span className={styles.deskDot} style={{ background: deskColor }} />

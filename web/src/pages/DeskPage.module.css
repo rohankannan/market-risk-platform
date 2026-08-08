@@ -1,3 +1,39 @@
+/* desk switcher: the header nav carries one DESKS entry, so every desk is
+   reachable from here */
+.deskTabs {
+  display: flex;
+  border-bottom: 2px solid var(--rd-divider);
+  margin-bottom: 12px;
+}
+
+.deskTabs a {
+  padding: 5px 12px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--rd-muted);
+  text-decoration: none;
+  border-right: 1px solid var(--rd-divider);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.deskTabs a:hover {
+  color: var(--rd-text);
+}
+
+.deskTabs a.activeTab {
+  background: var(--rd-gold-rush);
+  color: var(--rd-bg);
+}
+
+.tabDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+}
+
 .header {
   display: flex;
   align-items: baseline;

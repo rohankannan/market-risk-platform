@@ -10,6 +10,19 @@ function renderAt(path: string) {
   return render(<App />);
 }
 
+test("every desk is reachable from the desk page's own tab strip", async () => {
+  renderAt("/desks/EQUITY");
+  const tabs = await screen.findByRole("navigation", { name: "Desks" });
+  const meta = (await import("../mocks/fixtures/meta.json")).default;
+  const desks = meta.desks.filter((d) => !d.is_aggregate);
+  expect(desks.length).toBeGreaterThan(1);
+  for (const d of desks) {
+    expect(
+      within(tabs).getByRole("link", { name: new RegExp(d.desk_name, "i") }),
+    ).toHaveAttribute("href", `/desks/${d.desk_code}`);
+  }
+});
+
 test("header VaR reproduces the decomposition fixture to the cent", async () => {
   renderAt("/desks/EQUITY");
   expect(await screen.findByTitle(fmtMoneyFull(equityDecomp.var_hs_1d))).toHaveTextContent(

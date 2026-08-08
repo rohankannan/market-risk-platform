@@ -82,9 +82,11 @@ function Logo() {
   );
 }
 
+// DESKS resolves to the first booked desk from /meta - the desk page's own
+// tab strip switches between them
 const NAV = [
   { to: "/", label: "OVERVIEW", end: true },
-  { to: "/desks/RATES", label: "DESKS", end: false },
+  { to: null, label: "DESKS", end: false },
   { to: "/scenarios", label: "SCENARIOS", end: false },
   { to: "/backtesting", label: "BACKTESTING", end: false },
   { to: "/whatif", label: "WHAT-IF", end: false },
@@ -108,6 +110,7 @@ export function Shell() {
     ? (dates.find((d) => d <= asOf) ?? "—")
     : (meta.data?.latest_as_of ?? "—");
   const onDesks = location.pathname.startsWith("/desks");
+  const firstDesk = (meta.data?.desks ?? []).find((d) => !d.is_aggregate)?.desk_code;
 
   return (
     <div className={styles.layout}>
@@ -126,7 +129,7 @@ export function Shell() {
           {NAV.map((n) => (
             <NavLink
               key={n.label}
-              to={`${n.to}${suffix}`}
+              to={`${n.to ?? `/desks/${firstDesk ?? "RATES"}`}${suffix}`}
               end={n.end}
               className={({ isActive }) =>
                 (n.label === "DESKS" ? onDesks : isActive) ? styles.active : ""
