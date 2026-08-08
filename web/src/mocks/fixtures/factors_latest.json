@@ -1,0 +1,125 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 328,
+  "ticks": [
+    {
+      "factor_code": "EQ.AAPL",
+      "factor_type": "PRICE",
+      "level": 312.41000366,
+      "change": 0.004534,
+      "unit": "%"
+    },
+    {
+      "factor_code": "EQ.JNJ",
+      "factor_type": "PRICE",
+      "level": 256.98001099,
+      "change": -0.002368,
+      "unit": "%"
+    },
+    {
+      "factor_code": "EQ.JPM",
+      "factor_type": "PRICE",
+      "level": 356.29998779,
+      "change": -0.008184,
+      "unit": "%"
+    },
+    {
+      "factor_code": "EQ.MSFT",
+      "factor_type": "PRICE",
+      "level": 499.85998535,
+      "change": 0.025438,
+      "unit": "%"
+    },
+    {
+      "factor_code": "EQ.NVDA",
+      "factor_type": "PRICE",
+      "level": 218.99000549,
+      "change": -0.001049,
+      "unit": "%"
+    },
+    {
+      "factor_code": "EQ.SPY",
+      "factor_type": "PRICE",
+      "level": 768.55999756,
+      "change": -0.001598,
+      "unit": "%"
+    },
+    {
+      "factor_code": "EQ.XOM",
+      "factor_type": "PRICE",
+      "level": 154.83999634,
+      "change": 0.02117,
+      "unit": "%"
+    },
+    {
+      "factor_code": "FX.EURUSD",
+      "factor_type": "FX_RATE",
+      "level": 1.1519,
+      "change": 0.0,
+      "unit": "%"
+    },
+    {
+      "factor_code": "FX.GBPUSD",
+      "factor_type": "FX_RATE",
+      "level": 1.347,
+      "change": 0.0,
+      "unit": "%"
+    },
+    {
+      "factor_code": "FX.JPYUSD",
+      "factor_type": "FX_RATE",
+      "level": 0.00628299,
+      "change": 0.0,
+      "unit": "%"
+    },
+    {
+      "factor_code": "FX.MXNUSD",
+      "factor_type": "FX_RATE",
+      "level": 0.05772506,
+      "change": 0.0,
+      "unit": "%"
+    },
+    {
+      "factor_code": "IR.UST.3M",
+      "factor_type": "YIELD",
+      "level": 3.89,
+      "change": 0.0,
+      "unit": "bp"
+    },
+    {
+      "factor_code": "IR.UST.2Y",
+      "factor_type": "YIELD",
+      "level": 4.18,
+      "change": 0.0,
+      "unit": "bp"
+    },
+    {
+      "factor_code": "IR.UST.5Y",
+      "factor_type": "YIELD",
+      "level": 4.33,
+      "change": 0.0,
+      "unit": "bp"
+    },
+    {
+      "factor_code": "IR.UST.10Y",
+      "factor_type": "YIELD",
+      "level": 4.63,
+      "change": 0.0,
+      "unit": "bp"
+    },
+    {
+      "factor_code": "IR.UST.30Y",
+      "factor_type": "YIELD",
+      "level": 5.17,
+      "change": 0.0,
+      "unit": "bp"
+    },
+    {
+      "factor_code": "VOL.SPX.IV30",
+      "factor_type": "VOL_INDEX",
+      "level": 15.15,
+      "change": -0.66,
+      "unit": "pt"
+    }
+  ]
+}

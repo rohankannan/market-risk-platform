@@ -1,0 +1,78 @@
+{
+  "scope": "FIRM",
+  "model": "FHS",
+  "measure": "VAR_FHS",
+  "window": 500,
+  "start": "2025-05-02",
+  "end": "2026-08-06",
+  "n_obs": 327,
+  "n_exceptions": 4,
+  "expected_exceptions": 3.27,
+  "kupiec": {
+    "name": "kupiec_pof",
+    "statistic": 0.15368237325822065,
+    "p_value": 0.6950408986031851,
+    "df": 1,
+    "reject_5pct": false,
+    "details": {
+      "n_obs": 327,
+      "n_exceptions": 4,
+      "expected": 3.27,
+      "p": 0.01
+    }
+  },
+  "christoffersen_independence": {
+    "name": "christoffersen_independence",
+    "statistic": 0.09938143808796696,
+    "p_value": 0.752573198928827,
+    "df": 1,
+    "reject_5pct": false,
+    "details": {
+      "n00": 318,
+      "n01": 4,
+      "n10": 4,
+      "n11": 0
+    }
+  },
+  "christoffersen_cc": {
+    "name": "christoffersen_cc",
+    "statistic": 0.2530638113461876,
+    "p_value": 0.881146035537662,
+    "df": 2,
+    "reject_5pct": false,
+    "details": {
+      "lr_pof": 0.15368237325822065,
+      "lr_ind": 0.09938143808796696
+    }
+  },
+  "traffic_light": {
+    "zone": "GREEN",
+    "n_exceptions": 4,
+    "n_obs": 327,
+    "plus_factor": 0.0,
+    "multiplier": 3.0,
+    "regulatory_window": false
+  },
+  "exceptions": [
+    {
+      "date": "2026-03-20",
+      "var_value": 999347.97,
+      "pnl_value": -1139059.59
+    },
+    {
+      "date": "2026-05-15",
+      "var_value": 819381.89,
+      "pnl_value": -1244417.1
+    },
+    {
+      "date": "2026-06-05",
+      "var_value": 907677.62,
+      "pnl_value": -1329217.37
+    },
+    {
+      "date": "2026-07-29",
+      "var_value": 866646.0,
+      "pnl_value": -1073013.88
+    }
+  ]
+}

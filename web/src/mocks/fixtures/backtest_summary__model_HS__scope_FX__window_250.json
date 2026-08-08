@@ -1,0 +1,57 @@
+{
+  "scope": "FX",
+  "model": "HS",
+  "measure": "VAR_HS",
+  "window": 250,
+  "start": "2025-08-19",
+  "end": "2026-08-06",
+  "n_obs": 250,
+  "n_exceptions": 0,
+  "expected_exceptions": 2.5,
+  "kupiec": {
+    "name": "kupiec_pof",
+    "statistic": 5.025167926750726,
+    "p_value": 0.024981503053449684,
+    "df": 1,
+    "reject_5pct": true,
+    "details": {
+      "n_obs": 250,
+      "n_exceptions": 0,
+      "expected": 2.5,
+      "p": 0.01
+    }
+  },
+  "christoffersen_independence": {
+    "name": "christoffersen_independence",
+    "statistic": -0.0,
+    "p_value": 1.0,
+    "df": 1,
+    "reject_5pct": false,
+    "details": {
+      "n00": 249,
+      "n01": 0,
+      "n10": 0,
+      "n11": 0
+    }
+  },
+  "christoffersen_cc": {
+    "name": "christoffersen_cc",
+    "statistic": 5.025167926750726,
+    "p_value": 0.08105851616218127,
+    "df": 2,
+    "reject_5pct": false,
+    "details": {
+      "lr_pof": 5.025167926750726,
+      "lr_ind": -0.0
+    }
+  },
+  "traffic_light": {
+    "zone": "GREEN",
+    "n_exceptions": 0,
+    "n_obs": 250,
+    "plus_factor": 0.0,
+    "multiplier": 3.0,
+    "regulatory_window": true
+  },
+  "exceptions": []
+}
