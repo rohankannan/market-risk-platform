@@ -36,6 +36,8 @@ jobs:
             echo "DATABASE_URL secret not configured yet (hosted DB pending) - nothing to do"
             exit 0
           fi
+          # schema first (idempotent) - new migrations must not wait on a manual step
+          alembic upgrade head
           # pin the date to the New York calendar rather than the runner's UTC
           # clock: Actions crons can fire late, and 23:30 UTC is only 30 min
           # from a UTC date roll; market holidays surface as DQ forward-fills
