@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { vi } from "vitest";
 
@@ -14,18 +14,19 @@ test("shell renders the as-of badge, desk nav and footer from /meta", async () =
   expect(document.querySelector("header")?.textContent).toMatch(
     /Data as of 2026-08-06 EOD · batch \d{2}:\d{2} UTC/,
   );
-  expect(await screen.findByRole("link", { name: /US Rates/ })).toHaveAttribute(
+  const nav = screen.getByRole("navigation", { name: "Main" });
+  expect(await within(nav).findByRole("link", { name: /US Rates/ })).toHaveAttribute(
     "href",
     "/desks/RATES",
   );
-  expect(screen.getByRole("link", { name: /Cash Equities/ })).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "Model Doc" })).toHaveAttribute("href", "/docs");
+  expect(within(nav).getByRole("link", { name: /Cash Equities/ })).toBeInTheDocument();
+  expect(within(nav).getByRole("link", { name: "Model Doc" })).toHaveAttribute("href", "/docs");
   expect(screen.getByText("bbf728d")).toBeInTheDocument(); // footer git SHA
 });
 
-test("overview stub shows the firm VaR to the fixture's value", async () => {
+test("overview shows the firm VaR to the cent", async () => {
   render(<App />);
-  expect(await screen.findByText("$1.14M")).toBeInTheDocument(); // 1,137,118.30
+  expect(await screen.findByTitle("$1,137,118.30")).toHaveTextContent("$1.14M");
 });
 
 test("an errored page does not brick the shell: boundary resets on navigation", async () => {
@@ -46,7 +47,7 @@ test("an errored page does not brick the shell: boundary resets on navigation", 
   // ...and once the API recovers, revisiting the errored route recovers too
   server.resetHandlers();
   fireEvent.click(screen.getByRole("link", { name: "Overview" }));
-  expect(await screen.findByText("$1.14M")).toBeInTheDocument();
+  expect(await screen.findByTitle("$1,137,118.30")).toBeInTheDocument();
   spy.mockRestore();
 });
 
@@ -57,5 +58,5 @@ test("network failure falls back to the snapshot with the demo badge", async () 
   );
   render(<App />);
   expect(await screen.findByText("demo snapshot")).toBeInTheDocument();
-  expect(await screen.findByText("$1.14M")).toBeInTheDocument(); // data still renders
+  expect(await screen.findByTitle("$1,137,118.30")).toBeInTheDocument(); // data still renders
 });

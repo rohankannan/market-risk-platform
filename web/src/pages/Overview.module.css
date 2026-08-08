@@ -1,0 +1,74 @@
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.panelTitle {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.utilBar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.utilFill {
+  height: 100%;
+}
+
+.utilCell {
+  display: block;
+  text-decoration: none;
+  text-align: right;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+
+.deskCell {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.deskCell:hover,
+.utilCell:hover {
+  text-decoration: underline;
+}
+
+.drivers {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.chartData {
+  border-top: 1px solid var(--border);
+}
+
+.chartData summary {
+  color: var(--text-dim);
+  font-size: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.chartData summary:focus-visible {
+  outline: 2px solid var(--desk-rates);
+  outline-offset: -2px;
+}

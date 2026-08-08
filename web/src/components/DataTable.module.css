@@ -1,0 +1,37 @@
+/* professional-density table defaults: 13px, 32px rows, tabular numerals */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--table-fs);
+  background: var(--panel);
+}
+
+.table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 12px;
+  height: var(--row-h);
+  white-space: nowrap;
+}
+
+.table td {
+  border-bottom: 1px solid var(--border);
+  padding: 0 12px;
+  height: var(--row-h);
+  white-space: nowrap;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.r {
+  text-align: right !important;
+}
+
+.dim {
+  color: var(--text-dim);
+}
