@@ -27,10 +27,12 @@ import pandas as pd
 import yaml
 from sqlalchemy import create_engine, text
 
+from risk_engine.options import bs_delta, bs_price, bs_vega
 from risk_engine.pricing import dv01
 
 DEFAULT_DB_URL = "postgresql+psycopg://riskdesk:riskdesk@localhost:5432/riskdesk"
 LIMITS_EFFECTIVE_FROM = dt.date(2007, 1, 1)   # before all snapshot data: limits always in force
+OPTION_MULTIPLIER = 100                        # US equity option contract size
 
 _FACTOR_TYPE_TO_ASSET_CLASS = {"PRICE": "EQUITY", "FX_RATE": "FX", "YIELD": "RATES",
                                "VOL_INDEX": "EQUITY"}
@@ -54,14 +56,17 @@ def to_positions_frame(bundle: SeedBundle) -> pd.DataFrame:
     itype_of = {i["ticker"]: i["instrument_type"] for i in bundle.instruments}
     rows = []
     for p in bundle.positions:
-        # ticker -> factor via the sensitivity rows (one factor per instrument in MVP)
+        # ticker -> primary factor via the DELTA/DV01 sensitivity row; options
+        # additionally carry their vol/rate factors in meta
         factor = next(s["factor_code"] for s in bundle.instrument_factors
-                      if s["ticker"] == p["ticker"])
+                      if s["ticker"] == p["ticker"] and s["sensitivity_type"] != "VEGA")
         meta = meta_of[p["ticker"]]
         rows.append({
             "ticker": p["ticker"], "desk_code": p["desk_code"], "factor_code": factor,
             "quantity": p["quantity"], "instrument_type": itype_of[p["ticker"]],
             "coupon": meta.get("coupon"), "maturity_years": meta.get("maturity_years"),
+            "vol_factor_code": meta.get("vol_factor"), "rate_factor_code": meta.get("rate_factor"),
+            "option_type": meta.get("option_type"), "moneyness": meta.get("moneyness"),
         })
     df = pd.DataFrame(rows)
     conv_of = {f["factor_code"]: f["return_conv"] for f in bundle.factors}
@@ -103,7 +108,30 @@ def build_seed_bundle(cfg: dict, snap: pd.DataFrame) -> SeedBundle:
             anchor_value = float(latest.loc[factor, "value"])
             anchor_unadj = float(latest.loc[factor, "value_unadjusted"])
 
-            if desk_code == "EQUITY":
+            if desk_code == "EQUITY" and "option" in p:
+                # options price off the ADJUSTED underlier level (the series the
+                # engine shocks); strike is moneyness times the anchor spot
+                spot = anchor_value
+                sigma = float(latest.loc[p["vol_factor"], "value"]) / 100.0
+                rate = float(latest.loc[p["rate_factor"], "value"]) / 100.0
+                strike = float(p["moneyness"]) * spot
+                t_years = float(p["maturity_years"])
+                qty = int(p["contracts"]) * OPTION_MULTIPLIER
+                inst_type = "OPTION"
+                meta = {"option_type": p["option"], "moneyness": float(p["moneyness"]),
+                        "maturity_years": t_years, "vol_factor": p["vol_factor"],
+                        "rate_factor": p["rate_factor"]}
+                entry_price = float(bs_price(p["option"], spot, strike, sigma, t_years, rate))
+                sens = [
+                    {"factor_code": factor, "sensitivity_type": "DELTA",
+                     "sensitivity": round(float(bs_delta(p["option"], spot, strike, sigma,
+                                                         t_years, rate)), 6)},
+                    {"factor_code": p["vol_factor"], "sensitivity_type": "VEGA",
+                     "sensitivity": round(float(bs_vega(spot, strike, sigma, t_years, rate))
+                                          / 100.0, 6)},          # $ per vol point per unit
+                ]
+                realized = qty * entry_price                       # premium value
+            elif desk_code == "EQUITY":
                 target = float(p["target_notional_usd"])
                 qty = round(target / anchor_unadj)                     # whole shares
                 inst_type = "ETF" if p["ticker"] == "SPY" else "STOCK"
@@ -138,10 +166,11 @@ def build_seed_bundle(cfg: dict, snap: pd.DataFrame) -> SeedBundle:
             })
             for s in sens:
                 b.instrument_factors.append({"ticker": p["ticker"], **s})
+            target = p.get("target_notional_usd", p.get("face_usd"))
             b.positions.append({
                 "desk_code": desk_code, "ticker": p["ticker"], "quantity": qty,
                 "entry_date": b.anchor_date, "entry_price": entry_price,
-                "target_notional_usd": float(p.get("target_notional_usd", p.get("face_usd"))),
+                "target_notional_usd": float(target) if target is not None else realized,
                 "realized_notional_usd": realized,
             })
 

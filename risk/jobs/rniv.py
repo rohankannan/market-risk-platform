@@ -263,7 +263,7 @@ def render(m: dict) -> str:
         f"Material >= {MATERIAL_PCT:.0%} of the base measure, Monitor >= "
         f"{MONITOR_PCT:.0%}, else Immaterial. (The database path stores levels "
         "and quantities at fixed decimal precision; its firm VaR is "
-        "$1,168,055.33 - the ~7e-6 relative gap to the float path here is "
+        "$1,137,118.30 - the ~7e-6 relative gap to the float path here is "
         "quantization, measured and understood.)*",
         "",
         "Banks keep an inventory of risks their VaR model does not capture, each",

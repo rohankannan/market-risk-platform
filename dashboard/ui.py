@@ -76,6 +76,24 @@ def pnl_vs_var_figure(points: list[dict], models: tuple[str, ...] = ("hs", "fhs"
     return fig
 
 
+def pla_scatter_figure(points: list[dict]) -> Figure:
+    """HPL vs RTPL daily pairs on the 45-degree line - a healthy attribution
+    hugs the diagonal; systematic bias or missing risk pulls it off."""
+    df = pd.DataFrame(points)
+    fig, ax = plt.subplots(figsize=(5.5, 5.5))
+    ax.scatter(df["hpl"], df["rtpl"], s=14, alpha=0.55, color=DESK_COLORS["RATES"])
+    lim = float(df[["hpl", "rtpl"]].abs().max().max()) * 1.1
+    ax.plot([-lim, lim], [-lim, lim], color="#999999", lw=0.8)
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+    ax.set_xlabel("hypothetical P&L")
+    ax.set_ylabel("risk-theoretical P&L")
+    _money_axis(ax)
+    ax.xaxis.set_major_formatter(ax.yaxis.get_major_formatter())
+    fig.tight_layout()
+    return fig
+
+
 def scenario_bars_figure(results: list[dict]) -> Figure:
     """Grouped per-desk scenario P&L with a firm-total diamond per scenario."""
     codes = [r["scenario_code"] for r in results]

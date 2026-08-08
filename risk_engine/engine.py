@@ -5,13 +5,18 @@ a scenario shock matrix; it never touches the database. The positions frame
 contract (one row per position):
 
     ticker, desk_code, factor_code, quantity, instrument_type, return_conv,
-    coupon (bonds, else NaN), maturity_years (bonds, else NaN)
+    coupon (bonds), maturity_years (bonds and options),
+    vol_factor_code, rate_factor_code, option_type, moneyness (options; the
+    non-applicable columns are NaN/None)
 
 Shocks are in each factor's return convention (LOG factors: log returns;
-ABS_BP factors: basis points). P&L is EXACT under mode="full":
-equity/FX = qty * S0 * (exp(r) - 1), bonds are fully repriced. The linearized
-path lives only in mode="delta_gamma" - it is the future risk-theoretical P&L
-for the PLA test, so the HPL-RTPL gap stays real and internally generated.
+ABS_BP factors: basis points; ABS vol factors: points). P&L is EXACT under
+mode="full": equity/FX = qty * S0 * (exp(r) - 1), bonds are fully repriced,
+options fully reprice through Black-Scholes at the shocked spot, vol, and
+rate. The linearized path lives only in mode="delta_gamma" - the
+risk-theoretical P&L for the PLA test: delta/gamma in the underlier plus
+vega in the vol factor, deliberately excluding rho and cross terms, so the
+HPL-RTPL gap is real and internally generated.
 
 Equity note (documented model choice): stored equity levels are the ADJUSTED
 close, so positions are total-return positions - quantity was struck from the
@@ -26,9 +31,11 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 
+from .options import bs_delta, bs_gamma, bs_price, bs_vega
 from .pricing import bond_pnl, dollar_convexity, dv01
 
 _LINEAR_TYPES = {"STOCK", "ETF", "FX_SPOT"}
+VOL_POINTS_PER_UNIT = 100.0          # vol factors store points; sigma is decimal
 
 
 def revalue(positions: pd.DataFrame, levels: pd.Series, shocks: pd.DataFrame,
@@ -64,6 +71,32 @@ def revalue(positions: pd.DataFrame, levels: pd.Series, shocks: pd.DataFrame,
                 d = dv01(pos.coupon, pos.maturity_years, y0, face=qty)         # signed with face
                 g = dollar_convexity(pos.coupon, pos.maturity_years, y0, face=qty)
                 pnl = -d * r + 0.5 * g * (r / 1e4) ** 2
+        elif pos.instrument_type == "OPTION":
+            if pos.return_conv != "LOG":
+                raise ValueError(f"{pos.ticker}: option underlier on non-LOG factor "
+                                 f"{pos.factor_code} ({pos.return_conv})")
+            for extra in (pos.vol_factor_code, pos.rate_factor_code):
+                if extra not in shocks.columns or extra not in levels.index:
+                    raise ValueError(f"{pos.ticker}: option factor {extra!r} missing "
+                                     "from shocks or levels")
+            sigma0 = float(levels[pos.vol_factor_code]) / VOL_POINTS_PER_UNIT
+            rate0 = float(levels[pos.rate_factor_code]) / 100.0    # percent
+            strike = float(pos.moneyness) * lvl                    # struck at today's spot
+            t = float(pos.maturity_years)
+            dvol = shocks[pos.vol_factor_code].to_numpy(dtype=float) / VOL_POINTS_PER_UNIT
+            drate = shocks[pos.rate_factor_code].to_numpy(dtype=float) / 1e4    # bp
+            if mode == "full":
+                base = bs_price(pos.option_type, lvl, strike, sigma0, t, rate0)
+                pnl = qty * (bs_price(pos.option_type, lvl * np.exp(r), strike,
+                                      sigma0 + dvol, t, rate0 + drate) - base)
+            else:
+                # RTPL: delta/gamma in spot, vega in vol; rho and cross terms
+                # excluded by design - that omission IS the PLA content
+                delta = bs_delta(pos.option_type, lvl, strike, sigma0, t, rate0)
+                gamma = bs_gamma(lvl, strike, sigma0, t, rate0)
+                vega = bs_vega(lvl, strike, sigma0, t, rate0)
+                ds = lvl * r                                       # linearized spot move
+                pnl = qty * (delta * ds + 0.5 * gamma * ds**2 + vega * dvol)
         else:
             raise ValueError(f"{pos.ticker}: unknown instrument_type {pos.instrument_type!r}")
         out[pos.ticker] = np.asarray(pnl, dtype=float)

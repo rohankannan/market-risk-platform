@@ -21,6 +21,7 @@ from risk_engine.backtest import (
 )
 from risk_engine.config import DEFAULT_CONFIG as CFG
 from risk_engine.curve import NODE_TENORS
+from risk_engine.pla import pla_test
 
 # Basel traffic-light zone boundaries are calibrated to a 250-day window;
 # other realized window lengths are reported but flagged non-regulatory.
@@ -174,20 +175,32 @@ class KeyRateRow(BaseModel):
     value: float                            # USD per +1bp bump of the par node
 
 
+class VegaExposure(BaseModel):
+    desk_code: str
+    factor_code: str
+    value: float                            # USD per 1 vol point
+
+
 class KeyRateExposures(BaseModel):
     as_of: dt.date
     run_id: int
     unit: str
     rows: list[KeyRateRow]                  # empty for runs that skip the curve step
+    vega: list[VegaExposure]                # empty until the options sleeve has run
 
 
 def build_key_rate_exposures(run: dict, rows: list[dict]) -> KeyRateExposures:
-    built = [KeyRateRow(desk_code=r["desk_code"], factor_code=r["factor_code"],
-                        tenor_years=NODE_TENORS.get(r["factor_code"], 0.0),
-                        value=r["value"]) for r in rows]
-    built.sort(key=lambda r: (not r.desk_code == "FIRM", r.desk_code, r.tenor_years))
+    krd = [KeyRateRow(desk_code=r["desk_code"], factor_code=r["factor_code"],
+                      tenor_years=NODE_TENORS.get(r["factor_code"], 0.0),
+                      value=r["value"])
+           for r in rows if r.get("measure", "KRD_DV01") == "KRD_DV01"]
+    krd.sort(key=lambda r: (not r.desk_code == "FIRM", r.desk_code, r.tenor_years))
+    vega = [VegaExposure(desk_code=r["desk_code"], factor_code=r["factor_code"],
+                         value=r["value"])
+            for r in rows if r.get("measure") == "VEGA"]
+    vega.sort(key=lambda r: (not r.desk_code == "FIRM", r.desk_code))
     return KeyRateExposures(as_of=run["run_date"], run_id=run["run_id"],
-                            unit="USD per 1bp", rows=built)
+                            unit="USD per 1bp", rows=krd, vega=vega)
 
 
 # ---------------------------------------------------------------- backtest
@@ -259,6 +272,37 @@ def build_backtest_summary(scope: str, model: str, series: list[dict],
         exceptions=[BacktestException(date=r["pnl_date"], var_value=r["var_value"],
                                       pnl_value=r["pnl_value"])
                     for r in series if r["var_value"] is not None])
+
+
+# ---------------------------------------------------------------- pla
+
+class PlaPoint(BaseModel):
+    date: dt.date
+    hpl: float
+    rtpl: float
+
+
+class PlaSummary(BaseModel):
+    scope: str
+    window: int                             # requested; n_obs is what history allowed
+    start: dt.date
+    end: dt.date
+    n_obs: int
+    spearman: float
+    ks: float
+    zone: Literal["GREEN", "AMBER", "RED"]  # MAR32.41 thresholds
+    points: list[PlaPoint]
+
+
+def build_pla_summary(scope: str, window: int, rows: list[dict]) -> PlaSummary:
+    """rows: date-ordered {pnl_date, hpl, rtpl} pairs (needs pla.MIN_OBS)."""
+    res = pla_test([r["hpl"] for r in rows], [r["rtpl"] for r in rows])
+    return PlaSummary(scope=scope, window=window,
+                      start=rows[0]["pnl_date"], end=rows[-1]["pnl_date"],
+                      n_obs=res.n_obs, spearman=round(res.spearman, 4),
+                      ks=round(res.ks, 4), zone=res.zone,
+                      points=[PlaPoint(date=r["pnl_date"], hpl=r["hpl"], rtpl=r["rtpl"])
+                              for r in rows])
 
 
 # ---------------------------------------------------------------- scenarios

@@ -100,19 +100,34 @@ def read_levels(conn: Connection, end: dt.date | None = None) -> pd.DataFrame:
 
 
 def read_book(conn: Connection) -> pd.DataFrame:
-    """The engine's positions-frame contract, straight from the DB (one factor
-    per instrument in MVP - identical to seed.to_positions_frame's output)."""
-    return pd.read_sql(text("""
+    """The engine's positions-frame contract, straight from the DB - identical
+    to seed.to_positions_frame's output. The primary factor comes from the
+    DELTA/DV01 sensitivity row; an option's vol and rate factors ride in its
+    instrument meta (the VEGA row exists for exposure reporting, not mapping).
+    A position whose mapping row is missing must fail loudly here - an inner
+    join would otherwise silently drop it from VaR, P&L, and scenarios."""
+    frame = pd.read_sql(text("""
         SELECT i.ticker, d.desk_code, rf.factor_code, p.quantity::float AS quantity,
                i.instrument_type, rf.return_conv,
                (i.meta->>'coupon')::float AS coupon,
-               (i.meta->>'maturity_years')::float AS maturity_years
+               (i.meta->>'maturity_years')::float AS maturity_years,
+               i.meta->>'vol_factor' AS vol_factor_code,
+               i.meta->>'rate_factor' AS rate_factor_code,
+               i.meta->>'option_type' AS option_type,
+               (i.meta->>'moneyness')::float AS moneyness
         FROM positions p
         JOIN desks d USING (desk_id)
         JOIN instruments i USING (instrument_id)
-        JOIN instrument_factors f USING (instrument_id)
+        JOIN instrument_factors f ON f.instrument_id = i.instrument_id
+                                 AND f.sensitivity_type <> 'VEGA'
         JOIN risk_factors rf ON rf.factor_id = f.factor_id
         ORDER BY d.desk_code, i.ticker"""), conn)
+    booked = {t for (t,) in conn.execute(text(
+        "SELECT i.ticker FROM positions p JOIN instruments i USING (instrument_id)")).all()}
+    dropped = sorted(booked - set(frame["ticker"]))
+    if dropped:
+        raise RuntimeError(f"booked positions without a DELTA/DV01 mapping row: {dropped}")
+    return frame
 
 
 def desk_id_map(conn: Connection) -> dict[str, int]:

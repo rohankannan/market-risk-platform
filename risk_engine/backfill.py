@@ -55,7 +55,11 @@ def run_backfill(book: pd.DataFrame, levels: pd.DataFrame, returns: pd.DataFrame
     for i, t in enumerate(dates[:-1]):
         lvl_t = levels.loc[t]
         nxt = dates[i + 1]
-        hpl = aggregate(revalue(book, lvl_t, returns.loc[[nxt]]), book).iloc[0]
+        day_move = returns.loc[[nxt]]
+        hpl = aggregate(revalue(book, lvl_t, day_move), book).iloc[0]
+        # risk-theoretical P&L: the same realized move through the linearized
+        # path - the PLA test's other leg
+        rtpl = aggregate(revalue(book, lvl_t, day_move, mode="delta_gamma"), book).iloc[0]
 
         for method in methods:
             if method == "HS":
@@ -70,6 +74,7 @@ def run_backfill(book: pd.DataFrame, levels: pd.DataFrame, returns: pd.DataFrame
                     "as_of": t, "method": method, "scope": scope,
                     "var": r.var, "es": r.es,
                     "hpl_next": float(hpl[scope]),
+                    "rtpl_next": float(rtpl[scope]),
                     "is_exception": bool(hpl[scope] < -r.var),
                 })
     return pd.DataFrame(rows)

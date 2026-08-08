@@ -4,8 +4,9 @@
 # tables: FY2025 average interest-rate : equity : currency shares are ~52/28/20
 # across the GS/MS/JPM/Citi/BofA 10-Ks, and ~45-48/28/24-27 at DB and HSBC once
 # credit-spread risk (which a Treasuries-only desk doesn't carry) is excluded.
-# Measured on the 2026-08-06 snapshot: shares 44/30/26, firm 1d VaR99 ~$1.17M
-# (58% of the $2M limit), diversification benefit ~40% - inside the 25-40% band
+# Measured on the 2026-08-06 snapshot (with the SPY collar): shares 46/28/26,
+# firm 1d VaR99 ~$1.14M (57% of the $2M limit), diversification benefit ~40% -
+# inside the 25-40% band
 # implied by three-desk books (group-level disclosures with more risk classes
 # show 40-70%). Rates carries far larger gross notional per dollar of VaR -
 # that asymmetry is itself realistic.
@@ -40,7 +41,7 @@ factors:
   - {code: IR.UST.5Y,  type: YIELD, conv: ABS_BP, source: FRED, symbol: DGS5}
   - {code: IR.UST.10Y, type: YIELD, conv: ABS_BP, source: FRED, symbol: DGS10}
   - {code: IR.UST.30Y, type: YIELD, conv: ABS_BP, source: FRED, symbol: DGS30}
-  # implied vol - parametric-VaR input (winter); ABS convention, points
+  # implied vol - prices the options sleeve (VIX as 30d SPX proxy); ABS convention, points
   - {code: VOL.SPX.IV30, type: VOL_INDEX, conv: ABS, source: FRED, symbol: VIXCLS}
 
 positions:
@@ -52,6 +53,15 @@ positions:
     - {ticker: JPM,  factor: EQ.JPM,  target_notional_usd:  1_500_000}
     - {ticker: XOM,  factor: EQ.XOM,  target_notional_usd: -2_500_000}
     - {ticker: JNJ,  factor: EQ.JNJ,  target_notional_usd: -2_500_000}
+    # 1M constant-maturity collar on the SPY position (protective put financed by a
+    # covered call), sized to the ~7,800-share holding. Constant moneyness, re-struck
+    # daily like the par-bond proxies; VOL.SPX.IV30 supplies the (flat) implied vol,
+    # IR.UST.3M the discount rate. This sleeve is what makes gamma/vega - and the
+    # P&L-attribution test - real.
+    - {ticker: SPY_PUT_95,   factor: EQ.SPY, option: PUT,  moneyness: 0.95, maturity_years: 0.08333,
+       vol_factor: VOL.SPX.IV30, rate_factor: IR.UST.3M, contracts:  78}
+    - {ticker: SPY_CALL_103, factor: EQ.SPY, option: CALL, moneyness: 1.03, maturity_years: 0.08333,
+       vol_factor: VOL.SPX.IV30, rate_factor: IR.UST.3M, contracts: -78}
   FX:      # carry-trade flavor; MXN supplies the fat tails in 2020
     - {ticker: EURUSD_SPOT, factor: FX.EURUSD, target_notional_usd:  22_000_000}
     - {ticker: JPYUSD_SPOT, factor: FX.JPYUSD, target_notional_usd: -27_000_000}

@@ -1,6 +1,6 @@
 # Model change pack — challenger vol filter for FHS VaR
 
-*Champion: EWMA (lambda = 0.94). Candidate: GARCH(1,1), Gaussian QMLE per factor, parameters frozen at 2025-08-19 (no look-ahead into the 250-day evaluation window ending 2026-08-06). Candidate hash `1976d3184878`, code `14144ab`. Regenerate: `python -m risk.jobs.challenger`.*
+*Champion: EWMA (lambda = 0.94). Candidate: GARCH(1,1), Gaussian QMLE per factor, parameters frozen at 2025-08-19 (no look-ahead into the 250-day evaluation window ending 2026-08-06). Candidate hash `1976d3184878`, code `57e075f-dirty`. Regenerate: `python -m risk.jobs.challenger`.*
 
 ## Promotion criteria (pre-registered)
 
@@ -46,13 +46,13 @@ EWMA is the IGARCH boundary (omega 0, alpha 1-lambda = 0.06, beta = lambda): eve
 | Kupiec p | 0.380 | 0.380 |
 | Conditional coverage p | 0.638 | 0.638 |
 | Basel zone, 250d (multiplier) | GREEN (3.00) | GREEN (3.00) |
-| Average firm VaR | $975,558 | $1,020,053 |
+| Average firm VaR | $955,479 | $1,007,376 |
 
 Exception days: 4 shared, 0 champion-only, 0 challenger-only.
 
 ## Impact analysis
 
-Daily VaR delta (challenger vs champion): mean +5.5%, mean absolute 7.8%, worst 28.6% on 2026-01-12.
+Daily VaR delta (challenger vs champion): mean +6.4%, mean absolute 8.0%, worst 28.6% on 2026-01-12.
 
 ## Verdict: HOLD
 

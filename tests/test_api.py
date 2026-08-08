@@ -135,9 +135,10 @@ def test_scenarios_worst_first_and_worst_desk_excludes_firm():
 
 
 EXPOSURE_ROWS = [
-    {"desk_code": "RATES", "factor_code": "IR.UST.10Y", "value": 48004.0},
-    {"desk_code": "RATES", "factor_code": "IR.UST.2Y", "value": 17114.0},
-    {"desk_code": "FIRM", "factor_code": "IR.UST.2Y", "value": 17114.0},
+    {"desk_code": "RATES", "factor_code": "IR.UST.10Y", "measure": "KRD_DV01", "value": 48004.0},
+    {"desk_code": "RATES", "factor_code": "IR.UST.2Y", "measure": "KRD_DV01", "value": 17114.0},
+    {"desk_code": "FIRM", "factor_code": "IR.UST.2Y", "measure": "KRD_DV01", "value": 17114.0},
+    {"desk_code": "EQUITY", "factor_code": "VOL.SPX.IV30", "measure": "VEGA", "value": -1200.0},
 ]
 
 
@@ -148,10 +149,25 @@ def test_key_rate_exposures_maps_tenors_and_sorts_firm_first():
     rates = [r for r in e.rows if r.desk_code == "RATES"]
     assert [r.tenor_years for r in rates] == [2.0, 10.0]         # tenor order, not lexical
     assert rates[1].value == 48004.0
+    assert len(e.rows) == 3                                      # vega stays out of the KRD table
+    assert e.vega[0].factor_code == "VOL.SPX.IV30" and e.vega[0].value == -1200.0
 
 
 def test_key_rate_exposures_empty_rows_ok():
-    assert schemas.build_key_rate_exposures(RUN, []).rows == []
+    e = schemas.build_key_rate_exposures(RUN, [])
+    assert e.rows == [] and e.vega == []
+
+
+PLA_ROWS = [{"pnl_date": dt.date(2026, 1, 1) + dt.timedelta(days=i),
+             "hpl": float(v), "rtpl": float(v) * 0.98}
+            for i, v in enumerate(range(-50, 50))]
+
+
+def test_pla_builder_green_on_tracking_series():
+    p = schemas.build_pla_summary("EQUITY", 250, PLA_ROWS)
+    assert p.zone == "GREEN" and p.spearman == 1.0
+    assert p.n_obs == 100 and len(p.points) == 100
+    assert p.points[0].date == dt.date(2026, 1, 1)
 
 
 # ---------------------------------------------------------------- routes
@@ -280,7 +296,19 @@ def test_exposures_endpoint(client, monkeypatch):
     monkeypatch.setattr(queries, "exposure_rows", lambda conn, run_id: EXPOSURE_ROWS)
     body = client.get("/api/v1/risk/exposures").json()
     assert body["unit"] == "USD per 1bp" and len(body["rows"]) == 3
+    assert body["vega"][0]["desk_code"] == "EQUITY"
     assert body["rows"][0]["desk_code"] == "FIRM"
+
+
+def test_pla_endpoint_and_insufficient_pairs(client, monkeypatch):
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(queries, "desk_exists", lambda conn, code: True)
+    monkeypatch.setattr(queries, "pla_series", lambda conn, scope, end, window: PLA_ROWS)
+    body = client.get("/api/v1/backtest/pla?scope=EQUITY").json()
+    assert body["zone"] == "GREEN" and body["n_obs"] == 100
+
+    monkeypatch.setattr(queries, "pla_series", lambda conn, scope, end, window: [])
+    assert client.get("/api/v1/backtest/pla").status_code == 404
 
 
 def test_backtest_endpoint_insufficient_history(client, monkeypatch):

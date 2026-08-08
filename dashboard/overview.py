@@ -47,6 +47,10 @@ def render() -> None:
         st.caption(f"{exposures['unit']} per node, bootstrapped par curve, "
                    "curve re-solved per bump. Off-diagonal risk grows as coupons "
                    "drift from par (see the model doc's R7).")
+        if exposures.get("vega"):
+            st.caption("Vega: " + " · ".join(
+                f"{v['desk_code']} {fmt_usd(v['value'])}/vol pt on {v['factor_code']}"
+                for v in exposures["vega"]))
     else:
         st.caption("No key-rate exposures for this run - backfill runs skip the curve step.")
 

@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 
 from dashboard import api_client
-from dashboard.ui import fmt_usd, pnl_vs_var_figure
+from dashboard.ui import fmt_usd, pla_scatter_figure, pnl_vs_var_figure
 
 WINDOW_MIN, WINDOW_MAX, WINDOW_STEP = 50, 1000, 50
 WINDOW_DEFAULT = 250      # the Basel traffic-light window
@@ -67,3 +67,19 @@ def render() -> None:
             hide_index=True, width="stretch")
     else:
         st.caption("No exceptions in the window.")
+
+    st.subheader("P&L attribution")
+    pla = api_client.fetch_or_none("/api/v1/backtest/pla", scope=scope,
+                                   window=window, as_of=as_of)
+    if pla is None:
+        st.caption("No paired risk-theoretical P&L for this scope and window yet.")
+    else:
+        p1, p2, p3 = st.columns(3)
+        p1.metric("Spearman", f"{pla['spearman']:.3f}")
+        p2.metric("KS statistic", f"{pla['ks']:.3f}")
+        p3.metric("PLA zone", pla["zone"], delta=f"{pla['n_obs']} paired days",
+                  delta_color="off")
+        st.pyplot(pla_scatter_figure(pla["points"]))
+        st.caption("Daily hypothetical vs risk-theoretical P&L on the 45-degree line. "
+                   "RTPL is the delta-gamma-vega path - rho and cross terms excluded "
+                   "by design, so the scatter is honest, not decorative.")

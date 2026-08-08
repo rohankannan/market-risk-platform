@@ -6,8 +6,9 @@
 
 Steps: ingest (top up market_data from sources; snapshot-seeded history never
 depends on this) -> dq (checks -> dq_issues; BLOCK downgrades the run to
-PARTIAL) -> risk (HS/FHS VaR + ES at 1d/10d, stressed ES, clean P&L, exception
-check vs the prior run's VaR) -> scenarios (2008/2020 replays + hypothetical
+PARTIAL) -> risk (HS/FHS VaR + ES at 1d/10d, stressed ES, hypothetical and
+risk-theoretical P&L, key-rate/vega exposures, flash check, exception check vs
+the prior run's VaR) -> scenarios (2008/2020 replays + hypothetical
 shocks on today's book). One transaction per run; risk_runs doubles as the
 status table; re-runs are idempotent via the (run_date, run_type) claim.
 
@@ -37,6 +38,7 @@ from risk_engine.curve import NODE_TENORS, key_rate_dv01s
 from risk_engine.engine import aggregate, revalue
 from risk_engine.es import stressed_window
 from risk_engine.factors import align_levels, build_scenarios_fhs, build_scenarios_hs, to_returns
+from risk_engine.options import bs_vega
 from risk_engine.stress import REPLAY_WINDOWS, apply_scenario, compute_replay_shock
 from risk_engine.var import ewma_vol_forecast, ewma_volatility, var_es_from_pnl
 
@@ -255,6 +257,21 @@ def step_risk(ctx: dict) -> None:
                 for (d, t), v in desk_krd.items()]
     db.write_exposures(conn, ctx["run_id"], krd_rows)
 
+    # vega per desk on each vol factor, dollars per vol point
+    desk_vega: dict[tuple[str, str], float] = {}
+    for o in book[book["instrument_type"] == "OPTION"].itertuples(index=False):
+        spot = float(lvl_t[o.factor_code])
+        sigma = float(lvl_t[o.vol_factor_code]) / 100.0
+        rate = float(lvl_t[o.rate_factor_code]) / 100.0
+        v = float(o.quantity) * float(bs_vega(spot, o.moneyness * spot, sigma,
+                                              o.maturity_years, rate)) / 100.0
+        for scope in (o.desk_code, "FIRM"):
+            desk_vega[(scope, o.vol_factor_code)] = desk_vega.get(
+                (scope, o.vol_factor_code), 0.0) + v
+    db.write_exposures(conn, ctx["run_id"],
+                       [{"desk_id": desks[d], "factor_id": fids[f], "measure": "VEGA",
+                         "value": round(v, 2)} for (d, f), v in desk_vega.items()])
+
     # flash check on BOTH measures: the headline (HS) and the filtered model
     # (FHS) each explain their own move before publishing. Vol-forecast movers
     # attach only where they are the actual driver - the EWMA forecast enters
@@ -292,10 +309,16 @@ def step_risk(ctx: dict) -> None:
     idx = returns.index.get_loc(ts_run)
     if idx > 0:
         prev_ts = returns.index[idx - 1]
-        hpl = aggregate(revalue(book, levels.loc[prev_ts], returns.loc[[ts_run]]), book).iloc[0]
+        day_move = returns.loc[[ts_run]]
+        hpl = aggregate(revalue(book, levels.loc[prev_ts], day_move), book).iloc[0]
+        rtpl = aggregate(revalue(book, levels.loc[prev_ts], day_move,
+                                 mode="delta_gamma"), book).iloc[0]
         db.write_pnl(conn, [{"desk_id": desks[s], "pnl_date": run_date,
                              "pnl_type": "HYPOTHETICAL", "amount": round(float(hpl[s]), 2)}
                             for s in hpl.index])
+        db.write_pnl(conn, [{"desk_id": desks[s], "pnl_date": run_date,
+                             "pnl_type": "RISK_THEORETICAL", "amount": round(float(rtpl[s]), 2)}
+                            for s in rtpl.index])
         exceptions = []
         for method in ("HS", "FHS"):
             prev = db.prev_var(conn, run_date, f"VAR_{method}")
@@ -421,6 +444,10 @@ def run_db_backfill(engine, start: dt.date, end: dt.date, resume: bool, force: b
                                          "pnl_date": pd.Timestamp(nxt).date(),
                                          "pnl_type": "HYPOTHETICAL",
                                          "amount": round(r.hpl_next, 2)})
+                        pnl_rows.append({"desk_id": desks[r.scope],
+                                         "pnl_date": pd.Timestamp(nxt).date(),
+                                         "pnl_type": "RISK_THEORETICAL",
+                                         "amount": round(r.rtpl_next, 2)})
                     if r.is_exception:
                         exc_rows.append({"desk_id": desks[r.scope],
                                          "obs_date": pd.Timestamp(nxt).date(),

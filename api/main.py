@@ -154,6 +154,26 @@ def backtest_summary(response: Response, scope: str = Scope,
     return schemas.build_backtest_summary(code, model, series, window)
 
 
+@app.get("/api/v1/backtest/pla", response_model=schemas.PlaSummary)
+def backtest_pla(response: Response, scope: str = Scope,
+                 window: int = Query(250, ge=20, le=1000, description="Trailing P&L days"),
+                 as_of: dt.date | None = AsOf,
+                 conn: Connection = Depends(get_conn)) -> schemas.PlaSummary:
+    """P&L attribution: Spearman and KS between daily hypothetical and
+    risk-theoretical P&L with MAR32-style zones. Shipped with the options
+    sleeve, which gives the statistic structural content beyond the linear
+    legs' log-linearization."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    code = _scope_or_404(conn, scope)
+    series = queries.pla_series(conn, code, run["run_date"], window)
+    try:
+        return schemas.build_pla_summary(code, window, series)
+    except (ValueError, IndexError) as exc:
+        raise HTTPException(status_code=404,
+                            detail=f"insufficient paired P&L for {code}: {exc}") from exc
+
+
 @app.get("/api/v1/scenarios/results", response_model=schemas.ScenarioResults)
 def scenarios_results(response: Response, as_of: dt.date | None = AsOf,
                       conn: Connection = Depends(get_conn)) -> schemas.ScenarioResults:

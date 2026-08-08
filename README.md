@@ -32,7 +32,7 @@ flowchart LR
 
 | method | days | exceptions | expected | Kupiec p | Christoffersen CC p | Basel zone (250d) |
 |---|---|---|---|---|---|---|
-| Historical sim | 750 | 5 | 7.5 | 0.33 | 0.60 | GREEN |
+| Historical sim | 750 | 6 | 7.5 | 0.57 | 0.81 | GREEN |
 | Filtered HS (EWMA) | 750 | 10 | 7.5 | 0.38 | 0.60 | GREEN |
 
 The equal-weight 500-day window makes plain historical sim slow in both directions: it stays wide through the calm late-2025 regime (capital inefficiency) and only steps up months after the April 2025 vol spike, once those scenarios finally enter the window. The EWMA-filtered VaR tracks the regime — wider into stress, tighter in calm — with coverage near the nominal 1%. Regenerate with `python -m risk.jobs.backfill`.
@@ -67,9 +67,10 @@ Three Streamlit pages over the API — tiles, limits, and the P&L-vs-VaR timelin
 | Quantified risks-not-in-VaR inventory: horizon-scaling error, async-close correlation bias, forward-fill vol damping, stressed-window sensitivity, ES concentration — measured from the snapshot, regenerable | ✅ (`docs/rniv.md`, `risk/jobs/rniv.py`) |
 | Champion/challenger harness: hand-rolled GARCH(1,1) QMLE vs the EWMA champion, parallel-run over 250 days under pre-registered promotion criteria with a fit-health gate — current verdict HOLD, boundary fits named | ✅ (`docs/challenger_garch.md`, `risk/jobs/challenger.py`) |
 | Ops controls: day-over-day flash check (firm VaR moves arrive pre-explained with desk and vol attribution) and a vendor-revision log with classified before-images and a `--force` restatement path | ✅ (`risk_engine/dq.py`, `data_revisions`) |
+| Options sleeve: SPY collar priced with hand-rolled Black-Scholes (constant-maturity, constant-moneyness proxies), vega exposures in the nightly batch, risk-theoretical P&L — and a **real P&L-attribution test** (Spearman + KS, MAR32-style zones) served at `/backtest/pla` with the HPL-vs-RTPL scatter on the dashboard | ✅ (`risk_engine/{options,pla}.py`) |
 | Hosted deploy: Neon Postgres, API + dashboard on Render, nightly EOD batch via GitHub Actions cron | ✅ (links above) |
 | ≤90s demo video | 🔜 milestone 3 (by Oct 15) |
-| Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
+| Parametric VaR w/ implied vol, CCAR-style scenarios, React dashboard | 🔜 winter |
 
 ## Quickstart
 
@@ -98,12 +99,12 @@ make dashboard   # Streamlit UI on http://localhost:8501 (needs the API running)
 
 - **Hand-roll anything an interviewer could ask you to derive** (EWMA recursion, VaR/ES estimators, Kupiec/Christoffersen likelihood ratios, bond pricing, traffic-light zones); import only optimizers and distribution functions (scipy `chi2`, `spearmanr`).
 - **Return conventions are data, not code**: log returns for prices/FX, absolute bp for yields (log yield shocks explode when rates sit near zero, as in 2020) — carried on the `risk_factors` table.
-- **P&L is exact, never linearized** in scenarios (`qty·S0·(exp(r)−1)`; bonds full-reval via closed-form). The linear approximation exists only in risk-theoretical P&L, so the future PLA test's HPL−RTPL gap is real and internally generated.
+- **P&L is exact, never linearized** in scenarios (`qty·S0·(exp(r)−1)`; bonds full-reval via closed-form). The linear approximation exists only in risk-theoretical P&L, so the PLA test's HPL−RTPL gap is real and internally generated.
 - **No demo, test, or CI run ever depends on a live third-party API** — the market-data snapshot is committed; live fetch is a top-up.
 - **Loud failures**: data-quality breaches write `dq_issues` and mark the run `PARTIAL`; unimplemented steps exit non-zero with their scheduled milestone.
 
 ## Scope honesty
 
-This implements the **ES piece of FRTB's internal-models approach** — 97.5% ES with stressed-period calibration — not liquidity horizons, NMRF, or (yet) the P&L-attribution test. PLA is deliberately deferred until the book has options: on a purely linear book, risk-theoretical and hypothetical P&L coincide and the test is vacuous. Full limitations: [docs/model_doc.md](docs/model_doc.md).
+This implements the **ES piece of FRTB's internal-models approach** — 97.5% ES with stressed-period calibration — plus the P&L-attribution *metrics* (Spearman + KS with MAR32-style zones); not liquidity horizons, NMRF, or IMA capital. The PLA test shipped together with the options sleeve, and the model doc decomposes exactly what its statistic sees — including the part the linear book contributes through its own log-linearization. Full limitations: [docs/model_doc.md](docs/model_doc.md).
 
 *Educational demonstration on public data; not investment advice.*

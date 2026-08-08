@@ -91,6 +91,11 @@ PAYLOADS = {
                         "pnl_value": -1_394_732.46}]},
     "/api/v1/scenarios/results": {"as_of": "2026-08-06", "run_id": 328,
                                   "results": SCENARIOS},
+    "/api/v1/backtest/pla": {
+        "scope": "FIRM", "window": 250, "start": "2025-08-06", "end": "2026-08-06",
+        "n_obs": 250, "spearman": 0.994, "ks": 0.032, "zone": "GREEN",
+        "points": [{"date": "2026-08-05", "hpl": -120.0, "rtpl": -118.0},
+                   {"date": "2026-08-06", "hpl": 46.0, "rtpl": 44.0}]},
     "/api/v1/risk/exposures": {
         "as_of": "2026-08-06", "run_id": 328, "unit": "USD per 1bp",
         "rows": [
@@ -102,7 +107,8 @@ PAYLOADS = {
              "value": 17114.0},
             {"desk_code": "RATES", "factor_code": "IR.UST.10Y", "tenor_years": 10.0,
              "value": 48004.0},
-        ]},
+        ],
+        "vega": [{"desk_code": "EQUITY", "factor_code": "VOL.SPX.IV30", "value": -1200.0}]},
 }
 
 
@@ -146,11 +152,14 @@ def test_overview_renders(stub_api):
     krd = at.dataframe[1].value                                  # key-rate table
     assert list(krd.columns) == ["2Y", "10Y", "Total"]           # tenor order
     assert krd.loc["RATES", "10Y"] == "$48k"
+    assert any("vol pt" in str(c.value) for c in at.caption)     # vega line shows
 
 
 def test_backtesting_renders(stub_api):
     at = _render(_backtesting_page)
     assert at.metric[1].value == "GREEN"
+    assert at.metric[-1].value == "GREEN"                        # PLA zone card
+    assert any("attribution" in str(h.value).lower() for h in at.subheader)
     assert any("Kupiec" in str(df.value["Test"].tolist()) for df in at.dataframe)
 
 

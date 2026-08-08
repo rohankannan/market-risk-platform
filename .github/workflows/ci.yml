@@ -64,9 +64,10 @@ jobs:
           uvicorn api.main:app --port 8000 &
           for i in $(seq 1 20); do curl -sf http://127.0.0.1:8000/healthz >/dev/null && break; sleep 1; done
           curl -sf http://127.0.0.1:8000/healthz
-          curl -sf "http://127.0.0.1:8000/api/v1/risk/summary" | python -c "import json,sys; s=json.load(sys.stdin); f=[d for d in s['desks'] if d['is_aggregate']][0]; assert f['var_hs_1d'] == 1168055.33, f; assert f['limit_status'] == 'OK', f; print('firm VaR99 1d reproduced to the cent:', f['var_hs_1d'])"
+          curl -sf "http://127.0.0.1:8000/api/v1/risk/summary" | python -c "import json,sys; s=json.load(sys.stdin); f=[d for d in s['desks'] if d['is_aggregate']][0]; assert f['var_hs_1d'] == 1137118.30, f; assert f['limit_status'] == 'OK', f; print('firm VaR99 1d reproduced to the cent:', f['var_hs_1d'])"
           curl -sf "http://127.0.0.1:8000/api/v1/scenarios/results" | python -c "import json,sys; s=json.load(sys.stdin); assert len(s['results']) == 5, s; print('scenarios:', [r['scenario_code'] for r in s['results']])"
-          curl -sf "http://127.0.0.1:8000/api/v1/risk/exposures" | python -c "import json,sys; s=json.load(sys.stdin); rates=[r for r in s['rows'] if r['desk_code']=='RATES']; assert len(rates) == 5 and s['unit'] == 'USD per 1bp', s; print('KRD nodes:', [f\"{r['factor_code']}={r['value']:,.0f}\" for r in rates])"
+          curl -sf "http://127.0.0.1:8000/api/v1/risk/exposures" | python -c "import json,sys; s=json.load(sys.stdin); rates=[r for r in s['rows'] if r['desk_code']=='RATES']; assert len(rates) == 5 and s['unit'] == 'USD per 1bp', s; assert any(v['desk_code'] == 'EQUITY' for v in s['vega']), s; print('KRD nodes:', [f\"{r['factor_code']}={r['value']:,.0f}\" for r in rates], '+ vega')"
+          curl -sf "http://127.0.0.1:8000/api/v1/backtest/pla?scope=EQUITY" | python -c "import json,sys; s=json.load(sys.stdin); assert s['n_obs'] >= 250 and s['zone'] in ('GREEN','AMBER','RED'), s; print('PLA EQUITY:', s['spearman'], s['ks'], s['zone'])"
 
   # the acceptance path: clone -> docker compose up -> both surfaces serve
   compose:

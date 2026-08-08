@@ -120,12 +120,29 @@ def backtest_series(conn: Connection, scope: str, measure: str, end: dt.date,
 
 def exposure_rows(conn: Connection, run_id: int) -> list[dict]:
     return [dict(r) for r in conn.execute(text("""
-        SELECT d.desk_code, rf.factor_code, re.value::float AS value
+        SELECT d.desk_code, rf.factor_code, re.measure, re.value::float AS value
         FROM risk_exposures re
         JOIN desks d USING (desk_id)
         JOIN risk_factors rf USING (factor_id)
-        WHERE re.run_id = :r AND re.measure = 'KRD_DV01'
-        ORDER BY d.desk_code, rf.factor_code"""), {"r": run_id}).mappings()]
+        WHERE re.run_id = :r
+        ORDER BY re.measure, d.desk_code, rf.factor_code"""), {"r": run_id}).mappings()]
+
+
+def pla_series(conn: Connection, scope: str, end: dt.date, window: int) -> list[dict]:
+    """Date-ordered paired daily P&L: hypothetical vs risk-theoretical - the
+    two legs of the P&L-attribution test. Only dates carrying both legs count."""
+    rows = [dict(r) for r in conn.execute(text("""
+        SELECT p.pnl_date,
+               max(p.amount::float) FILTER (WHERE p.pnl_type = 'HYPOTHETICAL') AS hpl,
+               max(p.amount::float) FILTER (WHERE p.pnl_type = 'RISK_THEORETICAL') AS rtpl
+        FROM pnl p JOIN desks d USING (desk_id)
+        WHERE d.desk_code = :scope AND p.pnl_date <= :end
+        GROUP BY p.pnl_date
+        HAVING count(*) FILTER (WHERE p.pnl_type = 'HYPOTHETICAL') > 0
+           AND count(*) FILTER (WHERE p.pnl_type = 'RISK_THEORETICAL') > 0
+        ORDER BY p.pnl_date DESC
+        LIMIT :w"""), {"scope": scope, "end": end, "w": window}).mappings()]
+    return rows[::-1]
 
 
 def scenario_rows(conn: Connection, run_id: int) -> list[dict]:
