@@ -187,8 +187,9 @@ it lands in 2008–09 or 2020.
 Firm ES can be allocated to desks by Euler allocation — each desk's mean P&L
 over the firm's tail scenarios. Components sum exactly to firm ES and go
 *negative* for hedging desks, which is the feature: it answers "which desk to
-cut". The allocation is implemented and unit-tested in the engine; surfacing
-it per desk arrives with the desk-decomposition endpoint on the roadmap.
+cut". The allocation is exercised per position in the RNIV concentration
+measurement (R5, [docs/rniv.md](rniv.md)); a per-desk API surface arrives
+with the desk-decomposition endpoint on the roadmap.
 
 *Questions an interviewer would ask:* Prove ES is subadditive and give the
 two-position example where VaR is not. Why did Basel pick 97.5% ES to replace
@@ -326,12 +327,18 @@ VaR in an exception check come from the *prior* run?
 ## 5. Assumptions and limitations
 
 *The load-bearing section: each entry names the assumption, its consequence,
-and the mitigation or roadmap item.*
+and the mitigation or roadmap item. Where a limitation is measurable it is
+**measured**: [docs/rniv.md](rniv.md) is a risks-not-in-VaR inventory
+regenerated from the snapshot by `python -m risk.jobs.rniv`, and §5.1 below
+summarizes it.*
 
 1. **sqrt(10) horizon scaling assumes iid daily P&L.** Under volatility
-   clustering it understates 10-day risk in stressed regimes. The 10-day
-   figures are reported as scaled, never as modeled; overlapping-window
-   estimation is a known alternative deliberately not implemented.
+   clustering it under-scales in stressed regimes; on trending or
+   mean-reverting windows it over-scales. Measured (R1): on the current
+   500-day window, overlapping 10-day revaluation gives $2.97M firm VaR
+   against $3.69M scaled — the scaled figure currently *overstates* by ~20%.
+   The 10-day figures are reported as scaled, never as modeled, with the
+   overlapping estimator kept as a standing check.
 2. **One factor per instrument; no tenor interpolation.** Each bond proxy
    loads on a single constant-maturity yield: no curve interpolation risk, no
    key-rate decomposition within a position, no instrument-vs-factor basis.
@@ -342,11 +349,17 @@ and the mitigation or roadmap item.*
 4. **Non-synchronous closes bias cross-asset correlation.** FRED H.10 FX is a
    noon-ET fixing; equities close 16:00 ET; yields are afternoon CMT reads.
    Same-day cross-asset correlations are attenuated, and the diversification
-   benefit (~40%) inherits that bias. Named, not fixed — production desks
-   fight the same issue with synchronization overlays.
+   benefit inherits that bias. Measured (R2): the benefit is 40.3% on 1-day
+   returns and 39.3% on 2-day aggregation — about one percentage point of
+   co-movement hides in the close-time gaps (SPY leads next-day GBP at +0.23
+   vs +0.14 same-day). Named and measured, not fixed — production desks fight
+   the same issue with synchronization overlays.
 5. **Forward-filled days imprint zero returns** (bounded at 3 days, 7 for
-   H.10 FX), mildly damping vol and correlation for affected factors. The fill
-   count per factor per run is recorded; beyond-cap gaps block the run.
+   H.10 FX), damping vol for affected factors. Measured (R3): fills are 3.6%
+   of factor-days in the window; correcting each factor's EWMA forecast to
+   print-days-only raises firm FHS VaR by 1.9% (~$24k), concentrated in the
+   H.10 FX factors (forecast ratios ~1.15). The fill count per factor per run
+   is recorded; beyond-cap gaps block the run.
 6. **The book is linear, so P&L attribution would be vacuous** — RTPL and HPL
    coincide by construction. PLA ships only with the options sleeve; shipping
    a trivially green PLA on a linear book would be validation theater.
@@ -356,9 +369,12 @@ and the mitigation or roadmap item.*
    uniform at its 10-day default), no NMRF/RFET, no IMA capital arithmetic.
    The phrase "FRTB-compliant" is deliberately banned from this repository.
 8. **The stressed window is fixed (2008-09-12 → 2009-09-11).** A book can
-   have its true worst regime elsewhere (this one's COVID replay is milder,
-   but an FX-heavy book might disagree). The programmatic argmax search over
-   2007+ full-reval history is the scheduled fix.
+   have its true worst regime elsewhere. Measured (R4): stressed ES on this
+   book is $2.74M under the in-force window vs $2.10M for the 2022 hiking
+   year and $1.91M for the COVID year — the fixed choice is currently the
+   most conservative of the candidates, but that is checked, not assumed. The
+   programmatic argmax search over 2007+ full-reval history is the scheduled
+   replacement.
 9. **Post-shock yields floor at 1bp**, which would truncate the rates desk's
    convexity gain in scenarios that drive short yields toward zero. No shipped
    scenario currently binds it — GFC-replay post-shock yields bottom out near
@@ -366,9 +382,31 @@ and the mitigation or roadmap item.*
 10. **Equal-weight HS dilutes new information by design**; the FHS comparison
     exists to quantify exactly that cost (§4). Equity risk is total-return
     (adjusted close), so dividend timing is smeared across history.
-11. **No idiosyncratic-risk model.** Single names carry only their own
-    history; there is no factor model, no name-level shrinkage, and seven
-    liquid mega-caps make that tolerable. A real book would not be.
+11. **No idiosyncratic-risk model, and tail risk is concentrated.** Single
+    names carry only their own history; there is no factor model and no
+    name-level shrinkage. Measured (R5): Euler allocation of firm ES puts
+    33.9% on the top position and 79.5% on the top three (the 10Y/30Y
+    duration proxies dominate; NVDA is the largest single-name component).
+    Seven liquid mega-caps make the missing idio model tolerable; the
+    concentration is monitored via the component table.
+
+### 5.1 Quantified impacts (risks-not-in-VaR inventory)
+
+Summary of [docs/rniv.md](rniv.md), regenerated by `python -m risk.jobs.rniv`
+(as of 2026-08-06; Material ≥ 5% of the base measure, Monitor ≥ 1%):
+
+| ID | Limitation | Measured impact | Class |
+|---|---|---|---|
+| R1 | sqrt(10) scaling vs overlapping 10-day reval | −$726k on the 10-day VaR (−19.7%) | Material |
+| R2 | Asynchronous closes hide co-movement | diversification 40.3% (1d) → 39.3% (2d) | Immaterial |
+| R3 | Forward-fill vol damping | +$24k on FHS VaR (+1.9%) | Monitor |
+| R4 | Fixed stressed window | in-force $2.74M is the max of candidates ($1.91M–$2.10M) | Immaterial |
+| R5 | Position concentration of firm ES | top position 33.9%, top 3 79.5% | Monitor |
+| R6 | 1bp post-shock yield floor | unbinding; 230bp of headroom | Immaterial |
+
+The point of the exercise is the discipline, not the add-ons: every §5 claim
+that could be a number *is* a number, with the measurement code in the
+repository and the classification rule stated up front.
 
 ## 6. Model governance
 

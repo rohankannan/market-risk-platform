@@ -64,6 +64,7 @@ Three Streamlit pages over the API — tiles, limits, and the P&L-vs-VaR timelin
 | Streamlit dashboard, 3 pages reading the API (Overview w/ tiles + limit table + P&L-vs-VaR chart, Backtesting w/ Kupiec/Christoffersen/zone, Stress w/ per-desk scenario P&L) | ✅ (`dashboard/`) |
 | One-command Docker Compose stack (bootstrap + API + dashboard + opt-in APScheduler night cycle); CI runs tests, the full pipeline against Postgres, and the compose acceptance path | ✅ (`Dockerfile`, `docker-compose.yml`, `.github/workflows/`) |
 | SR 11-7-structured model documentation with a full assumptions-and-limitations inventory | ✅ (`docs/model_doc.md`) |
+| Quantified risks-not-in-VaR inventory: horizon-scaling error, async-close correlation bias, forward-fill vol damping, stressed-window sensitivity, ES concentration — measured from the snapshot, regenerable | ✅ (`docs/rniv.md`, `risk/jobs/rniv.py`) |
 | Hosted deploy: Neon Postgres, API + dashboard on Render, nightly EOD batch via GitHub Actions cron | ✅ (links above) |
 | ≤90s demo video | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
