@@ -121,12 +121,13 @@ def desk_id_map(conn: Connection) -> dict[str, int]:
 
 def prev_var(conn: Connection, run_date: dt.date, measure: str) -> dict[str, float]:
     """Most recent 1-day VaR per desk_code strictly before run_date (for the
-    exception check). Empty dict on the first ever run."""
+    exception check). Empty dict on the first ever run. EOD outranks BACKFILL
+    on a shared date - an EOD restatement must supersede everywhere."""
     rows = conn.execute(text("""
         WITH prev AS (
           SELECT r.run_id FROM risk_runs r
           WHERE r.run_date < :d AND r.status IN ('SUCCESS','PARTIAL')
-          ORDER BY r.run_date DESC LIMIT 1)
+          ORDER BY r.run_date DESC, (r.run_type = 'EOD') DESC, r.run_id DESC LIMIT 1)
         SELECT d.desk_code, rr.value::float
         FROM risk_results rr JOIN prev USING (run_id) JOIN desks d USING (desk_id)
         WHERE rr.measure = :m AND rr.horizon_days = 1"""),
@@ -134,7 +135,42 @@ def prev_var(conn: Connection, run_date: dt.date, measure: str) -> dict[str, flo
     return dict(rows)
 
 
+def last_real_obs(conn: Connection) -> dict[int, dt.date]:
+    """Per-factor date of the last NON-synthetic observation. Fetch windows and
+    staleness ages must anchor here, not at max(obs_date): a forward-fill row
+    would otherwise advance the high-water mark past dates the vendor still
+    owes us, making fills permanent and staleness invisible."""
+    return dict(conn.execute(text("""
+        SELECT factor_id, max(obs_date) FROM market_data
+        WHERE NOT is_ffilled GROUP BY factor_id""")).all())
+
+
+def existing_market_values(conn: Connection, factor_ids: list[int],
+                           dates: list) -> dict[tuple, tuple]:
+    """(factor_id, obs_date) -> (value, is_ffilled) for the superset of the
+    given ids and dates - the before-image the revision check compares against."""
+    if not factor_ids or not dates:
+        return {}
+    rows = conn.execute(text("""
+        SELECT factor_id, obs_date, value::float, is_ffilled FROM market_data
+        WHERE factor_id = ANY(:fids) AND obs_date = ANY(:dates)"""),
+        {"fids": factor_ids, "dates": dates}).all()
+    return {(fid, d): (v, ff) for fid, d, v, ff in rows}
+
+
 # ---------------------------------------------------------------- writes
+
+def write_market_revisions(conn: Connection, run_id: int, rows: list[dict]) -> None:
+    """rows: factor_id, obs_date, old_value, new_value, revision_type, source."""
+    if not rows:
+        return
+    conn.execute(text("""
+        INSERT INTO data_revisions (run_id, factor_id, obs_date, old_value, new_value,
+                                    revision_type, source)
+        VALUES (:run_id, :factor_id, :obs_date, :old_value, :new_value,
+                :revision_type, :source)"""),
+        [{**r, "run_id": run_id} for r in rows])
+
 
 def upsert_market_rows(conn: Connection, rows: list[dict]) -> int:
     """rows: factor_id, obs_date, value, source, is_ffilled, ffill_age."""

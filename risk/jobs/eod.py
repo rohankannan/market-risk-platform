@@ -54,8 +54,9 @@ def step_ingest(ctx: dict) -> None:
         return
     conn, run_date = ctx["conn"], ctx["run_date"]
     meta = ctx["factor_meta"]
-    last = dict(conn.execute(text(
-        "SELECT factor_id, max(obs_date) FROM market_data GROUP BY factor_id")).all())
+    # windows anchor at the last REAL print: filled dates stay in the request
+    # until the vendor publishes them, so fills are provisional, not permanent
+    last = db.last_real_obs(conn)
 
     rows: list[dict] = []
     eq = meta[meta["source"] == "YFINANCE"]
@@ -99,8 +100,19 @@ def step_ingest(ctx: dict) -> None:
         except Exception as exc:
             print(f"[eod] ingest: {spec.factor_code} FRED fetch failed ({exc})", file=sys.stderr)
 
+    # history that changed under our feet gets logged before the upsert
+    # overwrites it - the restatement trail (--force on affected dates restates)
+    existing = db.existing_market_values(
+        conn, sorted({r["factor_id"] for r in rows}), sorted({r["obs_date"] for r in rows}))
+    revisions = dq.detect_revisions(existing, rows)
+    db.write_market_revisions(conn, ctx["run_id"], revisions)
     n = db.upsert_market_rows(ctx["conn"], rows)
-    print(f"[eod] ingest: upserted {n} observations")
+    vendor = [r for r in revisions if r["revision_type"] == "VENDOR_REVISION"]
+    print(f"[eod] ingest: upserted {n} observations, {len(revisions)} revision(s) logged")
+    if vendor:
+        print(f"[eod] ingest: {len(vendor)} VENDOR revision(s) touch stored history - "
+              "restate affected dates with 'run --date <d> --force' (an EOD restatement "
+              "outranks a backfill run for the same date in every read)", file=sys.stderr)
 
 
 def step_dq(ctx: dict) -> None:
@@ -131,16 +143,21 @@ def step_dq(ctx: dict) -> None:
                        "severity": "INFO", "obs_date": run_date,
                        "detail": {"ffill_age": int(age), "carried_from_prior_run": True}})
 
+    # staleness anchors at the last REAL print - measuring against a prior
+    # synthetic fill would reset the clock nightly and let a dead source
+    # forward-fill forever without ever tripping its cap
+    real_last = db.last_real_obs(conn)
     for code in levels.columns:
         if pd.notna(levels.loc[ts_run, code]):
             continue
         prior = levels[code].dropna()
         prior = prior[prior.index < ts_run]
-        if prior.empty:
+        real_anchor = real_last.get(fids[code])
+        if prior.empty or real_anchor is None:
             issues.append({"factor_code": code, "check_name": "GAP", "severity": "BLOCK",
                            "obs_date": run_date, "detail": {"reason": "no history at all"}})
             continue
-        age = len(pd.bdate_range(prior.index[-1], ts_run)) - 1
+        age = len(pd.bdate_range(pd.Timestamp(real_anchor), ts_run)) - 1
         if age <= int(limits[code]):
             synthetic.append({"factor_id": fids[code], "obs_date": run_date,
                               "value": float(prior.iloc[-1]), "source": "FFILL",
@@ -237,6 +254,39 @@ def step_risk(ctx: dict) -> None:
                  "measure": "KRD_DV01", "value": round(v, 2)}
                 for (d, t), v in desk_krd.items()]
     db.write_exposures(conn, ctx["run_id"], krd_rows)
+
+    # flash check on BOTH measures: the headline (HS) and the filtered model
+    # (FHS) each explain their own move before publishing. Vol-forecast movers
+    # attach only where they are the actual driver - the EWMA forecast enters
+    # FHS, not HS, whose moves come from scenario turnover and level changes.
+    fids_map = dict(zip(meta["factor_code"], meta["factor_id"]))
+    tripped = []
+    for flash_measure in ("VAR_HS", "VAR_FHS"):
+        prev_m = db.prev_var(conn, run_date, flash_measure)
+        curr_m = {code: r["value"] for r in results
+                  for code, did in desks.items()
+                  if r["desk_id"] == did and r["measure"] == flash_measure
+                  and r["horizon_days"] == 1}
+        flash = dq.flash_dod_check(curr_m, prev_m, CFG.flash_dod_threshold)
+        if flash is None:
+            continue
+        flash["detail"]["measure"] = flash_measure
+        if flash_measure == "VAR_FHS":
+            idx_run = returns.index.get_loc(ts_run)
+            if idx_run > 0:
+                fc_prev = ewma_vol_forecast(returns.loc[:returns.index[idx_run - 1]],
+                                            lam=CFG.lambda_ewma,
+                                            seed_window=CFG.ewma_seed_window)
+                flash["detail"]["vol_forecast_movers"] = dq.top_vol_movers(fc, fc_prev)
+        flash["obs_date"] = run_date
+        db.write_dq_issues(conn, ctx["run_id"], [flash], fids_map)
+        tripped.append(flash_measure)
+        print(f"[eod] FLASH: firm {flash_measure} moved "
+              f"{flash['detail']['pct_move']:+.1%} day-over-day (threshold "
+              f"{CFG.flash_dod_threshold:.0%}) - attribution written to dq_issues",
+              file=sys.stderr)
+    if not tripped and db.prev_var(conn, run_date, "VAR_HS"):
+        print(f"[eod] flash: day-over-day moves within {CFG.flash_dod_threshold:.0%}")
 
     # clean P&L for run_date (frozen book, prior-day levels, actual move) + exception check
     idx = returns.index.get_loc(ts_run)

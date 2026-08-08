@@ -66,6 +66,7 @@ Three Streamlit pages over the API — tiles, limits, and the P&L-vs-VaR timelin
 | SR 11-7-structured model documentation with a full assumptions-and-limitations inventory | ✅ (`docs/model_doc.md`) |
 | Quantified risks-not-in-VaR inventory: horizon-scaling error, async-close correlation bias, forward-fill vol damping, stressed-window sensitivity, ES concentration — measured from the snapshot, regenerable | ✅ (`docs/rniv.md`, `risk/jobs/rniv.py`) |
 | Champion/challenger harness: hand-rolled GARCH(1,1) QMLE vs the EWMA champion, parallel-run over 250 days under pre-registered promotion criteria with a fit-health gate — current verdict HOLD, boundary fits named | ✅ (`docs/challenger_garch.md`, `risk/jobs/challenger.py`) |
+| Ops controls: day-over-day flash check (firm VaR moves arrive pre-explained with desk and vol attribution) and a vendor-revision log with classified before-images and a `--force` restatement path | ✅ (`risk_engine/dq.py`, `data_revisions`) |
 | Hosted deploy: Neon Postgres, API + dashboard on Render, nightly EOD batch via GitHub Actions cron | ✅ (links above) |
 | ≤90s demo video | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |

@@ -68,3 +68,64 @@ def test_apply_scenario_known_answer():
     # unshocked factors are zero-filled: shocking nothing = zero P&L
     flat = apply_scenario(book, levels, pd.Series({"IR.UST.10Y": 100.0}))
     assert flat["FIRM"] == pytest.approx(0.0, abs=1e-9)
+
+
+# ------------------------------------------------------- output-side controls
+
+def test_flash_trips_above_threshold_with_desk_attribution():
+    from risk_engine.dq import flash_dod_check
+    curr = {"FIRM": 1_300_000.0, "RATES": 900_000.0, "EQUITY": 600_000.0}
+    prev = {"FIRM": 1_000_000.0, "RATES": 650_000.0, "EQUITY": 610_000.0}
+    issue = flash_dod_check(curr, prev, threshold=0.25)
+    assert issue is not None and issue["severity"] == "WARN"
+    assert issue["detail"]["pct_move"] == pytest.approx(0.30)
+    assert issue["detail"]["desk_var_deltas"]["RATES"] == pytest.approx(250_000.0)
+    assert issue["factor_code"] is None                          # firm-level issue
+
+
+def test_flash_quiet_at_threshold_and_without_history():
+    from risk_engine.dq import flash_dod_check
+    assert flash_dod_check({"FIRM": 125.0}, {"FIRM": 100.0}, threshold=0.25) is None
+    assert flash_dod_check({"FIRM": 125.9}, {"FIRM": 100.0}, threshold=0.25) is not None
+    assert flash_dod_check({"FIRM": 500.0}, {}, threshold=0.25) is None   # first run
+
+
+def test_top_vol_movers_orders_by_absolute_move():
+    from risk_engine.dq import top_vol_movers
+    now = pd.Series({"A": 1.5, "B": 0.6, "C": 1.02, "D": 2.0})
+    prev = pd.Series({"A": 1.0, "B": 1.0, "C": 1.0})             # D has no history
+    movers = top_vol_movers(now, prev, n=2)
+    assert list(movers) == ["A", "B"]                            # +50% then -40%
+    assert movers["B"] == pytest.approx(-0.4)
+
+
+def test_detect_revisions_classifies_and_ignores_noise():
+    import datetime as dt
+
+    from risk_engine.dq import detect_revisions
+    d = dt.date(2026, 8, 6)
+    existing = {(1, d): (4.20, False), (2, d): (0.0068, True), (3, d): (100.0, False)}
+    incoming = [
+        {"factor_id": 1, "obs_date": d, "value": 4.25, "source": "FRED"},      # real print moved
+        {"factor_id": 2, "obs_date": d, "value": 0.0069, "source": "FRED"},    # fill replaced
+        {"factor_id": 3, "obs_date": d, "value": 100.0 * (1 + 1e-12), "source": "YFINANCE"},
+        {"factor_id": 9, "obs_date": d, "value": 55.0, "source": "YFINANCE"},  # brand new row
+    ]
+    revs = detect_revisions(existing, incoming)
+    assert len(revs) == 2
+    by_id = {r["factor_id"]: r for r in revs}
+    assert by_id[1]["revision_type"] == "VENDOR_REVISION"
+    assert by_id[2]["revision_type"] == "FFILL_REPLACED"
+    assert by_id[1]["old_value"] == 4.20 and by_id[1]["new_value"] == 4.25
+
+
+def test_detect_revisions_no_phantom_from_storage_quantization():
+    import datetime as dt
+
+    from risk_engine.dq import detect_revisions
+    d = dt.date(2026, 8, 6)
+    raw = 0.006801234564999                       # JPY-scale value, 8dp boundary
+    stored = round(raw, 8)                        # what numeric(18,8) preserved
+    existing = {(1, d): (stored, False)}
+    incoming = [{"factor_id": 1, "obs_date": d, "value": raw, "source": "FRED"}]
+    assert detect_revisions(existing, incoming) == []            # identical print, no phantom

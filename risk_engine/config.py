@@ -26,6 +26,10 @@ class RiskConfig:
     # Data-quality: forward-fill cap (per-factor override lives on the risk_factors table).
     ffill_limit_days: int = 3
 
+    # Flash check: a day-over-day firm-VaR move beyond this flags the run
+    # (WARN with attribution) before the number is read as final.
+    flash_dod_threshold: float = 0.25
+
     # MVP: fixed FRTB-style stressed window (GFC year). The programmatic
     # worst-window search over 2007+ history is a winter deliverable (es.find_stressed_window).
     stressed_window_start: dt.date = dt.date(2008, 9, 12)

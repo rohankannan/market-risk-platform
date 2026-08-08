@@ -99,6 +99,28 @@ auto-scrubbing genuine crash days would destroy the very tail VaR feeds on.
 Any BLOCK downgrades the run to `PARTIAL` — results write, but the run is
 visibly impaired; there is no silent green.
 
+Fills are **provisional**: ingest windows anchor at each factor's last *real*
+print, not its last row, so a filled date stays in the request until the
+vendor publishes it, and staleness ages are measured against real prints — a
+dead source runs into its cap and blocks rather than forward-filling forever
+behind self-resetting fills.
+
+Two controls extend the gate beyond the inputs. A **flash check** compares
+each firm VaR measure (HS and FHS) to the prior run before the number is read
+as final: a move beyond ±25% writes a `FLASH_DOD` warning carrying its own
+explanation — per-desk VaR deltas, plus the largest vol-forecast movers where
+the vol filter is the actual driver (FHS; an HS move comes from scenario
+turnover and level changes). A large move is not an error; an *unexplained*
+large move is. And a **revision log** (`data_revisions`) records every
+ingested value that differs from what is stored — compared at the database's
+own precision — classified: a synthetic fill replaced by the vendor's late
+print is routine (`FFILL_REPLACED`, the H.10 publication cycle produces
+these); a changed real print is a vendor restatement (`VENDOR_REVISION`) and
+the reason yesterday's VaR may no longer be reproducible from today's
+database. The log preserves the before-image, and
+`run --date <d> --force` is the restatement path — an EOD restatement
+outranks a backfill run for the same date in every read.
+
 *Questions an interviewer would ask:* Why absolute bp shocks for rates — what
 breaks with log returns on 2020 yields? Why flag rather than delete an outlier
 return? What does a forward-filled day do to EWMA vol, and where would you see
@@ -468,6 +490,6 @@ fit-health gate).
 
 In SR 11-7 terms: this document is the development evidence; the known-answer
 tests and the 750-day out-of-sample backtest are validation; the nightly
-exception writes, traffic-light zones, and DQ gate are ongoing monitoring; §5
-is the limitations inventory, maintained with the same seriousness as the
-code.
+exception writes, traffic-light zones, DQ gate, flash check, and revision log
+are ongoing monitoring; §5 is the limitations inventory, maintained with the
+same seriousness as the code.
