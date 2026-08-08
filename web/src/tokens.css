@@ -1,13 +1,51 @@
-/* Design tokens (spec section 7). Desk identity colors are constant across
-   every chart; red/green is reserved for P&L sign and limit status only. */
+/* RiskDesk terminal theme - dark "internal tooling" ground, Purdue Federal
+   palette, IBM Plex Mono. The --rd-* set is the source of truth; the semantic
+   names below map onto it so every surface reads from one palette. */
 :root {
-  --desk-rates: #5B8DEF; --desk-fx: #C08BF0; --desk-equity: #3EBFA5;
-  --pnl-pos: #3E9C55; --pnl-neg: #C64545;
-  --zone-green: #2E7D32; --zone-amber: #B8860B; --zone-red: #B71C1C;
-  --util-ok: #E8F0E9; --util-warn: #F5E9CC; --util-hot: #F2D7C9; --util-breach: #EFC4C4;
-  --bg: #FAFBFC; --panel: #FFFFFF; --border: #E3E7EB;
-  --text: #1B2733; --text-dim: #5B6B7B;
-  --mono: "JetBrains Mono", ui-monospace, monospace;
+  /* grounds */
+  --rd-bg: #0a0a09;          /* page ground */
+  --rd-panel: #0f0e0c;       /* tape, tiles, footer, inset panels */
+  --rd-hover: #17150f;       /* row hover */
+  /* rules */
+  --rd-hairline: #1c1a16;    /* 1px row separators, chart gridlines */
+  --rd-divider: #2a2822;     /* 2px section dividers, 1px nav separators */
+  /* ink */
+  --rd-text: #e8e4da;
+  --rd-muted: #8a857a;
+  /* Purdue Federal golds */
+  --rd-gold: #cfb991;        /* working accent: labels, symbols, bars */
+  --rd-gold-rush: #daaa00;   /* frame rules, active tab fill, warn bars */
+  /* semantics */
+  --rd-up: #5fbf7a;          /* gains, GREEN zone, pass */
+  --rd-down: #e0563f;        /* losses, exceptions, breaches */
+  /* type + geometry */
+  --rd-font: "IBM Plex Mono", ui-monospace, monospace;
+  --rd-radius: 0;            /* zero radius everywhere - no exceptions */
+
+  /* semantic aliases used across the pages */
+  --bg: var(--rd-bg);
+  --panel: var(--rd-panel);
+  --border: var(--rd-divider);
+  --hairline: var(--rd-hairline);
+  --text: var(--rd-text);
+  --text-dim: var(--rd-muted);
+  --accent: var(--rd-gold);
+  --mono: var(--rd-font);
+
+  /* desk identity, constant across every chart (spec section 7), lifted for
+     legibility on the dark ground */
+  --desk-rates: #6f9bf2; --desk-fx: #c894f5; --desk-equity: #45cbb0;
+
+  /* red/green stay reserved for P&L sign and limit status */
+  --pnl-pos: var(--rd-up); --pnl-neg: var(--rd-down);
+  --zone-green: var(--rd-up); --zone-amber: var(--rd-gold-rush); --zone-red: var(--rd-down);
+
+  /* limit-utilization tints: translucent so the dark ground shows through */
+  --util-ok: rgba(95, 191, 122, 0.14);
+  --util-warn: rgba(218, 170, 0, 0.16);
+  --util-hot: rgba(218, 170, 0, 0.28);
+  --util-breach: rgba(224, 86, 63, 0.28);
+
   --sidebar-w: 200px; --row-h: 32px; --table-fs: 13px;
 }
 
@@ -15,14 +53,28 @@
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 14px/1.45 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--rd-bg);
+  color: var(--rd-text);
+  font-family: var(--rd-font);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-x: auto;
 }
 
-.num {
-  font-family: var(--mono);
+/* every numeral is tabular; Plex Mono is inherently so, the declaration keeps
+   fallback fonts honest */
+.num,
+body {
   font-variant-numeric: tabular-nums;
 }
 
-a { color: inherit; }
+a { color: var(--rd-gold); }
+
+::selection { background: rgba(218, 170, 0, 0.3); }
+
+:focus-visible {
+  outline: 2px solid var(--rd-gold-rush);
+  outline-offset: 2px;
+}
+
+h1, h2, h3 { font-weight: 700; letter-spacing: 0.04em; }

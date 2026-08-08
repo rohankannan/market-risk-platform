@@ -1,25 +1,5 @@
 import type { HistoryPoint } from "../api/types";
-import { PNL_POS, pnlVsVarOption, UTIL_BAR, utilLevel } from "./overview";
-
-test("utilLevel piecewise boundaries", () => {
-  expect(utilLevel(0.58)).toBe("ok");
-  expect(utilLevel(0.7)).toBe("warn");
-  expect(utilLevel(0.9)).toBe("hot");
-  expect(utilLevel(1.0)).toBe("hot"); // at the limit without a BREACH status
-  expect(utilLevel(1.01)).toBe("breach");
-});
-
-test("the API's BREACH status overrides a 4dp-rounded utilization", () => {
-  expect(utilLevel(1.0, "BREACH")).toBe("breach"); // hairline breach rounds to 1.0000
-  expect(utilLevel(1.0, "WARN")).toBe("hot"); // sub-breach statuses never escalate
-  expect(utilLevel(0.58, "OK")).toBe("ok");
-});
-
-test("tile bar earns red only past the limit", () => {
-  expect(UTIL_BAR.breach).toBe("var(--zone-red)");
-  expect(UTIL_BAR.hot).toBe("var(--zone-amber)");
-  expect(UTIL_BAR.ok).toBe("var(--zone-green)");
-});
+import { PNL_POS, pnlVsVarOption } from "./overview";
 
 const P = (d: string, pnl: number | null, hs: number | null, exc = false): HistoryPoint => ({
   date: d,

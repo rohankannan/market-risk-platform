@@ -8,7 +8,7 @@ export function Skeleton({ height, width }: { height: number; width?: number | s
         height,
         width: width ?? "100%",
         background: "var(--border)",
-        borderRadius: 3,
+        borderRadius: "var(--rd-radius)",
         opacity: 0.5,
       }}
     />

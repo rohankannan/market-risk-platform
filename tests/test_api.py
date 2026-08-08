@@ -259,13 +259,13 @@ def test_scenario_catalog_groups_shocks_replays_stay_empty():
 DESK = {"desk_code": "EQUITY", "desk_name": "Equity", "is_aggregate": False}
 COMP_ROWS = [
     {"ticker": "SPY", "instrument_type": "ETF", "quantity": 11_800.0, "factor_class": "EQ",
-     "option_type": None, "moneyness": None, "maturity_years": None,
+     "factor_code": "EQ.SPY", "option_type": None, "moneyness": None, "maturity_years": None,
      "standalone_var": 45.55, "component_es": 60.0, "marginal_var": 40.0},
     {"ticker": "NVDA", "instrument_type": "STOCK", "quantity": 1_700.0, "factor_class": "EQ",
-     "option_type": None, "moneyness": None, "maturity_years": None,
+     "factor_code": "EQ.NVDA", "option_type": None, "moneyness": None, "maturity_years": None,
      "standalone_var": 30.20, "component_es": 30.0, "marginal_var": 20.0},
     {"ticker": "SPY_PUT_95", "instrument_type": "OPTION", "quantity": 7_800.0,
-     "factor_class": "EQ", "option_type": "PUT", "moneyness": 0.95,
+     "factor_class": "EQ", "factor_code": "EQ.SPY", "option_type": "PUT", "moneyness": 0.95,
      "maturity_years": 0.08333, "standalone_var": 10.10, "component_es": -10.0,
      "marginal_var": -5.0},
 ]
@@ -310,6 +310,39 @@ def test_desk_positions_pct_and_order():
     put = p.positions[-1]
     assert put.option_type == "PUT" and put.moneyness == 0.95    # collar metadata surfaced
     assert put.component_es == -10.0                             # hedge: negative share
+    assert put.factor_code == "EQ.SPY"                           # legs map to the underlier
+
+
+def _tape_row(code, conv, obs_date, value, ftype="EQUITY"):
+    return {"factor_code": code, "factor_type": ftype, "return_conv": conv,
+            "obs_date": obs_date, "value": value}
+
+
+def test_factors_latest_conventions_and_tape_order():
+    d1, d2 = dt.date(2026, 8, 5), dt.date(2026, 8, 6)
+    rows = [
+        _tape_row("IR.UST.2Y", "ABS_BP", d1, 3.94, "RATE"),
+        _tape_row("IR.UST.2Y", "ABS_BP", d2, 3.91, "RATE"),
+        _tape_row("IR.UST.10Y", "ABS_BP", d1, 4.18, "RATE"),
+        _tape_row("IR.UST.10Y", "ABS_BP", d2, 4.20, "RATE"),
+        _tape_row("EQ.SPY", "LOG", d1, 630.0),
+        _tape_row("EQ.SPY", "LOG", d2, 637.10),
+        _tape_row("VOL.SPX.IV30", "ABS", d1, 15.0, "VOL"),
+        _tape_row("VOL.SPX.IV30", "ABS", d2, 14.62, "VOL"),
+        _tape_row("FX.EURUSD", "LOG", d2, 1.0942),           # single print: change None
+    ]
+    t = schemas.build_factors_latest(RUN, rows)
+    # class order EQ, FX, then rates along the curve (2Y before 10Y), then vol
+    assert [x.factor_code for x in t.ticks] == [
+        "EQ.SPY", "FX.EURUSD", "IR.UST.2Y", "IR.UST.10Y", "VOL.SPX.IV30"]
+    by = {x.factor_code: x for x in t.ticks}
+    assert by["EQ.SPY"].change == pytest.approx(637.10 / 630.0 - 1, abs=1e-6)
+    assert by["EQ.SPY"].unit == "%"
+    assert by["IR.UST.2Y"].change == pytest.approx(-3.0)     # (3.91-3.94)*100 bp
+    assert by["IR.UST.2Y"].unit == "bp"
+    assert by["VOL.SPX.IV30"].change == pytest.approx(-0.38)
+    assert by["VOL.SPX.IV30"].unit == "pt"
+    assert by["FX.EURUSD"].change is None and by["FX.EURUSD"].level == 1.0942
 
 
 # ---------------------------------------------------------------- routes
@@ -529,6 +562,16 @@ def test_desk_decomposition_endpoint(client, monkeypatch):
     assert body["buckets"][0]["factor_class"] == "EQ"
     assert client.get("/api/v1/desks/CREDIT/decomposition").status_code == 404
     assert client.get("/api/v1/desks/FIRM/decomposition").status_code == 404   # aggregate
+
+
+def test_factors_latest_endpoint(client, monkeypatch):
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    d1, d2 = dt.date(2026, 8, 5), dt.date(2026, 8, 6)
+    monkeypatch.setattr(queries, "factor_latest_rows", lambda conn, end: [
+        _tape_row("EQ.SPY", "LOG", d1, 630.0), _tape_row("EQ.SPY", "LOG", d2, 637.10)])
+    body = client.get("/api/v1/factors/latest").json()
+    assert body["ticks"][0]["factor_code"] == "EQ.SPY"
+    assert body["ticks"][0]["unit"] == "%"
 
 
 def test_desk_positions_endpoint(client, monkeypatch):

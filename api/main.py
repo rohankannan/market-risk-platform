@@ -133,6 +133,17 @@ def risk_history(response: Response, scope: str = Scope,
                                  queries.exception_rows(conn, code, start, end))
 
 
+@app.get("/api/v1/factors/latest", response_model=schemas.FactorsLatest)
+def factors_latest(response: Response, as_of: dt.date | None = AsOf,
+                   conn: Connection = Depends(get_conn)) -> schemas.FactorsLatest:
+    """Latest level and day move per active factor - the dashboard's factor
+    tape. Moves are reported in each factor's own convention units."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    return schemas.build_factors_latest(
+        run, queries.factor_latest_rows(conn, run["run_date"]))
+
+
 @app.get("/api/v1/risk/movers", response_model=schemas.RiskMovers)
 def risk_movers(response: Response, as_of: dt.date | None = AsOf,
                 window: int = Query(1, ge=1, le=30,

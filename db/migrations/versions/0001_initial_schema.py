@@ -1,4 +1,4 @@
-"""Initial schema: 13 tables per RISKDESK_SPEC section 5.
+"""Initial schema: 15 tables per RISKDESK_SPEC section 5.
 
 Revision ID: 0001
 Revises:

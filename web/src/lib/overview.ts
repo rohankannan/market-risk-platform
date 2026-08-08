@@ -1,44 +1,17 @@
-// Pure data transforms for the Overview page - testable without React.
+// Shared chart palette and the P&L-vs-VaR option builder - testable without React.
 import type { EChartsOption } from "echarts";
 
-import type { DeskRisk, HistoryPoint } from "../api/types";
+import type { HistoryPoint } from "../api/types";
 import { fmtMoney } from "./format";
 
-// literal hexes mirroring the Streamlit charts (dashboard/ui.py VAR_LINES,
-// EXCEPTION_DOT). ECharts paints to canvas, which cannot resolve CSS custom
-// properties - so no var() references; the P&L pair doubles as tokens.css
-// --pnl-pos/--pnl-neg.
-export const VAR_HS_COLOR = "#1B2A4A";
-export const VAR_FHS_COLOR = "#5B8DEF";
-export const EXCEPTION_COLOR = "#C61A1A";
-export const PNL_POS = "#3E9C55";
-export const PNL_NEG = "#C64545";
-
-export type UtilLevel = "ok" | "warn" | "hot" | "breach";
-
-// the API's limit_status is authoritative for BREACH: server-side utilization
-// is rounded to 4dp, so a hairline breach can arrive as exactly 1.0000
-export function utilLevel(u: number, status?: DeskRisk["limit_status"]): UtilLevel {
-  if (status === "BREACH" || u > 1.0) return "breach";
-  if (u >= 0.9) return "hot";
-  if (u >= 0.7) return "warn";
-  return "ok";
-}
-
-export const UTIL_BG: Record<UtilLevel, string> = {
-  ok: "var(--util-ok)",
-  warn: "var(--util-warn)",
-  hot: "var(--util-hot)",
-  breach: "var(--util-breach)",
-};
-
-// solid fills for the tile's inline bar: red is earned only past the limit
-export const UTIL_BAR: Record<UtilLevel, string> = {
-  ok: "var(--zone-green)",
-  warn: "var(--zone-amber)",
-  hot: "var(--zone-amber)",
-  breach: "var(--zone-red)",
-};
+// terminal-palette literals (tokens.css). ECharts paints to canvas, which
+// cannot resolve CSS custom properties - so no var() references. The HS series
+// takes the working gold; red/green stay reserved for P&L sign and exceptions.
+export const VAR_HS_COLOR = "#cfb991";
+export const VAR_FHS_COLOR = "#6f9bf2";
+export const EXCEPTION_COLOR = "#e0563f";
+export const PNL_POS = "#5fbf7a";
+export const PNL_NEG = "#e0563f";
 
 // P&L bars vs the negated VaR lines, exception days as labeled dots
 export function pnlVsVarOption(points: HistoryPoint[]): EChartsOption {

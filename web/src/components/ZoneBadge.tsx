@@ -11,8 +11,8 @@ export function ZoneBadge({ zone }: { zone: string }) {
       style={{
         display: "inline-block",
         padding: "2px 10px",
-        borderRadius: 3,
-        color: "#fff",
+        borderRadius: "var(--rd-radius)",
+        color: "var(--rd-bg)",
         background: ZONE_COLOR[zone] ?? "var(--text-dim)",
         fontSize: 13,
         fontWeight: 600,

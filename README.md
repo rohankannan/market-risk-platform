@@ -53,7 +53,7 @@ Three Streamlit pages over the API — tiles, limits, and the P&L-vs-VaR timelin
 |---|---|
 | Risk engine core: HS VaR, EWMA filtering + FHS scenarios, ES 97.5, bond pricer (DV01/convexity by bump-and-reprice) | ✅ implemented, known-answer tested |
 | Backtesting stats: Kupiec POF, Christoffersen (independence + conditional coverage), Basel traffic light with multiplier add-ons | ✅ implemented, known-answer tested |
-| Postgres schema (13 tables) + Alembic migration + showcase analytics SQL | ✅ |
+| Postgres schema (18 tables) + Alembic migrations + showcase analytics SQL | ✅ |
 | Portfolio / factor definitions (desk mix calibrated to disclosed bank VaR risk-class shares), hypothetical shock catalog | ✅ (`data/seed/`, `scenarios/`) |
 | Committed 2007+ market snapshot (17 factors), snapshot pipeline w/ source fallbacks | ✅ (`risk/jobs/snapshot.py`) |
 | Seed loader (COPY-based, idempotent), portfolio revaluation engine (full reval + delta-gamma) | ✅ |

@@ -58,10 +58,13 @@ def request_list(desks: list[str]) -> list[tuple[str, dict]]:
         ("/api/v1/risk/history", {"scope": "FIRM", "window": HISTORY_WINDOW_FIRM}),
         ("/api/v1/risk/movers", {}),
         ("/api/v1/risk/exposures", {}),
+        ("/api/v1/factors/latest", {}),
         ("/api/v1/scenarios", {}),
         ("/api/v1/scenarios/results", {}),
         ("/api/v1/modeldoc", {}),
     ]
+    # the terminal overview reads FIRM history at the plain backtest window
+    reqs.append(("/api/v1/risk/history", {"scope": "FIRM", "window": BACKTEST_WINDOW}))
     for w in BACKTEST_WINDOWS:
         reqs.append(("/api/v1/risk/history",
                      {"scope": "FIRM", "window": min(w + ROLLING_WINDOW, HISTORY_CAP)}))

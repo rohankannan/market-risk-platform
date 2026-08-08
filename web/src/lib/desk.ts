@@ -5,13 +5,14 @@ import type { DeskDecomposition, DeskExposure } from "../api/types";
 import { fmtMoney } from "./format";
 import { VAR_HS_COLOR } from "./overview";
 
-// desk identity colors, canvas literals (tokens.css --desk-*)
+// desk identity colors, canvas literals (tokens.css --desk-*, lifted for the
+// dark ground)
 export const DESK_HEX: Record<string, string> = {
-  RATES: "#5B8DEF",
-  FX: "#C08BF0",
-  EQUITY: "#3EBFA5",
+  RATES: "#6f9bf2",
+  FX: "#c894f5",
+  EQUITY: "#45cbb0",
 };
-const DIVERSIFICATION_GREY = "#8A97A5";
+const DIVERSIFICATION_GREY = "#8a857a";
 
 export const FACTOR_CLASS_LABEL: Record<string, string> = {
   EQ: "Equity",

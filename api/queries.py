@@ -159,6 +159,20 @@ def factor_move_rows(conn: Connection, end: dt.date, lookback: int = 61) -> list
         ORDER BY factor_code, obs_date"""), {"end": end, "lb": lookback}).mappings()]
 
 
+def factor_latest_rows(conn: Connection, end: dt.date) -> list[dict]:
+    """Last two observations per active factor at or before end - the factor
+    tape feed (level plus the day move, conventions attached)."""
+    return [dict(r) for r in conn.execute(text("""
+        SELECT factor_code, factor_type, return_conv, obs_date, value FROM (
+          SELECT rf.factor_code, rf.factor_type, rf.return_conv, md.obs_date,
+                 md.value::float AS value,
+                 row_number() OVER (PARTITION BY md.factor_id ORDER BY md.obs_date DESC) AS rn
+          FROM market_data md JOIN risk_factors rf USING (factor_id)
+          WHERE rf.is_active AND md.obs_date <= :end) t
+        WHERE rn <= 2
+        ORDER BY factor_code, obs_date"""), {"end": end}).mappings()]
+
+
 def desk_position_rows(conn: Connection, run_id: int, desk_code: str) -> list[dict]:
     """Per-position component rows for one desk (the decomposition waterfall
     and the positions table). Empty for runs that skip the position step
@@ -174,10 +188,14 @@ def desk_position_rows(conn: Connection, run_id: int, desk_code: str) -> list[di
                i.ticker IS NULL AS instrument_missing,
                i.meta->>'option_type' AS option_type,
                (i.meta->>'moneyness')::float AS moneyness,
-               (i.meta->>'maturity_years')::float AS maturity_years
+               (i.meta->>'maturity_years')::float AS maturity_years,
+               rf.factor_code
         FROM position_components pc
         JOIN desks d USING (desk_id)
         LEFT JOIN instruments i ON i.ticker = pc.ticker
+        LEFT JOIN instrument_factors f ON f.instrument_id = i.instrument_id
+                                      AND f.sensitivity_type <> 'VEGA'
+        LEFT JOIN risk_factors rf ON rf.factor_id = f.factor_id
         WHERE pc.run_id = :r AND d.desk_code = :c
         ORDER BY pc.ticker"""), {"r": run_id, "c": desk_code}).mappings()]
     dropped = sorted(r["ticker"] for r in rows if r.pop("instrument_missing"))

@@ -12,6 +12,7 @@ import type {
   BacktestSummary,
   DeskDecomposition,
   DeskPositions,
+  FactorsLatest,
   KeyRateExposures,
   Meta,
   ModelDoc,
@@ -69,6 +70,7 @@ export const useRiskHistory = (scope: string, window: number) =>
   useApi<RiskHistory>("/api/v1/risk/history", { scope, window });
 export const useRiskMovers = () => useApi<RiskMovers>("/api/v1/risk/movers");
 export const useRiskExposures = () => useApi<KeyRateExposures>("/api/v1/risk/exposures");
+export const useFactorsLatest = () => useApi<FactorsLatest>("/api/v1/factors/latest");
 export const useDeskDecomposition = (desk: string) =>
   useApi<DeskDecomposition>(`/api/v1/desks/${desk}/decomposition`);
 export const useDeskPositions = (desk: string) =>

@@ -11,7 +11,7 @@ export function StaleBanner({ resolved }: { resolved: string | undefined }) {
       style={{
         background: "var(--util-warn)",
         border: "1px solid var(--zone-amber)",
-        borderRadius: 3,
+        borderRadius: "var(--rd-radius)",
         padding: "6px 12px",
         marginBottom: 16,
         fontSize: 13,

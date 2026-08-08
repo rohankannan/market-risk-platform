@@ -8,7 +8,7 @@
 .rail {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--rd-radius);
   padding: 12px;
   position: sticky;
   top: 0;
@@ -39,7 +39,7 @@
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--rd-radius);
   margin-bottom: 16px;
   overflow: hidden;
 }
@@ -68,7 +68,7 @@
 }
 
 .drillButton:focus-visible {
-  outline: 2px solid var(--desk-rates);
+  outline: 2px solid var(--rd-gold-rush);
   outline-offset: 2px;
 }
 

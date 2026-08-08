@@ -167,6 +167,60 @@ def build_history(scope: str, risk_rows: list[dict], pnl_rows: list[dict],
     return RiskHistory(scope=scope, start=points[0].date, end=points[-1].date, points=points)
 
 
+# ---------------------------------------------------------------- factor tape
+
+class FactorTick(BaseModel):
+    factor_code: str
+    factor_type: str
+    level: float
+    change: float | None                    # day move: LOG as pct-decimal, ABS_BP in bp, ABS in pts
+    unit: Literal["%", "bp", "pt"]
+
+
+class FactorsLatest(BaseModel):
+    as_of: dt.date
+    run_id: int
+    ticks: list[FactorTick]                 # EQ, FX, rates by tenor, vol - tape order
+
+
+_UNIT_OF = {"LOG": "%", "ABS_BP": "bp", "ABS": "pt"}
+_CLASS_ORDER = {"EQ": 0, "FX": 1, "IR": 2, "VOL": 3}
+
+
+def _tape_sort_key(code: str) -> tuple:
+    cls = code.split(".")[0]
+    # rates read left-to-right along the curve, not alphabetically
+    tenor = NODE_TENORS.get(code, 0.0) if cls == "IR" else 0.0
+    return (_CLASS_ORDER.get(cls, 9), tenor, code)
+
+
+def build_factors_latest(run: dict, rows: list[dict]) -> FactorsLatest:
+    """rows: date-ordered (factor_code, return_conv, obs_date, value) pairs, at
+    most two per factor. A factor with a single observation ticks with change
+    None rather than dropping off the tape."""
+    by_factor: dict[str, list[dict]] = {}
+    for r in rows:
+        by_factor.setdefault(r["factor_code"], []).append(r)
+    ticks = []
+    for code in sorted(by_factor, key=_tape_sort_key):
+        fr = by_factor[code]
+        last = fr[-1]
+        change: float | None = None
+        if len(fr) == 2:
+            prev, curr = fr[0]["value"], fr[1]["value"]
+            conv = last["return_conv"]
+            if conv == "LOG":
+                change = round(curr / prev - 1.0, 6)
+            elif conv == "ABS_BP":
+                change = round((curr - prev) * 100.0, 2)
+            else:
+                change = round(curr - prev, 4)
+        ticks.append(FactorTick(factor_code=code, factor_type=last["factor_type"],
+                                level=last["value"], change=change,
+                                unit=_UNIT_OF[last["return_conv"]]))
+    return FactorsLatest(as_of=run["run_date"], run_id=run["run_id"], ticks=ticks)
+
+
 # ---------------------------------------------------------------- movers
 
 class MoverRow(BaseModel):
@@ -321,6 +375,7 @@ class DeskPosition(BaseModel):
     instrument_type: str
     quantity: float
     factor_class: str
+    factor_code: str | None                 # primary (DELTA/DV01) mapping factor
     option_type: str | None                 # options only
     moneyness: float | None
     maturity_years: float | None            # bonds and options
@@ -367,9 +422,9 @@ def build_desk_decomposition(run: dict, desk: dict, risk_rows: list[dict],
 def build_desk_positions(run: dict, desk: dict, comp_rows: list[dict]) -> DeskPositions:
     total = sum(r["component_es"] for r in comp_rows)
     positions = [DeskPosition(**{k: r[k] for k in (
-                     "ticker", "instrument_type", "quantity", "factor_class", "option_type",
-                     "moneyness", "maturity_years", "standalone_var", "component_es",
-                     "marginal_var")},
+                     "ticker", "instrument_type", "quantity", "factor_class", "factor_code",
+                     "option_type", "moneyness", "maturity_years", "standalone_var",
+                     "component_es", "marginal_var")},
                  pct_of_desk=round(r["component_es"] / total, 4) if total else None)
                  for r in comp_rows]
     positions.sort(key=lambda p: p.component_es, reverse=True)

@@ -11,9 +11,9 @@ export const AMBER_FROM = 5;
 export const RED_FROM = 10;
 
 // zone band fills, canvas literals kept deliberately faint behind the count line
-const BAND_GREEN = "rgba(46,125,50,0.10)";
-const BAND_AMBER = "rgba(184,134,11,0.12)";
-const BAND_RED = "rgba(183,28,28,0.10)";
+const BAND_GREEN = "rgba(95,191,122,0.08)";
+const BAND_AMBER = "rgba(218,170,0,0.10)";
+const BAND_RED = "rgba(224,86,63,0.10)";
 
 export function exceptionFlag(p: HistoryPoint, model: string): boolean {
   return model === "FHS" ? p.exception_fhs : p.exception_hs;

@@ -1,100 +1,179 @@
-import { NavLink, Outlet, useSearchParams } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
 
 import { useDemoMode } from "../api/client";
-import { useAsOf, useMeta } from "../api/queries";
+import { useAsOf, useFactorsLatest, useMeta } from "../api/queries";
+import type { FactorTick } from "../api/types";
 import styles from "./Shell.module.css";
 
-const DESK_COLOR: Record<string, string> = {
-  RATES: "var(--desk-rates)",
-  FX: "var(--desk-fx)",
-  EQUITY: "var(--desk-equity)",
+const FACTOR_COUNT = 17; // the committed snapshot's factor universe
+const TABLE_COUNT = 18; // 15 (initial schema) + risk_exposures + data_revisions + position_components
+
+// header wording per surface convention; the API's PARTIAL passes through
+const BATCH_LABEL: Record<string, string> = {
+  SUCCESS: "COMPLETE",
+  not_yet_run: "PENDING",
 };
 
-function AsOfBadge() {
-  const meta = useMeta();
-  if (!meta.data?.latest_as_of) return <span className={styles.badge}>—</span>;
-  const { latest_as_of, batch_type, batch_completed_at } = meta.data;
-  // completed_at arrives with the batch host's offset; report it in UTC
-  const at = batch_completed_at
-    ? ` · batch ${new Date(batch_completed_at).toISOString().slice(11, 16)} UTC`
-    : "";
+// tape symbols read like a terminal: "UST 2Y", "EQ.SPY", "VIX 30D"
+function tapeSymbol(code: string): string {
+  if (code.startsWith("IR.UST.")) return `UST ${code.split(".")[2]}`;
+  if (code === "VOL.SPX.IV30") return "VIX 30D";
+  return code;
+}
+
+function tapeLevel(t: FactorTick): string {
+  if (t.level < 0.01) return t.level.toFixed(5);
+  return t.level.toLocaleString("en-US", {
+    minimumFractionDigits: t.level < 2 ? 4 : 2,
+    maximumFractionDigits: t.level < 2 ? 4 : 2,
+  });
+}
+
+function tapeChange(t: FactorTick): string | null {
+  if (t.change == null) return null;
+  if (t.unit === "bp") return `${t.change >= 0 ? "+" : ""}${t.change.toFixed(2)}bp`;
+  if (t.unit === "pt") return `${t.change >= 0 ? "+" : ""}${t.change.toFixed(2)}pt`;
+  return `${t.change >= 0 ? "+" : ""}${(t.change * 100).toFixed(2)}%`;
+}
+
+function FactorTape() {
+  const factors = useFactorsLatest();
+  if (!factors.isSuccess || !factors.data.ticks.length) return null;
+  const ticks = factors.data.ticks;
+  // content duplicated 2x so the -50% marquee loops seamlessly; the moving
+  // copy is decorative - the same levels are served as a static list below
+  const cells = [...ticks, ...ticks];
   return (
-    <span className={styles.badge}>
-      Data as of <span className="num">{latest_as_of}</span> {batch_type}
-      {at}
-    </span>
+    <>
+      <div className={styles.tape} aria-hidden>
+        <div className={styles.tapeTrack}>
+          {cells.map((t, i) => (
+            <div key={`${t.factor_code}-${i}`} className={styles.tapeCell}>
+              <span className={styles.tapeSym}>{tapeSymbol(t.factor_code)}</span>
+              <span>{tapeLevel(t)}</span>
+              {t.change != null && (
+                <span className={t.change >= 0 ? styles.tapeUp : styles.tapeDown}>
+                  {tapeChange(t)}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <ul className={styles.srOnly} aria-label="Factor levels">
+        {ticks.map((t) => (
+          <li key={t.factor_code}>
+            {tapeSymbol(t.factor_code)} {tapeLevel(t)}
+            {t.change != null ? ` ${tapeChange(t)}` : ""}
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 
-function AsOfSelect() {
-  const meta = useMeta();
-  const [asOf, setAsOf] = useAsOf();
-  const dates = [...(meta.data?.available_dates ?? [])].reverse();
+function Logo() {
   return (
-    <select
-      className={styles.asOfSelect}
-      aria-label="As-of date"
-      value={asOf ?? ""}
-      onChange={(e) => setAsOf(e.target.value || null)}
-    >
-      <option value="">latest</option>
-      {dates.map((d) => (
-        <option key={d} value={d}>
-          {d}
-        </option>
-      ))}
-    </select>
+    <svg width="24" height="24" viewBox="0 0 24 24" style={{ flexShrink: 0 }} aria-hidden>
+      <rect width="24" height="24" fill="#daaa00" />
+      <path d="M3 21 L12 3 L21 21 Z" fill="#0a0a09" />
+      <path d="M8 21 L12 13 L16 21 Z" fill="#daaa00" />
+    </svg>
   );
 }
+
+const NAV = [
+  { to: "/", label: "OVERVIEW", end: true },
+  { to: "/desks/RATES", label: "DESKS", end: false },
+  { to: "/scenarios", label: "SCENARIOS", end: false },
+  { to: "/backtesting", label: "BACKTESTING", end: false },
+  { to: "/docs", label: "MODEL DOC", end: false },
+];
 
 export function Shell() {
   const meta = useMeta();
   const demo = useDemoMode();
   const [search] = useSearchParams();
+  const location = useLocation();
   const suffix = search.toString() ? `?${search.toString()}` : "";
-  const desks = (meta.data?.desks ?? []).filter((d) => !d.is_aggregate);
-  const [asOf] = useAsOf();
+  const [asOf, setAsOf] = useAsOf();
+  const dates = [...(meta.data?.available_dates ?? [])].reverse();
+
+  const batchStatus = meta.data?.batch_status;
+  // the footer stamps the RESOLVED run, not the pin: a pinned date between
+  // runs resolves to the latest run at or before it (resolve_run's rule,
+  // re-derived here from the served date catalog)
+  const resolvedAsOf = asOf
+    ? (dates.find((d) => d <= asOf) ?? "—")
+    : (meta.data?.latest_as_of ?? "—");
+  const onDesks = location.pathname.startsWith("/desks");
 
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar}>
-        <div className={styles.brand}>RiskDesk</div>
+      <header className={styles.header}>
+        <div className={styles.logoBlock}>
+          <Logo />
+          <div>
+            <div className={styles.wordmark}>
+              RISKDESK<span className={styles.wordmarkCaret}>_</span>
+            </div>
+            <div className={styles.subline}>MARKET RISK · EOD</div>
+          </div>
+          <span className={styles.prod}>PROD</span>
+        </div>
         <nav className={styles.nav} aria-label="Main">
-          <NavLink to={`/${suffix}`} end>
-            Overview
-          </NavLink>
-          <span className={styles.navGroup}>Desks</span>
-          {desks.map((d) => (
+          {NAV.map((n) => (
             <NavLink
-              key={d.desk_code}
-              className={styles.deskLink}
-              to={`/desks/${d.desk_code}${suffix}`}
+              key={n.label}
+              to={`${n.to}${suffix}`}
+              end={n.end}
+              className={({ isActive }) =>
+                (n.label === "DESKS" ? onDesks : isActive) ? styles.active : ""
+              }
             >
-              <span
-                className={styles.deskDot}
-                style={{ background: DESK_COLOR[d.desk_code] ?? "var(--text-dim)" }}
-              />
-              {d.desk_name}
+              {n.label}
             </NavLink>
           ))}
-          <NavLink to={`/backtesting${suffix}`}>Backtesting</NavLink>
-          <NavLink to={`/scenarios${suffix}`}>Scenarios</NavLink>
-          <NavLink to={`/docs${suffix}`}>Model Doc</NavLink>
         </nav>
-      </aside>
-      <header className={styles.topbar}>
-        <span>
-          <AsOfBadge />
-          {demo && <span className={styles.demoBadge}>demo snapshot</span>}
-        </span>
-        <AsOfSelect />
+        <div className={styles.headerMeta}>
+          {demo && <span className={styles.demoBadge}>DEMO SNAPSHOT</span>}
+          <span>
+            EOD BATCH{" "}
+            <span className={batchStatus === "SUCCESS" ? styles.statusOk : styles.statusWarn}>
+              {batchStatus ? (BATCH_LABEL[batchStatus] ?? batchStatus) : "—"}
+            </span>
+          </span>
+          <span>
+            AS OF{" "}
+            <select
+              className={styles.asOfSelect}
+              aria-label="As-of date"
+              value={asOf ?? ""}
+              onChange={(e) => setAsOf(e.target.value || null)}
+            >
+              <option value="">{meta.data?.latest_as_of ?? "latest"}</option>
+              {dates.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </span>
+        </div>
       </header>
-      <main className={styles.main}>
+
+      <FactorTape />
+
+      <main className={location.pathname === "/" ? styles.main : styles.mainPadded}>
         <Outlet />
       </main>
+
       <footer className={styles.footer}>
-        <span className="num">{meta.data?.code_version ?? "—"}</span>
-        <span className="num">as of {asOf ?? meta.data?.latest_as_of ?? "—"}</span>
+        <span>
+          RISKDESK {meta.data?.code_version ?? "—"} · SNAPSHOT {resolvedAsOf} · {FACTOR_COUNT}{" "}
+          FACTORS · {TABLE_COUNT} TABLES
+        </span>
+        <span>NEXT EOD BATCH 18:30 ET</span>
       </footer>
     </div>
   );

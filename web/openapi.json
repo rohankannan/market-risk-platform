@@ -263,6 +263,17 @@
             "title": "Factor Class",
             "type": "string"
           },
+          "factor_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factor Code"
+          },
           "instrument_type": {
             "title": "Instrument Type",
             "type": "string"
@@ -333,6 +344,7 @@
           "instrument_type",
           "quantity",
           "factor_class",
+          "factor_code",
           "option_type",
           "moneyness",
           "maturity_years",
@@ -528,6 +540,78 @@
           "is_aggregate"
         ],
         "title": "DeskRisk",
+        "type": "object"
+      },
+      "FactorTick": {
+        "properties": {
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "factor_code": {
+            "title": "Factor Code",
+            "type": "string"
+          },
+          "factor_type": {
+            "title": "Factor Type",
+            "type": "string"
+          },
+          "level": {
+            "title": "Level",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "%",
+              "bp",
+              "pt"
+            ],
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "factor_code",
+          "factor_type",
+          "level",
+          "change",
+          "unit"
+        ],
+        "title": "FactorTick",
+        "type": "object"
+      },
+      "FactorsLatest": {
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "integer"
+          },
+          "ticks": {
+            "items": {
+              "$ref": "#/components/schemas/FactorTick"
+            },
+            "title": "Ticks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "as_of",
+          "run_id",
+          "ticks"
+        ],
+        "title": "FactorsLatest",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -1707,6 +1791,56 @@
           }
         },
         "summary": "Desk Positions"
+      }
+    },
+    "/api/v1/factors/latest": {
+      "get": {
+        "description": "Latest level and day move per active factor - the dashboard's factor\ntape. Moves are reported in each factor's own convention units.",
+        "operationId": "factors_latest_api_v1_factors_latest_get",
+        "parameters": [
+          {
+            "description": "Pin to a run date (default: latest completed batch)",
+            "in": "query",
+            "name": "as_of",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pin to a run date (default: latest completed batch)",
+              "title": "As Of"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FactorsLatest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Factors Latest"
       }
     },
     "/api/v1/meta": {

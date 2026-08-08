@@ -91,6 +91,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/factors/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Factors Latest
+         * @description Latest level and day move per active factor - the dashboard's factor
+         *     tape. Moves are reported in each factor's own convention units.
+         */
+        get: operations["factors_latest_api_v1_factors_latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta": {
         parameters: {
             query?: never;
@@ -385,6 +406,8 @@ export interface components {
             component_es: number;
             /** Factor Class */
             factor_class: string;
+            /** Factor Code */
+            factor_code: string | null;
             /** Instrument Type */
             instrument_type: string;
             /** Marginal Var */
@@ -450,6 +473,34 @@ export interface components {
             var_hs_10d?: number | null;
             /** Var Hs 1D */
             var_hs_1d?: number | null;
+        };
+        /** FactorTick */
+        FactorTick: {
+            /** Change */
+            change: number | null;
+            /** Factor Code */
+            factor_code: string;
+            /** Factor Type */
+            factor_type: string;
+            /** Level */
+            level: number;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "%" | "bp" | "pt";
+        };
+        /** FactorsLatest */
+        FactorsLatest: {
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Run Id */
+            run_id: number;
+            /** Ticks */
+            ticks: components["schemas"]["FactorTick"][];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -900,6 +951,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DeskPositions"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    factors_latest_api_v1_factors_latest_get: {
+        parameters: {
+            query?: {
+                /** @description Pin to a run date (default: latest completed batch) */
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FactorsLatest"];
                 };
             };
             /** @description Validation Error */
