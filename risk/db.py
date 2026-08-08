@@ -35,7 +35,9 @@ def code_version() -> str:
     if sha := os.getenv("GIT_SHA"):
         return sha[:12]
     try:
-        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"],
+        # --dirty matters for provenance: a run or report generated from an
+        # uncommitted tree must say so, or its SHA claims code it doesn't have
+        out = subprocess.run(["git", "describe", "--always", "--dirty"],
                              capture_output=True, text=True, timeout=5)
         return out.stdout.strip() or "unknown"
     except Exception:
