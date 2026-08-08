@@ -34,6 +34,31 @@ jobs:
         run: |
           ! grep -rn -- '\-dirty"' web/src/mocks/fixtures web/public/snapshot.json || (echo "fixtures recorded from a dirty tree" && exit 1)
 
+  # the dashboard: generated types must match the committed OpenAPI document,
+  # then vitest against the recorded fixtures and a production build
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Typegen drift check
+        run: |
+          npm run typegen
+          git diff --exit-code src/api/schema.d.ts
+      - name: Tests
+        run: npm test
+      - name: Build (includes tsc --noEmit)
+        run: npm run build
+
   # the README quickstart, executed: migrate -> seed -> backfill -> EOD against
   # a real Postgres, all offline from the committed snapshot, then an API smoke
   pipeline:

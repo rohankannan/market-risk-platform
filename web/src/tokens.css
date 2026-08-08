@@ -1,0 +1,28 @@
+/* Design tokens (spec section 7). Desk identity colors are constant across
+   every chart; red/green is reserved for P&L sign and limit status only. */
+:root {
+  --desk-rates: #5B8DEF; --desk-fx: #C08BF0; --desk-equity: #3EBFA5;
+  --pnl-pos: #3E9C55; --pnl-neg: #C64545;
+  --zone-green: #2E7D32; --zone-amber: #B8860B; --zone-red: #B71C1C;
+  --util-ok: #E8F0E9; --util-warn: #F5E9CC; --util-hot: #F2D7C9; --util-breach: #EFC4C4;
+  --bg: #FAFBFC; --panel: #FFFFFF; --border: #E3E7EB;
+  --text: #1B2733; --text-dim: #5B6B7B;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --sidebar-w: 200px; --row-h: 32px; --table-fs: 13px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+a { color: inherit; }
