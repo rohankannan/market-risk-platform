@@ -35,6 +35,16 @@ flowchart LR
 
 The equal-weight 500-day window makes plain historical sim slow in both directions: it stays wide through the calm late-2025 regime (capital inefficiency) and only steps up months after the April 2025 vol spike, once those scenarios finally enter the window. The EWMA-filtered VaR tracks the regime — wider into stress, tighter in calm — with coverage near the nominal 1%. Regenerate with `python -m risk.jobs.backfill`.
 
+## The dashboard
+
+Three Streamlit pages over the API — tiles, limits, and the P&L-vs-VaR timeline on Overview; Kupiec/Christoffersen/traffic-light statistics on Backtesting; per-desk scenario P&L on Stress. (The richer React dashboard is the winter roadmap.)
+
+![Overview: firm tiles, desk limit table, P&L vs VaR with exception dots](docs/img/dashboard_overview.png)
+
+![Backtesting: exceptions vs expected, Basel zone, test statistics, timeline](docs/img/dashboard_backtesting.png)
+
+![Stress: per-desk scenario P&L, worst-first, with firm totals](docs/img/dashboard_stress.png)
+
 ## What's implemented (honest status)
 
 | Component | Status |
@@ -51,7 +61,8 @@ The equal-weight 500-day window makes plain historical sim slow in both directio
 | FastAPI read layer over the results tables: meta, risk summary w/ limit utilization + diversification, history, backtest stats, scenario results; typed response models, immutable caching on pinned `as_of` | ✅ (`api/`) |
 | Streamlit dashboard, 3 pages reading the API (Overview w/ tiles + limit table + P&L-vs-VaR chart, Backtesting w/ Kupiec/Christoffersen/zone, Stress w/ per-desk scenario P&L) | ✅ (`dashboard/`) |
 | One-command Docker Compose stack (bootstrap + API + dashboard + opt-in APScheduler night cycle); CI runs tests, the full pipeline against Postgres, and the compose acceptance path | ✅ (`Dockerfile`, `docker-compose.yml`, `.github/workflows/`) |
-| Hosted deploy: Neon Postgres + public API/dashboard URLs | 🔜 milestone 3 (by Oct 15) |
+| SR 11-7-structured model documentation with a full assumptions-and-limitations inventory | ✅ (`docs/model_doc.md`) |
+| Hosted deploy: Neon Postgres + public API/dashboard URLs; demo video | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
 
 ## Quickstart
