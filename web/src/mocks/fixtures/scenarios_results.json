@@ -1,0 +1,86 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 329,
+  "results": [
+    {
+      "scenario_code": "GFC_2008",
+      "scenario_name": "Gfc 2008",
+      "scenario_type": "HISTORICAL_REPLAY",
+      "window_start": "2008-09-12",
+      "window_end": "2008-11-20",
+      "description": null,
+      "impacts": {
+        "EQUITY": -4760115.92,
+        "FX": -11106377.05,
+        "RATES": 4853924.41,
+        "FIRM": -11012568.56
+      },
+      "firm_impact": -11012568.56,
+      "worst_desk": "FX"
+    },
+    {
+      "scenario_code": "RATES_UP_100",
+      "scenario_name": "Parallel rates +100bp",
+      "scenario_type": "HYPOTHETICAL",
+      "window_start": null,
+      "window_end": null,
+      "description": null,
+      "impacts": {
+        "EQUITY": -1894.94,
+        "FX": 0.0,
+        "RATES": -7703206.19,
+        "FIRM": -7705101.13
+      },
+      "firm_impact": -7705101.13,
+      "worst_desk": "RATES"
+    },
+    {
+      "scenario_code": "USD_UP_10",
+      "scenario_name": "Broad USD +10%",
+      "scenario_type": "HYPOTHETICAL",
+      "window_start": null,
+      "window_end": null,
+      "description": null,
+      "impacts": {
+        "EQUITY": 0.0,
+        "FX": -2392209.74,
+        "RATES": 0.0,
+        "FIRM": -2392209.74
+      },
+      "firm_impact": -2392209.74,
+      "worst_desk": "FX"
+    },
+    {
+      "scenario_code": "EQUITY_DOWN_20",
+      "scenario_name": "Equities -20%",
+      "scenario_type": "HYPOTHETICAL",
+      "window_start": null,
+      "window_end": null,
+      "description": null,
+      "impacts": {
+        "EQUITY": -1777304.82,
+        "FX": 0.0,
+        "RATES": 0.0,
+        "FIRM": -1777304.82
+      },
+      "firm_impact": -1777304.82,
+      "worst_desk": "EQUITY"
+    },
+    {
+      "scenario_code": "COVID_2020",
+      "scenario_name": "Covid 2020",
+      "scenario_type": "HISTORICAL_REPLAY",
+      "window_start": "2020-02-19",
+      "window_end": "2020-03-23",
+      "description": null,
+      "impacts": {
+        "EQUITY": -2210157.99,
+        "FX": -5705925.21,
+        "RATES": 6384619.08,
+        "FIRM": -1531464.11
+      },
+      "firm_impact": -1531464.11,
+      "worst_desk": "FX"
+    }
+  ]
+}

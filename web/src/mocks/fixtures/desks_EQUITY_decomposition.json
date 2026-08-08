@@ -1,0 +1,64 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 329,
+  "desk_code": "EQUITY",
+  "desk_name": "Cash Equities",
+  "var_hs_1d": 541030.44,
+  "buckets": [
+    {
+      "factor_class": "EQ",
+      "standalone_var": 1024297.59
+    }
+  ],
+  "diversification": -483267.15,
+  "exposures": [
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "EQ.AAPL",
+      "tenor_years": null,
+      "value": 4000097.69
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "EQ.JNJ",
+      "tenor_years": null,
+      "value": -2499901.55
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "EQ.JPM",
+      "tenor_years": null,
+      "value": 1500022.95
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "EQ.MSFT",
+      "tenor_years": null,
+      "value": 3999879.6
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "EQ.NVDA",
+      "tenor_years": null,
+      "value": 2999944.09
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "EQ.SPY",
+      "tenor_years": null,
+      "value": 3702721.17
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "EQ.XOM",
+      "tenor_years": null,
+      "value": -2500046.58
+    },
+    {
+      "measure": "VEGA",
+      "factor_code": "VOL.SPX.IV30",
+      "tenor_years": null,
+      "value": -2748.66
+    }
+  ]
+}

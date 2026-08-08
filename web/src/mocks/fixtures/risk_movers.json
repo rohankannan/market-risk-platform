@@ -1,0 +1,37 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 329,
+  "prev_date": "2026-08-04",
+  "rows": [
+    {
+      "desk_code": "EQUITY",
+      "delta_usd": 15138.66,
+      "delta_pct": 0.0288,
+      "drivers": [
+        "EQ.XOM +2.1%",
+        "EQ.MSFT +2.5%",
+        "EQ.JPM -0.8%"
+      ]
+    },
+    {
+      "desk_code": "RATES",
+      "delta_usd": 1169.6,
+      "delta_pct": 0.0013,
+      "drivers": [
+        "IR.UST.30Y +0bp",
+        "IR.UST.5Y +0bp",
+        "IR.UST.10Y +0bp"
+      ]
+    },
+    {
+      "desk_code": "FX",
+      "delta_usd": 0.0,
+      "delta_pct": 0.0,
+      "drivers": [
+        "FX.JPYUSD +0.0%",
+        "FX.MXNUSD +0.0%",
+        "FX.EURUSD +0.0%"
+      ]
+    }
+  ]
+}

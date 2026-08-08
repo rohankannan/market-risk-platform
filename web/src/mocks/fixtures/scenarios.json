@@ -1,0 +1,137 @@
+{
+  "scenarios": [
+    {
+      "scenario_code": "COVID_2020",
+      "scenario_name": "Covid 2020",
+      "scenario_type": "HISTORICAL_REPLAY",
+      "window_start": "2020-02-19",
+      "window_end": "2020-03-23",
+      "description": null,
+      "shocks": []
+    },
+    {
+      "scenario_code": "EQUITY_DOWN_20",
+      "scenario_name": "Equities -20%",
+      "scenario_type": "HYPOTHETICAL",
+      "window_start": null,
+      "window_end": null,
+      "description": null,
+      "shocks": [
+        {
+          "factor_code": "EQ.AAPL",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.223
+        },
+        {
+          "factor_code": "EQ.JNJ",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.223
+        },
+        {
+          "factor_code": "EQ.JPM",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.223
+        },
+        {
+          "factor_code": "EQ.MSFT",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.223
+        },
+        {
+          "factor_code": "EQ.NVDA",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.223
+        },
+        {
+          "factor_code": "EQ.SPY",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.223
+        },
+        {
+          "factor_code": "EQ.XOM",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.223
+        },
+        {
+          "factor_code": "VOL.SPX.IV30",
+          "shock_type": "ABSOLUTE",
+          "shock_value": 20.0
+        }
+      ]
+    },
+    {
+      "scenario_code": "GFC_2008",
+      "scenario_name": "Gfc 2008",
+      "scenario_type": "HISTORICAL_REPLAY",
+      "window_start": "2008-09-12",
+      "window_end": "2008-11-20",
+      "description": null,
+      "shocks": []
+    },
+    {
+      "scenario_code": "RATES_UP_100",
+      "scenario_name": "Parallel rates +100bp",
+      "scenario_type": "HYPOTHETICAL",
+      "window_start": null,
+      "window_end": null,
+      "description": null,
+      "shocks": [
+        {
+          "factor_code": "IR.UST.10Y",
+          "shock_type": "ABSOLUTE_BP",
+          "shock_value": 100.0
+        },
+        {
+          "factor_code": "IR.UST.2Y",
+          "shock_type": "ABSOLUTE_BP",
+          "shock_value": 100.0
+        },
+        {
+          "factor_code": "IR.UST.30Y",
+          "shock_type": "ABSOLUTE_BP",
+          "shock_value": 100.0
+        },
+        {
+          "factor_code": "IR.UST.3M",
+          "shock_type": "ABSOLUTE_BP",
+          "shock_value": 100.0
+        },
+        {
+          "factor_code": "IR.UST.5Y",
+          "shock_type": "ABSOLUTE_BP",
+          "shock_value": 100.0
+        }
+      ]
+    },
+    {
+      "scenario_code": "USD_UP_10",
+      "scenario_name": "Broad USD +10%",
+      "scenario_type": "HYPOTHETICAL",
+      "window_start": null,
+      "window_end": null,
+      "description": null,
+      "shocks": [
+        {
+          "factor_code": "FX.EURUSD",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.105
+        },
+        {
+          "factor_code": "FX.GBPUSD",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.105
+        },
+        {
+          "factor_code": "FX.JPYUSD",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.105
+        },
+        {
+          "factor_code": "FX.MXNUSD",
+          "shock_type": "RELATIVE",
+          "shock_value": -0.105
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 329,
+  "desk_code": "RATES",
+  "desk_name": "US Rates",
+  "positions": [
+    {
+      "ticker": "UST_10Y",
+      "instrument_type": "GOVT_BOND",
+      "quantity": 60000000.0,
+      "factor_class": "IR",
+      "option_type": null,
+      "moneyness": null,
+      "maturity_years": 10.0,
+      "standalone_var": 568364.01,
+      "component_es": 538774.93,
+      "marginal_var": 491915.32,
+      "pct_of_desk": 0.5855
+    },
+    {
+      "ticker": "UST_30Y",
+      "instrument_type": "GOVT_BOND",
+      "quantity": 30000000.0,
+      "factor_class": "IR",
+      "option_type": null,
+      "moneyness": null,
+      "maturity_years": 30.0,
+      "standalone_var": 538876.44,
+      "component_es": 531295.52,
+      "marginal_var": 488385.52,
+      "pct_of_desk": 0.5774
+    },
+    {
+      "ticker": "UST_2Y",
+      "instrument_type": "GOVT_BOND",
+      "quantity": 90000000.0,
+      "factor_class": "IR",
+      "option_type": null,
+      "moneyness": null,
+      "maturity_years": 2.0,
+      "standalone_var": 205041.53,
+      "component_es": 110294.23,
+      "marginal_var": 47643.04,
+      "pct_of_desk": 0.1199
+    },
+    {
+      "ticker": "UST_5Y",
+      "instrument_type": "GOVT_BOND",
+      "quantity": -60000000.0,
+      "factor_class": "IR",
+      "option_type": null,
+      "moneyness": null,
+      "maturity_years": 5.0,
+      "standalone_var": 295264.2,
+      "component_es": -260173.27,
+      "marginal_var": -303592.81,
+      "pct_of_desk": -0.2827
+    }
+  ]
+}

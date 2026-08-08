@@ -1,0 +1,73 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 329,
+  "run_type": "EOD",
+  "status": "SUCCESS",
+  "diversification_benefit": 0.4039,
+  "desks": [
+    {
+      "desk_code": "FIRM",
+      "desk_name": "Firm Aggregate",
+      "is_aggregate": true,
+      "var_hs_1d": 1137118.3,
+      "var_fhs_1d": 1249385.97,
+      "var_hs_10d": 3595883.78,
+      "var_fhs_10d": 3950905.34,
+      "es_975_1d": 1148026.47,
+      "es_975_10d": 3630378.46,
+      "es_stressed_1d": 2606622.35,
+      "var_dod": 8788.06,
+      "limit_value": 2000000.0,
+      "utilization": 0.5686,
+      "limit_status": "OK"
+    },
+    {
+      "desk_code": "EQUITY",
+      "desk_name": "Cash Equities",
+      "is_aggregate": false,
+      "var_hs_1d": 541030.44,
+      "var_fhs_1d": 887177.66,
+      "var_hs_10d": 1710888.49,
+      "var_fhs_10d": 2805502.11,
+      "es_975_1d": 569250.51,
+      "es_975_10d": 1800128.18,
+      "es_stressed_1d": 1024370.94,
+      "var_dod": 15138.66,
+      "limit_value": 1200000.0,
+      "utilization": 0.4509,
+      "limit_status": "OK"
+    },
+    {
+      "desk_code": "FX",
+      "desk_name": "FX Spot",
+      "is_aggregate": false,
+      "var_hs_1d": 497987.81,
+      "var_fhs_1d": 446885.75,
+      "var_hs_10d": 1574775.71,
+      "var_fhs_10d": 1413176.83,
+      "es_975_1d": 524349.91,
+      "es_975_10d": 1658139.99,
+      "es_stressed_1d": 2002367.85,
+      "var_dod": 0.0,
+      "limit_value": 900000.0,
+      "utilization": 0.5533,
+      "limit_status": "OK"
+    },
+    {
+      "desk_code": "RATES",
+      "desk_name": "US Rates",
+      "is_aggregate": false,
+      "var_hs_1d": 868455.07,
+      "var_fhs_1d": 809921.47,
+      "var_hs_10d": 2746296.06,
+      "var_fhs_10d": 2561196.57,
+      "es_975_1d": 920191.41,
+      "es_975_10d": 2909900.73,
+      "es_stressed_1d": 1490977.67,
+      "var_dod": 1169.6,
+      "limit_value": 1200000.0,
+      "utilization": 0.7237,
+      "limit_status": "OK"
+    }
+  ]
+}

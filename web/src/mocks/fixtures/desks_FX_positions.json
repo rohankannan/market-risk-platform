@@ -1,0 +1,60 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 329,
+  "desk_code": "FX",
+  "desk_name": "FX Spot",
+  "positions": [
+    {
+      "ticker": "MXNUSD_SPOT",
+      "instrument_type": "FX_SPOT",
+      "quantity": 311823000.0,
+      "factor_class": "FX",
+      "option_type": null,
+      "moneyness": null,
+      "maturity_years": null,
+      "standalone_var": 302014.65,
+      "component_es": 240694.65,
+      "marginal_var": 165609.89,
+      "pct_of_desk": 0.459
+    },
+    {
+      "ticker": "JPYUSD_SPOT",
+      "instrument_type": "FX_SPOT",
+      "quantity": -4297320000.0,
+      "factor_class": "FX",
+      "option_type": null,
+      "moneyness": null,
+      "maturity_years": null,
+      "standalone_var": 463566.1,
+      "component_es": 163419.38,
+      "marginal_var": -43757.33,
+      "pct_of_desk": 0.3117
+    },
+    {
+      "ticker": "EURUSD_SPOT",
+      "instrument_type": "FX_SPOT",
+      "quantity": 19098880.11,
+      "factor_class": "FX",
+      "option_type": null,
+      "moneyness": null,
+      "maturity_years": null,
+      "standalone_var": 233436.17,
+      "component_es": 76722.15,
+      "marginal_var": -9486.16,
+      "pct_of_desk": 0.1463
+    },
+    {
+      "ticker": "GBPUSD_SPOT",
+      "instrument_type": "FX_SPOT",
+      "quantity": 8166295.47,
+      "factor_class": "FX",
+      "option_type": null,
+      "moneyness": null,
+      "maturity_years": null,
+      "standalone_var": 131971.42,
+      "component_es": 43513.73,
+      "marginal_var": 11359.5,
+      "pct_of_desk": 0.083
+    }
+  ]
+}

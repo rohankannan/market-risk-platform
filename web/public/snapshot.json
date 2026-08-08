@@ -1,0 +1,6299 @@
+{
+  "/api/v1/meta": {
+    "latest_as_of": "2026-08-06",
+    "batch_status": "SUCCESS",
+    "batch_type": "EOD",
+    "batch_completed_at": "2026-08-08T13:44:59.051932-04:00",
+    "code_version": "bbf728d",
+    "available_dates": [
+      "2025-05-01",
+      "2025-05-02",
+      "2025-05-05",
+      "2025-05-06",
+      "2025-05-07",
+      "2025-05-08",
+      "2025-05-09",
+      "2025-05-12",
+      "2025-05-13",
+      "2025-05-14",
+      "2025-05-15",
+      "2025-05-16",
+      "2025-05-19",
+      "2025-05-20",
+      "2025-05-21",
+      "2025-05-22",
+      "2025-05-23",
+      "2025-05-26",
+      "2025-05-27",
+      "2025-05-28",
+      "2025-05-29",
+      "2025-05-30",
+      "2025-06-02",
+      "2025-06-03",
+      "2025-06-04",
+      "2025-06-05",
+      "2025-06-06",
+      "2025-06-09",
+      "2025-06-10",
+      "2025-06-11",
+      "2025-06-12",
+      "2025-06-13",
+      "2025-06-16",
+      "2025-06-17",
+      "2025-06-18",
+      "2025-06-19",
+      "2025-06-20",
+      "2025-06-23",
+      "2025-06-24",
+      "2025-06-25",
+      "2025-06-26",
+      "2025-06-27",
+      "2025-06-30",
+      "2025-07-01",
+      "2025-07-02",
+      "2025-07-03",
+      "2025-07-04",
+      "2025-07-07",
+      "2025-07-08",
+      "2025-07-09",
+      "2025-07-10",
+      "2025-07-11",
+      "2025-07-14",
+      "2025-07-15",
+      "2025-07-16",
+      "2025-07-17",
+      "2025-07-18",
+      "2025-07-21",
+      "2025-07-22",
+      "2025-07-23",
+      "2025-07-24",
+      "2025-07-25",
+      "2025-07-28",
+      "2025-07-29",
+      "2025-07-30",
+      "2025-07-31",
+      "2025-08-01",
+      "2025-08-04",
+      "2025-08-05",
+      "2025-08-06",
+      "2025-08-07",
+      "2025-08-08",
+      "2025-08-11",
+      "2025-08-12",
+      "2025-08-13",
+      "2025-08-14",
+      "2025-08-15",
+      "2025-08-18",
+      "2025-08-19",
+      "2025-08-20",
+      "2025-08-21",
+      "2025-08-22",
+      "2025-08-25",
+      "2025-08-26",
+      "2025-08-27",
+      "2025-08-28",
+      "2025-08-29",
+      "2025-09-01",
+      "2025-09-02",
+      "2025-09-03",
+      "2025-09-04",
+      "2025-09-05",
+      "2025-09-08",
+      "2025-09-09",
+      "2025-09-10",
+      "2025-09-11",
+      "2025-09-12",
+      "2025-09-15",
+      "2025-09-16",
+      "2025-09-17",
+      "2025-09-18",
+      "2025-09-19",
+      "2025-09-22",
+      "2025-09-23",
+      "2025-09-24",
+      "2025-09-25",
+      "2025-09-26",
+      "2025-09-29",
+      "2025-09-30",
+      "2025-10-01",
+      "2025-10-02",
+      "2025-10-03",
+      "2025-10-06",
+      "2025-10-07",
+      "2025-10-08",
+      "2025-10-09",
+      "2025-10-10",
+      "2025-10-13",
+      "2025-10-14",
+      "2025-10-15",
+      "2025-10-16",
+      "2025-10-17",
+      "2025-10-20",
+      "2025-10-21",
+      "2025-10-22",
+      "2025-10-23",
+      "2025-10-24",
+      "2025-10-27",
+      "2025-10-28",
+      "2025-10-29",
+      "2025-10-30",
+      "2025-10-31",
+      "2025-11-03",
+      "2025-11-04",
+      "2025-11-05",
+      "2025-11-06",
+      "2025-11-07",
+      "2025-11-10",
+      "2025-11-11",
+      "2025-11-12",
+      "2025-11-13",
+      "2025-11-14",
+      "2025-11-17",
+      "2025-11-18",
+      "2025-11-19",
+      "2025-11-20",
+      "2025-11-21",
+      "2025-11-24",
+      "2025-11-25",
+      "2025-11-26",
+      "2025-11-27",
+      "2025-11-28",
+      "2025-12-01",
+      "2025-12-02",
+      "2025-12-03",
+      "2025-12-04",
+      "2025-12-05",
+      "2025-12-08",
+      "2025-12-09",
+      "2025-12-10",
+      "2025-12-11",
+      "2025-12-12",
+      "2025-12-15",
+      "2025-12-16",
+      "2025-12-17",
+      "2025-12-18",
+      "2025-12-19",
+      "2025-12-22",
+      "2025-12-23",
+      "2025-12-24",
+      "2025-12-26",
+      "2025-12-29",
+      "2025-12-30",
+      "2025-12-31",
+      "2026-01-02",
+      "2026-01-05",
+      "2026-01-06",
+      "2026-01-07",
+      "2026-01-08",
+      "2026-01-09",
+      "2026-01-12",
+      "2026-01-13",
+      "2026-01-14",
+      "2026-01-15",
+      "2026-01-16",
+      "2026-01-19",
+      "2026-01-20",
+      "2026-01-21",
+      "2026-01-22",
+      "2026-01-23",
+      "2026-01-26",
+      "2026-01-27",
+      "2026-01-28",
+      "2026-01-29",
+      "2026-01-30",
+      "2026-02-02",
+      "2026-02-03",
+      "2026-02-04",
+      "2026-02-05",
+      "2026-02-06",
+      "2026-02-09",
+      "2026-02-10",
+      "2026-02-11",
+      "2026-02-12",
+      "2026-02-13",
+      "2026-02-16",
+      "2026-02-17",
+      "2026-02-18",
+      "2026-02-19",
+      "2026-02-20",
+      "2026-02-23",
+      "2026-02-24",
+      "2026-02-25",
+      "2026-02-26",
+      "2026-02-27",
+      "2026-03-02",
+      "2026-03-03",
+      "2026-03-04",
+      "2026-03-05",
+      "2026-03-06",
+      "2026-03-09",
+      "2026-03-10",
+      "2026-03-11",
+      "2026-03-12",
+      "2026-03-13",
+      "2026-03-16",
+      "2026-03-17",
+      "2026-03-18",
+      "2026-03-19",
+      "2026-03-20",
+      "2026-03-23",
+      "2026-03-24",
+      "2026-03-25",
+      "2026-03-26",
+      "2026-03-27",
+      "2026-03-30",
+      "2026-03-31",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-06",
+      "2026-04-07",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-13",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-20",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-27",
+      "2026-04-28",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-04",
+      "2026-05-05",
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-11",
+      "2026-05-12",
+      "2026-05-13",
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-18",
+      "2026-05-19",
+      "2026-05-20",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-25",
+      "2026-05-26",
+      "2026-05-27",
+      "2026-05-28",
+      "2026-05-29",
+      "2026-06-01",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-08",
+      "2026-06-09",
+      "2026-06-10",
+      "2026-06-11",
+      "2026-06-12",
+      "2026-06-15",
+      "2026-06-16",
+      "2026-06-17",
+      "2026-06-18",
+      "2026-06-19",
+      "2026-06-22",
+      "2026-06-23",
+      "2026-06-24",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-29",
+      "2026-06-30",
+      "2026-07-01",
+      "2026-07-02",
+      "2026-07-03",
+      "2026-07-06",
+      "2026-07-07",
+      "2026-07-08",
+      "2026-07-09",
+      "2026-07-10",
+      "2026-07-13",
+      "2026-07-14",
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-17",
+      "2026-07-20",
+      "2026-07-21",
+      "2026-07-22",
+      "2026-07-23",
+      "2026-07-24",
+      "2026-07-27",
+      "2026-07-28",
+      "2026-07-29",
+      "2026-07-30",
+      "2026-07-31",
+      "2026-08-03",
+      "2026-08-04",
+      "2026-08-06"
+    ],
+    "desks": [
+      {
+        "desk_code": "FIRM",
+        "desk_name": "Firm Aggregate",
+        "is_aggregate": true
+      },
+      {
+        "desk_code": "EQUITY",
+        "desk_name": "Cash Equities",
+        "is_aggregate": false
+      },
+      {
+        "desk_code": "FX",
+        "desk_name": "FX Spot",
+        "is_aggregate": false
+      },
+      {
+        "desk_code": "RATES",
+        "desk_name": "US Rates",
+        "is_aggregate": false
+      }
+    ]
+  },
+  "/api/v1/risk/summary": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "run_type": "EOD",
+    "status": "SUCCESS",
+    "diversification_benefit": 0.4039,
+    "desks": [
+      {
+        "desk_code": "FIRM",
+        "desk_name": "Firm Aggregate",
+        "is_aggregate": true,
+        "var_hs_1d": 1137118.3,
+        "var_fhs_1d": 1249385.97,
+        "var_hs_10d": 3595883.78,
+        "var_fhs_10d": 3950905.34,
+        "es_975_1d": 1148026.47,
+        "es_975_10d": 3630378.46,
+        "es_stressed_1d": 2606622.35,
+        "var_dod": 8788.06,
+        "limit_value": 2000000.0,
+        "utilization": 0.5686,
+        "limit_status": "OK"
+      },
+      {
+        "desk_code": "EQUITY",
+        "desk_name": "Cash Equities",
+        "is_aggregate": false,
+        "var_hs_1d": 541030.44,
+        "var_fhs_1d": 887177.66,
+        "var_hs_10d": 1710888.49,
+        "var_fhs_10d": 2805502.11,
+        "es_975_1d": 569250.51,
+        "es_975_10d": 1800128.18,
+        "es_stressed_1d": 1024370.94,
+        "var_dod": 15138.66,
+        "limit_value": 1200000.0,
+        "utilization": 0.4509,
+        "limit_status": "OK"
+      },
+      {
+        "desk_code": "FX",
+        "desk_name": "FX Spot",
+        "is_aggregate": false,
+        "var_hs_1d": 497987.81,
+        "var_fhs_1d": 446885.75,
+        "var_hs_10d": 1574775.71,
+        "var_fhs_10d": 1413176.83,
+        "es_975_1d": 524349.91,
+        "es_975_10d": 1658139.99,
+        "es_stressed_1d": 2002367.85,
+        "var_dod": 0.0,
+        "limit_value": 900000.0,
+        "utilization": 0.5533,
+        "limit_status": "OK"
+      },
+      {
+        "desk_code": "RATES",
+        "desk_name": "US Rates",
+        "is_aggregate": false,
+        "var_hs_1d": 868455.07,
+        "var_fhs_1d": 809921.47,
+        "var_hs_10d": 2746296.06,
+        "var_fhs_10d": 2561196.57,
+        "es_975_1d": 920191.41,
+        "es_975_10d": 2909900.73,
+        "es_stressed_1d": 1490977.67,
+        "var_dod": 1169.6,
+        "limit_value": 1200000.0,
+        "utilization": 0.7237,
+        "limit_status": "OK"
+      }
+    ]
+  },
+  "/api/v1/risk/history?scope=FIRM&window=90": {
+    "scope": "FIRM",
+    "start": "2026-04-02",
+    "end": "2026-08-06",
+    "points": [
+      {
+        "date": "2026-04-02",
+        "var_hs": 1165941.27,
+        "var_fhs": 1201276.97,
+        "es_975": 1221522.55,
+        "pnl": 141738.51,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-03",
+        "var_hs": 1159990.25,
+        "var_fhs": 1173442.99,
+        "es_975": 1216601.05,
+        "pnl": -343302.94,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-06",
+        "var_hs": 1165299.72,
+        "var_fhs": 1146939.77,
+        "es_975": 1220451.51,
+        "pnl": 307695.57,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-07",
+        "var_hs": 1165673.05,
+        "var_fhs": 1116738.38,
+        "es_975": 1217569.07,
+        "pnl": 37752.21,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-08",
+        "var_hs": 1175837.6,
+        "var_fhs": 1233433.29,
+        "es_975": 1232590.85,
+        "pnl": 1022410.48,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-09",
+        "var_hs": 1177416.9,
+        "var_fhs": 1198995.64,
+        "es_975": 1234835.25,
+        "pnl": 212603.86,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-10",
+        "var_hs": 1177071.26,
+        "var_fhs": 1159411.07,
+        "es_975": 1235375.63,
+        "pnl": 149079.49,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-13",
+        "var_hs": 1177189.49,
+        "var_fhs": 1128313.44,
+        "es_975": 1237234.5,
+        "pnl": 241796.86,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-14",
+        "var_hs": 1182326.97,
+        "var_fhs": 1136437.54,
+        "es_975": 1247444.06,
+        "pnl": 663398.45,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-15",
+        "var_hs": 1176805.46,
+        "var_fhs": 1123054.88,
+        "es_975": 1248818.7,
+        "pnl": 148529.36,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-16",
+        "var_hs": 1170144.51,
+        "var_fhs": 1102248.57,
+        "es_975": 1243743.06,
+        "pnl": -330618.25,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-17",
+        "var_hs": 1176761.04,
+        "var_fhs": 1094650.36,
+        "es_975": 1255532.07,
+        "pnl": 657811.58,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-20",
+        "var_hs": 1176845.65,
+        "var_fhs": 1060017.68,
+        "es_975": 1253125.62,
+        "pnl": 53843.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-21",
+        "var_hs": 1174558.12,
+        "var_fhs": 1030826.74,
+        "es_975": 1247637.87,
+        "pnl": -274408.21,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-22",
+        "var_hs": 1171659.59,
+        "var_fhs": 1005443.53,
+        "es_975": 1250542.4,
+        "pnl": 89214.96,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-23",
+        "var_hs": 1168261.01,
+        "var_fhs": 980046.82,
+        "es_975": 1243942.45,
+        "pnl": -537851.19,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-24",
+        "var_hs": 1167964.89,
+        "var_fhs": 956825.13,
+        "es_975": 1249328.89,
+        "pnl": 390570.3,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-27",
+        "var_hs": 1161137.84,
+        "var_fhs": 941274.72,
+        "es_975": 1247309.34,
+        "pnl": -116319.34,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-28",
+        "var_hs": 1160987.05,
+        "var_fhs": 913399.77,
+        "es_975": 1247065.88,
+        "pnl": -133689.79,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-29",
+        "var_hs": 1153838.4,
+        "var_fhs": 905370.58,
+        "es_975": 1236530.54,
+        "pnl": -632926.6,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-04-30",
+        "var_hs": 1152216.84,
+        "var_fhs": 881897.64,
+        "es_975": 1237165.44,
+        "pnl": -631913.47,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-01",
+        "var_hs": 1157472.97,
+        "var_fhs": 877304.45,
+        "es_975": 1242687.76,
+        "pnl": 525512.45,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-04",
+        "var_hs": 1145925.87,
+        "var_fhs": 875870.5,
+        "es_975": 1231190.89,
+        "pnl": -762697.96,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-05",
+        "var_hs": 1156884.22,
+        "var_fhs": 886584.28,
+        "es_975": 1240025.88,
+        "pnl": 634279.92,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-06",
+        "var_hs": 1161706.38,
+        "var_fhs": 910024.74,
+        "es_975": 1252753.14,
+        "pnl": 792065.84,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-07",
+        "var_hs": 1155522.29,
+        "var_fhs": 896466.78,
+        "es_975": 1250493.66,
+        "pnl": -165785.02,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-08",
+        "var_hs": 1160480.04,
+        "var_fhs": 884498.04,
+        "es_975": 1256297.34,
+        "pnl": 444699.23,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-11",
+        "var_hs": 1155492.13,
+        "var_fhs": 875583.22,
+        "es_975": 1251113.77,
+        "pnl": -217234.12,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-12",
+        "var_hs": 1145890.18,
+        "var_fhs": 875264.53,
+        "es_975": 1244137.49,
+        "pnl": -543910.76,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-13",
+        "var_hs": 1145106.94,
+        "var_fhs": 850701.99,
+        "es_975": 1247033.39,
+        "pnl": 106929.09,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-14",
+        "var_hs": 1141075.54,
+        "var_fhs": 819381.89,
+        "es_975": 1182758.23,
+        "pnl": 72940.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-15",
+        "var_hs": 1127160.43,
+        "var_fhs": 973595.7,
+        "es_975": 1185154.62,
+        "pnl": -1244417.1,
+        "exception_hs": true,
+        "exception_fhs": true
+      },
+      {
+        "date": "2026-05-18",
+        "var_hs": 1124197.53,
+        "var_fhs": 937525.53,
+        "es_975": 1182912.51,
+        "pnl": -22195.91,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-19",
+        "var_hs": 1116802.04,
+        "var_fhs": 922500.43,
+        "es_975": 1174749.97,
+        "pnl": -732042.25,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-20",
+        "var_hs": 1130754.8,
+        "var_fhs": 1017744.43,
+        "es_975": 1188740.47,
+        "pnl": 1059873.25,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-21",
+        "var_hs": 1132215.87,
+        "var_fhs": 988693.34,
+        "es_975": 1189646.33,
+        "pnl": -54415.05,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-22",
+        "var_hs": 1135698.69,
+        "var_fhs": 981294.68,
+        "es_975": 1193224.41,
+        "pnl": 243480.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-25",
+        "var_hs": 1135756.73,
+        "var_fhs": 952942.4,
+        "es_975": 1193415.6,
+        "pnl": 262.47,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-26",
+        "var_hs": 1144215.24,
+        "var_fhs": 962241.15,
+        "es_975": 1198382.82,
+        "pnl": 615683.89,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-27",
+        "var_hs": 1148258.81,
+        "var_fhs": 950842.63,
+        "es_975": 1201619.52,
+        "pnl": 112256.98,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-28",
+        "var_hs": 1155462.52,
+        "var_fhs": 957303.24,
+        "es_975": 1209169.23,
+        "pnl": 482559.16,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-29",
+        "var_hs": 1157040.21,
+        "var_fhs": 939579.54,
+        "es_975": 1209781.64,
+        "pnl": 219908.55,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-01",
+        "var_hs": 1163317.38,
+        "var_fhs": 946852.09,
+        "es_975": 1210866.14,
+        "pnl": -21835.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-02",
+        "var_hs": 1164794.3,
+        "var_fhs": 947395.98,
+        "es_975": 1215113.89,
+        "pnl": 263448.86,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-03",
+        "var_hs": 1154281.93,
+        "var_fhs": 929802.52,
+        "es_975": 1206244.04,
+        "pnl": -669346.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-04",
+        "var_hs": 1161336.27,
+        "var_fhs": 907677.62,
+        "es_975": 1211797.69,
+        "pnl": 337986.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-05",
+        "var_hs": 1205143.39,
+        "var_fhs": 966711.09,
+        "es_975": 1211735.0,
+        "pnl": -1329217.37,
+        "exception_hs": true,
+        "exception_fhs": true
+      },
+      {
+        "date": "2026-06-08",
+        "var_hs": 1208711.49,
+        "var_fhs": 944367.6,
+        "es_975": 1213199.32,
+        "pnl": -123619.17,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-09",
+        "var_hs": 1204668.92,
+        "var_fhs": 939861.04,
+        "es_975": 1211413.35,
+        "pnl": 63237.28,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-10",
+        "var_hs": 1194717.81,
+        "var_fhs": 914692.04,
+        "es_975": 1202984.07,
+        "pnl": -360907.55,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-11",
+        "var_hs": 1209024.25,
+        "var_fhs": 1052202.26,
+        "es_975": 1219402.52,
+        "pnl": 875243.92,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-12",
+        "var_hs": 1213133.26,
+        "var_fhs": 1052749.15,
+        "es_975": 1220494.16,
+        "pnl": 37632.25,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-15",
+        "var_hs": 1223876.39,
+        "var_fhs": 1018744.77,
+        "es_975": 1228608.32,
+        "pnl": 512525.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-16",
+        "var_hs": 1225175.71,
+        "var_fhs": 1025559.53,
+        "es_975": 1231926.68,
+        "pnl": 375574.02,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-17",
+        "var_hs": 1214924.1,
+        "var_fhs": 1011625.15,
+        "es_975": 1223688.27,
+        "pnl": -545877.93,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-18",
+        "var_hs": 1220074.85,
+        "var_fhs": 1051999.73,
+        "es_975": 1230352.8,
+        "pnl": 30248.52,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-19",
+        "var_hs": 1219158.22,
+        "var_fhs": 1020177.92,
+        "es_975": 1229684.13,
+        "pnl": -920.73,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-22",
+        "var_hs": 1212416.73,
+        "var_fhs": 1032252.81,
+        "es_975": 1220880.06,
+        "pnl": -550608.81,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-23",
+        "var_hs": 1201169.37,
+        "var_fhs": 1022689.1,
+        "es_975": 1212358.76,
+        "pnl": -407781.61,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-24",
+        "var_hs": 1205592.66,
+        "var_fhs": 1131706.68,
+        "es_975": 1221568.08,
+        "pnl": 432522.51,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-25",
+        "var_hs": 1198874.76,
+        "var_fhs": 1132344.62,
+        "es_975": 1216450.97,
+        "pnl": -191557.8,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-26",
+        "var_hs": 1203447.98,
+        "var_fhs": 1110242.84,
+        "es_975": 1219531.35,
+        "pnl": 227235.6,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-29",
+        "var_hs": 1206067.13,
+        "var_fhs": 1079837.43,
+        "es_975": 1221863.52,
+        "pnl": 85510.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-30",
+        "var_hs": 1165415.16,
+        "var_fhs": 993209.06,
+        "es_975": 1159381.85,
+        "pnl": -44309.18,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-01",
+        "var_hs": 1154018.94,
+        "var_fhs": 1015789.08,
+        "es_975": 1152232.24,
+        "pnl": -404576.37,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-02",
+        "var_hs": 1151342.97,
+        "var_fhs": 1016066.73,
+        "es_975": 1154927.79,
+        "pnl": 37902.1,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-03",
+        "var_hs": 1151504.69,
+        "var_fhs": 988493.91,
+        "es_975": 1155557.24,
+        "pnl": 854.9,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-06",
+        "var_hs": 1154474.01,
+        "var_fhs": 975870.88,
+        "es_975": 1156835.6,
+        "pnl": 291825.87,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-07",
+        "var_hs": 1140182.47,
+        "var_fhs": 1009821.03,
+        "es_975": 1146287.12,
+        "pnl": -844448.51,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-08",
+        "var_hs": 1136572.93,
+        "var_fhs": 974603.72,
+        "es_975": 1145449.79,
+        "pnl": -507.36,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-09",
+        "var_hs": 1142068.65,
+        "var_fhs": 958412.9,
+        "es_975": 1150894.55,
+        "pnl": 451055.16,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-10",
+        "var_hs": 1137513.65,
+        "var_fhs": 913050.67,
+        "es_975": 1140874.87,
+        "pnl": -111553.34,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-13",
+        "var_hs": 1131391.44,
+        "var_fhs": 907601.12,
+        "es_975": 1129342.77,
+        "pnl": -496201.93,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-14",
+        "var_hs": 1135792.05,
+        "var_fhs": 892605.18,
+        "es_975": 1135892.38,
+        "pnl": 460995.2,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-15",
+        "var_hs": 1139276.42,
+        "var_fhs": 903839.93,
+        "es_975": 1142452.54,
+        "pnl": 611956.3,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-16",
+        "var_hs": 1137036.49,
+        "var_fhs": 882026.7,
+        "es_975": 1138481.26,
+        "pnl": -166215.6,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-17",
+        "var_hs": 1140054.08,
+        "var_fhs": 878553.44,
+        "es_975": 1136744.25,
+        "pnl": -140342.98,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-20",
+        "var_hs": 1132714.66,
+        "var_fhs": 902293.51,
+        "es_975": 1129639.86,
+        "pnl": -371142.33,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-21",
+        "var_hs": 1130260.31,
+        "var_fhs": 880483.0,
+        "es_975": 1130430.14,
+        "pnl": -117992.36,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-22",
+        "var_hs": 1125246.48,
+        "var_fhs": 861698.64,
+        "es_975": 1127881.49,
+        "pnl": -337521.12,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-23",
+        "var_hs": 1119308.15,
+        "var_fhs": 854468.82,
+        "es_975": 1117579.94,
+        "pnl": -673398.91,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-24",
+        "var_hs": 1122680.92,
+        "var_fhs": 848332.3,
+        "es_975": 1121466.19,
+        "pnl": 322206.13,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-27",
+        "var_hs": 1130361.01,
+        "var_fhs": 862282.16,
+        "es_975": 1125026.16,
+        "pnl": 278894.01,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-28",
+        "var_hs": 1135824.26,
+        "var_fhs": 866646.0,
+        "es_975": 1131400.08,
+        "pnl": 462954.37,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-29",
+        "var_hs": 1120036.24,
+        "var_fhs": 1056449.29,
+        "es_975": 1121318.89,
+        "pnl": -1073013.88,
+        "exception_hs": false,
+        "exception_fhs": true
+      },
+      {
+        "date": "2026-07-30",
+        "var_hs": 1112027.02,
+        "var_fhs": 1165642.13,
+        "es_975": 1130091.97,
+        "pnl": 449019.54,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-31",
+        "var_hs": 1101519.96,
+        "var_fhs": 1227128.17,
+        "es_975": 1121787.99,
+        "pnl": -612089.57,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-03",
+        "var_hs": 1115844.33,
+        "var_fhs": 1263806.54,
+        "es_975": 1130746.46,
+        "pnl": 602563.5,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-04",
+        "var_hs": 1128330.24,
+        "var_fhs": 1309871.66,
+        "es_975": 1140601.12,
+        "pnl": 736300.36,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-06",
+        "var_hs": 1137118.3,
+        "var_fhs": 1249385.97,
+        "es_975": 1148026.47,
+        "pnl": 51681.7,
+        "exception_hs": false,
+        "exception_fhs": false
+      }
+    ]
+  },
+  "/api/v1/risk/movers": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "prev_date": "2026-08-04",
+    "rows": [
+      {
+        "desk_code": "EQUITY",
+        "delta_usd": 15138.66,
+        "delta_pct": 0.0288,
+        "drivers": [
+          "EQ.XOM +2.1%",
+          "EQ.MSFT +2.5%",
+          "EQ.JPM -0.8%"
+        ]
+      },
+      {
+        "desk_code": "RATES",
+        "delta_usd": 1169.6,
+        "delta_pct": 0.0013,
+        "drivers": [
+          "IR.UST.30Y +0bp",
+          "IR.UST.5Y +0bp",
+          "IR.UST.10Y +0bp"
+        ]
+      },
+      {
+        "desk_code": "FX",
+        "delta_usd": 0.0,
+        "delta_pct": 0.0,
+        "drivers": [
+          "FX.JPYUSD +0.0%",
+          "FX.MXNUSD +0.0%",
+          "FX.EURUSD +0.0%"
+        ]
+      }
+    ]
+  },
+  "/api/v1/risk/exposures": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "unit": "USD per 1bp",
+    "rows": [
+      {
+        "desk_code": "FIRM",
+        "factor_code": "IR.UST.3M",
+        "tenor_years": 0.25,
+        "value": 0.0
+      },
+      {
+        "desk_code": "FIRM",
+        "factor_code": "IR.UST.2Y",
+        "tenor_years": 2.0,
+        "value": 17114.33
+      },
+      {
+        "desk_code": "FIRM",
+        "factor_code": "IR.UST.5Y",
+        "tenor_years": 5.0,
+        "value": -26774.25
+      },
+      {
+        "desk_code": "FIRM",
+        "factor_code": "IR.UST.10Y",
+        "tenor_years": 10.0,
+        "value": 48003.88
+      },
+      {
+        "desk_code": "FIRM",
+        "factor_code": "IR.UST.30Y",
+        "tenor_years": 30.0,
+        "value": 46598.15
+      },
+      {
+        "desk_code": "RATES",
+        "factor_code": "IR.UST.3M",
+        "tenor_years": 0.25,
+        "value": 0.0
+      },
+      {
+        "desk_code": "RATES",
+        "factor_code": "IR.UST.2Y",
+        "tenor_years": 2.0,
+        "value": 17114.33
+      },
+      {
+        "desk_code": "RATES",
+        "factor_code": "IR.UST.5Y",
+        "tenor_years": 5.0,
+        "value": -26774.25
+      },
+      {
+        "desk_code": "RATES",
+        "factor_code": "IR.UST.10Y",
+        "tenor_years": 10.0,
+        "value": 48003.88
+      },
+      {
+        "desk_code": "RATES",
+        "factor_code": "IR.UST.30Y",
+        "tenor_years": 30.0,
+        "value": 46598.15
+      }
+    ],
+    "vega": [
+      {
+        "desk_code": "FIRM",
+        "factor_code": "VOL.SPX.IV30",
+        "value": -2748.66
+      },
+      {
+        "desk_code": "EQUITY",
+        "factor_code": "VOL.SPX.IV30",
+        "value": -2748.66
+      }
+    ]
+  },
+  "/api/v1/scenarios": {
+    "scenarios": [
+      {
+        "scenario_code": "COVID_2020",
+        "scenario_name": "Covid 2020",
+        "scenario_type": "HISTORICAL_REPLAY",
+        "window_start": "2020-02-19",
+        "window_end": "2020-03-23",
+        "description": null,
+        "shocks": []
+      },
+      {
+        "scenario_code": "EQUITY_DOWN_20",
+        "scenario_name": "Equities -20%",
+        "scenario_type": "HYPOTHETICAL",
+        "window_start": null,
+        "window_end": null,
+        "description": null,
+        "shocks": [
+          {
+            "factor_code": "EQ.AAPL",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.223
+          },
+          {
+            "factor_code": "EQ.JNJ",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.223
+          },
+          {
+            "factor_code": "EQ.JPM",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.223
+          },
+          {
+            "factor_code": "EQ.MSFT",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.223
+          },
+          {
+            "factor_code": "EQ.NVDA",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.223
+          },
+          {
+            "factor_code": "EQ.SPY",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.223
+          },
+          {
+            "factor_code": "EQ.XOM",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.223
+          },
+          {
+            "factor_code": "VOL.SPX.IV30",
+            "shock_type": "ABSOLUTE",
+            "shock_value": 20.0
+          }
+        ]
+      },
+      {
+        "scenario_code": "GFC_2008",
+        "scenario_name": "Gfc 2008",
+        "scenario_type": "HISTORICAL_REPLAY",
+        "window_start": "2008-09-12",
+        "window_end": "2008-11-20",
+        "description": null,
+        "shocks": []
+      },
+      {
+        "scenario_code": "RATES_UP_100",
+        "scenario_name": "Parallel rates +100bp",
+        "scenario_type": "HYPOTHETICAL",
+        "window_start": null,
+        "window_end": null,
+        "description": null,
+        "shocks": [
+          {
+            "factor_code": "IR.UST.10Y",
+            "shock_type": "ABSOLUTE_BP",
+            "shock_value": 100.0
+          },
+          {
+            "factor_code": "IR.UST.2Y",
+            "shock_type": "ABSOLUTE_BP",
+            "shock_value": 100.0
+          },
+          {
+            "factor_code": "IR.UST.30Y",
+            "shock_type": "ABSOLUTE_BP",
+            "shock_value": 100.0
+          },
+          {
+            "factor_code": "IR.UST.3M",
+            "shock_type": "ABSOLUTE_BP",
+            "shock_value": 100.0
+          },
+          {
+            "factor_code": "IR.UST.5Y",
+            "shock_type": "ABSOLUTE_BP",
+            "shock_value": 100.0
+          }
+        ]
+      },
+      {
+        "scenario_code": "USD_UP_10",
+        "scenario_name": "Broad USD +10%",
+        "scenario_type": "HYPOTHETICAL",
+        "window_start": null,
+        "window_end": null,
+        "description": null,
+        "shocks": [
+          {
+            "factor_code": "FX.EURUSD",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.105
+          },
+          {
+            "factor_code": "FX.GBPUSD",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.105
+          },
+          {
+            "factor_code": "FX.JPYUSD",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.105
+          },
+          {
+            "factor_code": "FX.MXNUSD",
+            "shock_type": "RELATIVE",
+            "shock_value": -0.105
+          }
+        ]
+      }
+    ]
+  },
+  "/api/v1/scenarios/results": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "results": [
+      {
+        "scenario_code": "GFC_2008",
+        "scenario_name": "Gfc 2008",
+        "scenario_type": "HISTORICAL_REPLAY",
+        "window_start": "2008-09-12",
+        "window_end": "2008-11-20",
+        "description": null,
+        "impacts": {
+          "EQUITY": -4760115.92,
+          "FX": -11106377.05,
+          "RATES": 4853924.41,
+          "FIRM": -11012568.56
+        },
+        "firm_impact": -11012568.56,
+        "worst_desk": "FX"
+      },
+      {
+        "scenario_code": "RATES_UP_100",
+        "scenario_name": "Parallel rates +100bp",
+        "scenario_type": "HYPOTHETICAL",
+        "window_start": null,
+        "window_end": null,
+        "description": null,
+        "impacts": {
+          "EQUITY": -1894.94,
+          "FX": 0.0,
+          "RATES": -7703206.19,
+          "FIRM": -7705101.13
+        },
+        "firm_impact": -7705101.13,
+        "worst_desk": "RATES"
+      },
+      {
+        "scenario_code": "USD_UP_10",
+        "scenario_name": "Broad USD +10%",
+        "scenario_type": "HYPOTHETICAL",
+        "window_start": null,
+        "window_end": null,
+        "description": null,
+        "impacts": {
+          "EQUITY": 0.0,
+          "FX": -2392209.74,
+          "RATES": 0.0,
+          "FIRM": -2392209.74
+        },
+        "firm_impact": -2392209.74,
+        "worst_desk": "FX"
+      },
+      {
+        "scenario_code": "EQUITY_DOWN_20",
+        "scenario_name": "Equities -20%",
+        "scenario_type": "HYPOTHETICAL",
+        "window_start": null,
+        "window_end": null,
+        "description": null,
+        "impacts": {
+          "EQUITY": -1777304.82,
+          "FX": 0.0,
+          "RATES": 0.0,
+          "FIRM": -1777304.82
+        },
+        "firm_impact": -1777304.82,
+        "worst_desk": "EQUITY"
+      },
+      {
+        "scenario_code": "COVID_2020",
+        "scenario_name": "Covid 2020",
+        "scenario_type": "HISTORICAL_REPLAY",
+        "window_start": "2020-02-19",
+        "window_end": "2020-03-23",
+        "description": null,
+        "impacts": {
+          "EQUITY": -2210157.99,
+          "FX": -5705925.21,
+          "RATES": 6384619.08,
+          "FIRM": -1531464.11
+        },
+        "firm_impact": -1531464.11,
+        "worst_desk": "FX"
+      }
+    ]
+  },
+  "/api/v1/modeldoc": {
+    "markdown": "# RiskDesk \u2014 Model Documentation\n\n*Structured after SR 11-7 (model development, use, validation, and limitations).\nEvery methodology section ends with \"questions an interviewer would ask\" \u2014 this\ndocument doubles as the walkthrough script for anyone probing the model. The\nfigures quoted below are reproducible from the committed market snapshot:\n`docker compose up` rebuilds the database and reprints the headline risk\nnumbers (CI asserts the firm VaR to the cent on every push); the 750-day\nbacktest table regenerates with `python -m risk.jobs.backfill`.*\n\n## 1. Model purpose and scope\n\nRiskDesk measures the daily market risk of a mock three-desk trading book \u2014\ncash equities, FX spot, and US Treasuries \u2014 the way a bank's risk function runs\nits nightly cycle. Per desk and firm-wide, the nightly batch produces:\n\n- **1-day 99% VaR** under two methods: equal-weight historical simulation (HS)\n  and EWMA-filtered historical simulation (FHS), plus 10-day figures by\n  sqrt-of-time scaling;\n- **97.5% Expected Shortfall**, and a **stressed ES** calibrated on a fixed\n  2008\u201309 window (FRTB-style; see the scope note below);\n- **scenario P&L** for two historical replays (GFC 2008, COVID 2020) and three\n  hypothetical shocks;\n- **backtest inputs** against clean P&L \u2014 daily hypothetical AND\n  risk-theoretical P&L plus exceptions versus the prior run's VaR \u2014 from which\n  the API computes Kupiec, Christoffersen, the Basel traffic light, and the\n  P&L-attribution test (Spearman + KS with MAR32-style zones) on demand.\n\nThe book is sized so the standalone-VaR mix across desks is roughly\nrates 45 / equity 30 / fx 25 \u2014 the risk-class mix large dealers disclose in\ntheir FY2025 trading-VaR tables (measured on the snapshot: 46/28/26). The\nequity desk carries a 1-month SPY collar (long 95% put, short 103% call, 78\ncontracts against the ~7,800-share holding) \u2014 the options sleeve that gives\nthe book gamma and vega and makes the attribution test real. On the\n2026-08-06 snapshot the firm 1-day VaR99 is ~$1.14M, 57% of its $2M limit,\nwith a ~40% diversification benefit, net rates DV01 of ~$83k/bp, and net\nvega of about -$2.7k per vol point.\n\n**Out of scope, deliberately:** trade pricing, intraday risk, counterparty and\ncredit risk, and regulatory capital. The stressed-ES piece follows FRTB's\n*idea* (ES 97.5, stressed-period calibration) and the attribution test follows\nthe PLA *metrics*; neither is an FRTB implementation \u2014 no liquidity-horizon\ncascade, no NMRF, no IMA capital arithmetic (\u00a75).\n\n## 2. Model inputs and data\n\n### 2.1 Risk factors and sources\n\nSeventeen factors drive the book: seven equity adjusted closes\n(yfinance, Stooq fallback), four USD FX rates (FRED H.10, normalized at ingest\nto USD per unit of foreign currency; the weekly publication lag is absorbed by\na 7-day forward-fill cap), five constant-\nmaturity Treasury par yields in percent (FRED: 3M, 2Y, 5Y, 10Y, 30Y), and\nVIX, which prices the options sleeve as its (flat) implied vol. History runs from\n2007 \u2014 deep enough to contain both stress windows used in \u00a73.4.\n\nA frozen snapshot of all 17 series (~84k observations) is committed to the\nrepository. Tests, CI, and the demo never make a network call: every number in\nthis document is reproducible bit-for-bit from the snapshot. Live fetches\nhappen only in the nightly batch, with per-factor source fallbacks.\n\n### 2.2 Return conventions\n\nThe return convention is a property of the factor, stored on the\n`risk_factors` table \u2014 never an `if` statement in engine code:\n\n| Convention | Applied to | Definition | Why |\n|---|---|---|---|\n| `LOG` | equities, FX | log price relative | multiplicative, additive over time |\n| `ABS_BP` | yields | day-over-day change in basis points | log returns on yields explode as yields approach zero (2020: 3M bills under 10bp) |\n| `ABS` | vol indices | plain difference in points | vol points are already the natural unit |\n\nScenario P&L is exact under each convention: `qty * S0 * (exp(r) - 1)` for LOG\nfactors, full bond revaluation for bp shocks (\u00a73.5). Linearization exists only\nin the delta-gamma path reserved for risk-theoretical P&L.\n\n### 2.3 Alignment and forward-fill policy\n\nFactors publish on different calendars (FRED H.10 FX has a weekly publication\nlag; FRED yields miss bond-market holidays that equities trade through). Each\nfactor forward-fills up to its own cap \u2014 3 business days by default, 7 for\nH.10 FX. A filled day produces a zero return downstream: a mild, *measured*\nvol damping, recorded per factor per run rather than hidden. Gaps beyond the\ncap are never filled silently \u2014 they block (\u00a72.4).\n\nEquity levels are the **adjusted** close, so equity positions are total-return\npositions; share counts were struck from the unadjusted close on the anchor\ndate (where adjusted equals unadjusted by construction).\n\n### 2.4 Data-quality gate\n\nChecks run nightly before the risk step; findings persist to `dq_issues` with\na severity that decides the run's fate. The policy is **flag, never delete**:\nauto-scrubbing genuine crash days would destroy the very tail VaR feeds on.\n\n| Check | Trigger | Severity |\n|---|---|---|\n| `OUTLIER_RETURN` | LOG: \\|r\\| > 6\u00d7 trailing EWMA vol **and** \\|r\\| > 3%; yields: \\|\u0394y\\| > 75bp/day | WARN \u2014 investigate, keep |\n| `STALE` | a PRICE/FX factor repeats the identical value 5 sessions | WARN \u2014 dead source suspected |\n| `UNIT_BOUND` | yield outside [\u22122%, 25%]; price/vol \u2264 0; FX > 50% from its 1-year median | BLOCK \u2014 structurally impossible, unit error |\n| `GAP` / `FFILL_LIMIT` | missing beyond the factor's forward-fill cap | BLOCK / INFO within cap |\n\nAny BLOCK downgrades the run to `PARTIAL` \u2014 results write, but the run is\nvisibly impaired; there is no silent green.\n\nFills are **provisional**: ingest windows anchor at each factor's last *real*\nprint, not its last row, so a filled date stays in the request until the\nvendor publishes it, and staleness ages are measured against real prints \u2014 a\ndead source runs into its cap and blocks rather than forward-filling forever\nbehind self-resetting fills.\n\nTwo controls extend the gate beyond the inputs. A **flash check** compares\neach firm VaR measure (HS and FHS) to the prior run before the number is read\nas final: a move beyond \u00b125% writes a `FLASH_DOD` warning carrying its own\nexplanation \u2014 per-desk VaR deltas, plus the largest vol-forecast movers where\nthe vol filter is the actual driver (FHS; an HS move comes from scenario\nturnover and level changes). A large move is not an error; an *unexplained*\nlarge move is. And a **revision log** (`data_revisions`) records every\ningested value that differs from what is stored \u2014 compared at the database's\nown precision \u2014 classified: a synthetic fill replaced by the vendor's late\nprint is routine (`FFILL_REPLACED`, the H.10 publication cycle produces\nthese); a changed real print is a vendor restatement (`VENDOR_REVISION`) and\nthe reason yesterday's VaR may no longer be reproducible from today's\ndatabase. The log preserves the before-image, and\n`run --date <d> --force` is the restatement path \u2014 an EOD restatement\noutranks a backfill run for the same date in every read.\n\n*Questions an interviewer would ask:* Why absolute bp shocks for rates \u2014 what\nbreaks with log returns on 2020 yields? Why flag rather than delete an outlier\nreturn? What does a forward-filled day do to EWMA vol, and where would you see\nthat effect? Why is the FX bound relative to a median but the yield bound\nabsolute?\n\n## 3. Methodology\n\n### 3.1 Historical-simulation VaR\n\nThe scenario set is the trailing **500** daily joint return vectors. The full\nbook is revalued under each vector (\u00a73.5), scenario P&Ls are aggregated per\ndesk, and\n\n    VaR_a = -Quantile_{1-a}(P&L),   linear interpolation between order statistics.\n\nAt n=500 and a=0.99 the estimator interpolates between the 5th and 6th worst\nlosses, with almost all weight on the 6th. 500 days rather than the Basel\nminimum 250 is a variance-versus-staleness trade: at 250 the same quantile\nsits between the 3rd and 4th worst losses \u2014 an estimator that jumps when a\nsingle scenario ages out of the window.\n\nThe known weakness of equal weights is regime lag, and it is quantified rather\nthan asserted: over the 750-day out-of-sample backfill, the HS VaR line lags\nthe April-2025 vol spike on the way in \u2014 every desk takes exceptions in the\nfirst days of April \u2014 and then, once the spike's scenarios enter the window,\nstays conservatively wide through the calm regime that follows (\u00a74).\n\n*Questions an interviewer would ask:* Why 500 days and not 250? Which order\nstatistics does the 99% estimate sit between at each window length? What\nhappens to HS VaR in the weeks after a vol-regime shift, and in the months\nafter the spike leaves the window (\"ghosting\")?\n\n### 3.2 Filtered historical simulation (EWMA)\n\nPer-factor conditional variance follows the RiskMetrics recursion\n\n    sigma^2_t = lambda * sigma^2_{t-1} + (1 - lambda) * r^2_{t-1},   lambda = 0.94,\n\nseeded with the population variance of the first 30 returns; the half-life is\nln 0.5 / ln 0.94 \u2248 11 days. lambda = 0.94 is a convention, not an estimate \u2014\ndefended as such, with a GARCH(1,1) comparison on the roadmap rather than\nimplied.\n\nScenario construction devolatilizes and revolatilizes:\n\n    z_s = r_s / sigma_s          (standardized joint historical vector, per factor)\n    r~_s = z_s * sigma_{T+1}     (rescaled by the next-day vol forecast)\n\nCross-factor correlation survives because the scenarios remain *joint*\nhistorical z-vectors \u2014 only the per-factor vol scale updates. The same 500\nscenarios then price the same book through the same revaluation path as HS;\nthe only difference between the methods is the scenario matrix.\n\nFailure modes, named: standardized residuals are assumed stationary (a\ncorrelation-regime break violates this); a one-day vol overshoot inflates the\nnext day's entire scenario set (revol overshoot); forward-filled zero returns\ndamp sigma. The DQ gate bounds the third; the backfill chart shows the net\neffect of the first two is still a large improvement in regime tracking.\n\n**Champion/challenger.** The GARCH(1,1) question is answered with a parallel\nrun, not an opinion: a hand-rolled Gaussian-QMLE GARCH filter runs beside the\nEWMA champion over the trailing 250 days on the same historical windows, book,\nand clean P&L \u2014 the scenario sets differ only by each model's vol rescaling,\nwhich is the treatment under test \u2014 judged\nagainst promotion criteria pre-registered before any result is computed\n([docs/challenger_garch.md](challenger_garch.md), regenerated by\n`python -m risk.jobs.challenger`). Current verdict: **HOLD** \u2014 outcomes are\nindistinguishable (the same four exceptions, +6.4% mean VaR delta), and four\nfactors (the short-rate complex and EURUSD) fit at the stationarity boundary,\nwhere the unconditional level is meaningless \u2014 IGARCH by accident. EWMA *is*\nthe IGARCH boundary case (omega 0, alpha 1\u2212lambda, beta lambda; unit-tested\nequivalence), so the champion deliberately imposes the infinite persistence\nthose degenerate fits stumble into \u2014 a defensible convention until a\nchallenger clears the health gate.\n\n*Questions an interviewer would ask:* Derive the recursion from exponential\nweights. Why does FHS preserve cross-correlations when scaling per-factor?\nWhat breaks if sigma_s is near zero for some historical date? Derive the\nGARCH(1,1) likelihood; why does persistence at the boundary make the\nunconditional variance meaningless, and why must promotion criteria be\nregistered before results exist?\n\n### 3.3 Expected Shortfall 97.5% and stressed calibration\n\n    ES_a = -mean( P&L | P&L <= Quantile_{1-a}(P&L) )\n\n\u2014 the empirical mean of the tail at or beyond the 2.5% quantile; at n=500 that\naverages roughly the 13 worst scenario losses. ES is reported at 97.5% beside\nVaR 99% because that is Basel's calibration-neutral pair: under normality\nVaR99 = 2.326 sigma and ES97.5 = 2.338 sigma \u2014 numerically almost identical,\nbut ES is coherent (subadditive) and sees tail *shape*, not just one quantile.\nBoth reference constants are encoded as unit tests.\n\n**Stressed ES** revalues *today's* book on the daily shocks of a fixed\n2008-09-12 \u2192 2009-09-11 window and takes the same ES functional. On the\nsnapshot date it is ~2.3\u00d7 the current-window ES ($2.61M vs $1.15M firm) \u2014 the\ngap being exactly the point: current-regime ES understates what this book does\nin a crisis regime. The window is fixed in the MVP; the programmatic\nworst-window search over the full 2007+ history (FRTB's \"period of significant\nstress *for this portfolio*\") is scheduled, with an integration test asserting\nit lands in 2008\u201309 or 2020.\n\nFirm ES can be allocated to desks by Euler allocation \u2014 each desk's mean P&L\nover the firm's tail scenarios. Components sum exactly to firm ES and go\n*negative* for hedging desks, which is the feature: it answers \"which desk to\ncut\". The allocation is exercised per position in the RNIV concentration\nmeasurement (R5, [docs/rniv.md](rniv.md)); a per-desk API surface arrives\nwith the desk-decomposition endpoint on the roadmap.\n\n*Questions an interviewer would ask:* Prove ES is subadditive and give the\ntwo-position example where VaR is not. Why did Basel pick 97.5% ES to replace\n99% VaR? What makes a stressed window \"right\" for this portfolio, and why can\na fixed window rot? Show the Euler allocation sums to firm ES.\n\n### 3.4 Stress testing\n\nHistorical replays are **data-driven**: only the window dates are pinned\n(GFC: 2008-09-12 \u2192 2008-11-20; COVID: 2020-02-19 \u2192 2020-03-23). The shock\nvector is the sum of stored daily returns over the window \u2014 additive for both\nlog returns and bp changes \u2014 applied instantaneously to today's book with full\nrevaluation. Sanity anchors are pinned by tests against the committed snapshot\n(GFC window: SPX log return \u2248 \u22120.50, 2Y yield \u2248 \u2212118bp, JPY \u2248 +12%\nsafe-haven move). Three\nhypothetical shocks (+100bp parallel rates, \u221220% equities, +10% USD) come from\na YAML catalog; factors absent from a scenario are shocked by zero \u2014 the\ndocumented fill rule, until beta-fill rules arrive with the CCAR-style\nscenarios. Post-shock yields floor at 1bp.\n\nOn the snapshot book the GFC replay is the worst scenario at ~\u2212$11.0M firm\nP&L. The FX desk drives it (\u2212$11.1M): all four positions lose at once as risk\ncurrencies fall against USD and the yen rallies into the short \u2014 the long-MXN\nposition is the single largest loss (~\u2212$3.9M) \u2014 while the rates desk *gains*\n~+$4.9M on the yield collapse and the equity desk's protective put claws back\n~$2M of the fall. A concrete illustration that today's book, not 2008's, is\nwhat gets stressed.\n\n*Questions an interviewer would ask:* Why is summing daily log returns over\nthe window legitimate but summing simple returns is not? An instantaneous\nreplay ignores path \u2014 when does that matter? Why does the *rates* desk make\nmoney in the GFC replay while the firm loses?\n\n### 3.5 Revaluation\n\nThe engine prices from a tidy positions frame (one row per position: ticker,\ndesk, factor, quantity, type, convention, and coupon/maturity for bonds); it\nnever touches the database.\n\n**Equities / FX (exact):** `P&L = qty * S0 * (exp(r) - 1)`.\n\n**Rates:** each position is a constant-maturity UST par-bond proxy priced with\nthe closed-form semiannual fixed-coupon formula\n\n    P(y) = face * (c/y) * (1 - (1 + y/2)^(-2T)) + face * (1 + y/2)^(-2T),\n\nwith the y\u21920 limit `face * (1 + cT)` substituted below |y| < 1e-9. Par coupons\nare struck at the anchor date's yields (so each bond prices at par on that\ndate \u2014 unit-tested to 1e-9). Under a scenario the bond is *fully repriced* at\nthe shocked yield; DV01 and dollar convexity exist only for the delta-gamma\npath, computed by central-difference bump-and-reprice (\u00b10.5bp; reference:\n10Y 4% par bond \u2248 $817.5 per bp per $1M face). The delta-gamma approximation\n`P&L \u2248 -DV01_bp * dy_bp + 0.5 * convexity * dy^2` (with `dy_bp` in basis\npoints and `dy` in decimal, matching the mixed units the two Greeks are quoted\nin) is reserved for risk-theoretical P&L, so the PLA test's HPL-RTPL gap is\nreal and internally generated, not simulated.\n\n**Options:** the collar legs are European SPY options priced with hand-rolled\nBlack-Scholes (d1/d2, scipy only for the normal distribution). Like the bond\nproxies they are constant-maturity, constant-moneyness instruments \u2014 struck\ndaily at moneyness times that day's spot, one month to expiry \u2014 so daily P&L\nis price P&L under the day's joint spot/vol/rate move, with no theta or roll\n(the same documented re-strike convention as the par bonds). Implied vol is\nthe VOL.SPX.IV30 factor (VIX as the 30-day SPX proxy for SPY, in points,\nflat across strikes), the discount rate is the 3M CMT, and q = 0 because the\nstored equity series is total-return. Shocked vols floor at one point. Under\nmode=\"full\" options fully reprice; the delta-gamma-vega Taylor lives only in\nthe risk-theoretical path.\n\nEach *linear* instrument maps to exactly one factor for VaR (SPY to its own\nprice series, the 10Y proxy to the 10Y constant-maturity yield); an option\nadds its vol and rate factors through instrument meta. The **curve view**\nexists alongside the proxy: a semiannual zero curve bootstrapped from the five\npar CMT nodes (brentq per node, linear interpolation in zero rates, flat\nextrapolation), bonds priced as cashflow strips off it, and par key-rate\nDV01s measured by bumping one input node at a time and re-bootstrapping. The\nnightly batch writes the per-desk KRD table (`risk_exposures`), served by the\nAPI and dashboard. One subtlety worth knowing cold: at the anchor date the\nbook's par coupons make each bond the bootstrap's own calibration instrument,\nso the KRD matrix is exactly diagonal *by construction* \u2014 cross-tenor risk\nappears (and grows) as coupons drift off par, which is also why the\ncurve-vs-proxy VaR basis is nonzero inside shocked scenarios (\u00a75.1 R7). VaR\npricing keeps the proxy, with the basis measured rather than assumed.\n\n*Questions an interviewer would ask (options):* Derive d1 and put-call\nparity. Why does a flat smile understate risk for the 95% put specifically?\nWhat does the constant-moneyness re-strike assume away (theta, pin risk,\nearly exercise), and why is that consistent with the bond proxies? Where does\nthe VIX-as-SPY-IV basis bite hardest?\n\n*Questions an interviewer would ask (curve):* Why is a node par bond's KRD\ndiagonal by construction? Derive the bootstrap fixed point at the 2Y node \u2014\nwhat makes it one-dimensional? What breaks with linear-in-zero interpolation\n(forward-rate kinks), and what would you use instead?\n\n*Questions an interviewer would ask:* Derive the closed form from the annuity\nsum. Why bump-and-reprice instead of the analytic duration formula? What does\nthe constant-maturity proxy ignore that a real bond position has (roll-down,\ncarry, financing)? Where would linearization bite hardest in this book \u2014 which\ndesk, which scenario?\n\n## 4. Backtesting and ongoing monitoring\n\n**Clean P&L.** Each day's hypothetical P&L freezes the prior day's book and\nlevels and applies the realized factor returns \u2014 no fees, no intraday, no new\ntrades. An exception on day t+1 is `HPL_{t+1} < -VaR_t`: the comparison is\nstrictly out-of-sample (the VaR quoted on t never saw t+1's return).\n\n**Kupiec proportion-of-failures** tests coverage: with x exceptions in n days\nand target p = 1%,\n\n    LR_pof = -2 [ ln L(p) - ln L(x/n) ] ~ chi2(1),\n\nwith the 0\u00b7ln 0 := 0 convention guarding the zero-exception case. Published\nworked example, encoded as a known-answer test: n=250, x=5 gives LR \u2248 1.96,\np \u2248 0.16 \u2014 five exceptions against 2.5 expected and the test *cannot* reject.\n\n**Christoffersen independence** fits a first-order Markov chain to the\nexception indicator sequence and likelihood-ratio-tests whether an exception\ntoday changes tomorrow's exception probability. This is the test that sees\n*clustering*: ten consecutive exceptions in 500 days reject overwhelmingly\nwhile the same ten spread evenly do not \u2014 Kupiec, by construction, scores both\nidentically (unit-tested pair). Conditional coverage adds the two statistics:\nLR_cc = LR_pof + LR_ind ~ chi2(2). Clustered exceptions are precisely the\nvol-regime failure mode of equal-weight HS, which is why both tests run\nnightly.\n\n**Basel traffic light**, 250-day window: green at 0\u20134 exceptions, amber 5\u20139\nwith multiplier add-ons rising 0.40 \u2192 0.85, red at 10+ (add-on 1.00, model\npresumed flawed). The regulatory response is deliberately *not* hypothesis\ntesting: at x=5 Kupiec's p-value is 0.16, yet the capital multiplier already\npenalizes \u2014 supervisors price the asymmetry of accepting a bad model rather\nthan the Type-I error rate.\n\n**Out-of-sample results** (750 trading days ending 2026-08-06, firm book):\n\n| Method | Exceptions | Expected | Kupiec p | CC p | 250d zone |\n|---|---|---|---|---|---|\n| HS | 6 | 7.5 | 0.57 | 0.81 | GREEN |\n| FHS | 10 | 7.5 | 0.38 | 0.60 | GREEN |\n\nBoth models pass everything \u2014 the difference is *where* the risk shows. Going\ninto the April-2025 vol spike the lagging HS window under-covers at desk\nlevel: every desk takes exceptions in the first days of April, and only the\n~40% diversification benefit keeps the firm aggregate clean (its six HS\nexceptions sit elsewhere \u2014 two in late 2023, two in 2024, two in\nmid-2026). After the spike's scenarios enter the window, firm HS VaR runs\nconservatively wide for months of calm. FHS spends its near-nominal-rate\nexceptions across regimes and re-tightens where HS cannot. Coverage alone\ndoes not separate the two; the exception *timing* chart in the README and\ndashboard does. That comparison \u2014 champion/challenger on identical scenarios,\ndiffering only in the vol filter \u2014 is the model-selection argument in one\npicture.\n\n**P&L attribution.** Spearman rank correlation and the two-sample KS\nstatistic between daily hypothetical P&L (full revaluation) and\nrisk-theoretical P&L (the linearized path), zoned at the MAR32.41 thresholds\n(green requires rho >= 0.80 and KS <= 0.09). Over the trailing 250 paired\ndays the equity desk sits at rho 0.9999, KS 0.020 \u2014 GREEN. The gap\n*decomposes*, and knowing the decomposition is the point: the linear legs\nalone produce KS 0.016 (their RTPL is `qty*S0*r` against an HPL of\n`qty*S0*(exp(r)-1)` \u2014 the log-linearization convexity, a mean gap of about\n$1.8k/day), and the collar adds its Taylor error on top (about $1.2k/day;\noptions-only KS 0.024 from gamma, vanna, and the excluded rho). So the\npre-options test was never strictly vacuous \u2014 it was nearly degenerate, its\nonly content being the log-linearization \u2014 and the sleeve is what gives the\nstatistic something structural to see. A desk that failed would lose IMA\neligibility at a real bank; here it would fail the promotion gate the same\nway the GARCH challenger did. Served at `/backtest/pla` with the HPL-vs-RTPL\nscatter on the dashboard.\n\n**Ongoing monitoring** is the nightly cycle itself: every batch writes\nexceptions against the prior run's VaR, the dashboard recomputes rolling\nzones, DQ issues persist with severities, and CI reruns the known-answer suite\n(engine math, Kupiec/Christoffersen worked examples, bond-pricing identities)\non every commit. Scheduled next: the Acerbi\u2013Sz\u00e9kely ES backtest with\nsimulated critical values.\n\n*Questions an interviewer would ask:* Write the Kupiec statistic from memory\nand evaluate the n=250, x=5 case. Why does PLA need BOTH Spearman and KS \u2014\nwhat failure does each see that the other cannot? Why does Christoffersen catch what Kupiec\ncannot, and what does its n11 count mean? Why does the Basel multiplier start\nat five exceptions when the hypothesis test can't reject there? Why must the\nVaR in an exception check come from the *prior* run?\n\n## 5. Assumptions and limitations\n\n*The load-bearing section: each entry names the assumption, its consequence,\nand the mitigation or roadmap item. Where a limitation is measurable it is\n**measured**: [docs/rniv.md](rniv.md) is a risks-not-in-VaR inventory\nregenerated from the snapshot by `python -m risk.jobs.rniv`, and \u00a75.1 below\nsummarizes it.*\n\n1. **sqrt(10) horizon scaling assumes iid daily P&L.** Under volatility\n   clustering it under-scales in stressed regimes; on trending or\n   mean-reverting windows it over-scales. Measured (R1): on the current\n   500-day window, overlapping 10-day revaluation gives $2.87M firm VaR\n   against $3.60M scaled \u2014 the scaled figure currently *overstates* by ~20%.\n   The 10-day figures are reported as scaled, never as modeled, with the\n   overlapping estimator kept as a standing check.\n2. **One factor per instrument in the VaR path.** Each bond proxy loads on a\n   single constant-maturity yield. Measured (R7): repricing the bond book on\n   the bootstrapped curve under the same scenarios moves rates-desk VaR by\n   +1.9% ($885k vs $868k) \u2014 the pricing-model basis; the key-rate DV01 table\n   is written nightly and is diagonal at the anchor by construction, with\n   off-diagonals growing as coupons drift off par. Adequate for a five-point\n   node book; wrong for real curve trading.\n3. **Constant-maturity par proxies ignore aging, roll-down, carry, and\n   financing.** Positions are re-struck at par conceptually every day; clean\n   P&L is price P&L only.\n4. **Non-synchronous closes bias cross-asset correlation.** FRED H.10 FX is a\n   noon-ET fixing; equities close 16:00 ET; yields are afternoon CMT reads.\n   Same-day cross-asset correlations are attenuated, and the diversification\n   benefit inherits that bias. Measured (R2): the benefit is 40.4% on 1-day\n   returns and 38.4% on 2-day aggregation \u2014 two percentage points of\n   co-movement hide in the close-time gaps (SPY leads next-day GBP at +0.23\n   vs +0.14 same-day). Named and measured, not fixed \u2014 production desks fight\n   the same issue with synchronization overlays.\n5. **Forward-filled days imprint zero returns** (bounded at 3 days, 7 for\n   H.10 FX), damping vol for affected factors. Measured (R3): fills are 3.6%\n   of factor-days in the window; correcting each factor's EWMA forecast to\n   print-days-only raises firm FHS VaR by 3.0% (~$38k), concentrated in the\n   H.10 FX factors (forecast ratios ~1.15). The fill count per factor per run\n   is recorded; beyond-cap gaps block the run.\n6. **The attribution test is only as sharp as the book's nonlinearity.** The\n   collar's gamma is modest, so today's GREEN PLA discriminates weakly \u2014 a\n   larger options book would stress the Taylor harder \u2014 and the statistic's\n   decomposition (\u00a74) shows the linear legs' log-linearization still carries\n   most of it. The RTPL exclusions (rho, cross terms) are design choices; the\n   nearly-degenerate pre-options history is preserved in git, not rewritten.\n7. **FRTB scope is the ES piece only.** Stressed calibration follows the FRTB\n   idea; there is no liquidity-horizon cascade (a `liquidity_horizon` column\n   exists on `risk_factors` as a placeholder for the MAR33.12 mapping, still\n   uniform at its 10-day default), no NMRF/RFET, no IMA capital arithmetic.\n   The phrase \"FRTB-compliant\" is deliberately banned from this repository.\n8. **The stressed window is fixed (2008-09-12 \u2192 2009-09-11).** A book can\n   have its true worst regime elsewhere. Measured (R4): stressed ES on this\n   book is $2.61M under the in-force window vs $2.06M for the 2022 hiking\n   year and $1.80M for the COVID year \u2014 the fixed choice is currently the\n   most conservative of the candidates, but that is checked, not assumed. The\n   programmatic argmax search over 2007+ full-reval history is the scheduled\n   replacement.\n9. **Post-shock yields floor at 1bp**, which would truncate the rates desk's\n   convexity gain in scenarios that drive short yields toward zero. No shipped\n   scenario currently binds it \u2014 GFC-replay post-shock yields bottom out near\n   2.3% \u2014 but a 2020-style front-end shock from today's levels would.\n10. **Equal-weight HS dilutes new information by design**; the FHS comparison\n    exists to quantify exactly that cost (\u00a74). Equity risk is total-return\n    (adjusted close), so dividend timing is smeared across history.\n11. **No idiosyncratic-risk model, and tail risk is concentrated.** Single\n    names carry only their own history; there is no factor model and no\n    name-level shrinkage. Measured (R5): Euler allocation of firm ES puts\n    37.3% on the top position and 86.6% on the top three (the 30Y/10Y\n    duration proxies dominate; NVDA is the largest single-name component).\n    Seven liquid mega-caps make the missing idio model tolerable; the\n    concentration is monitored via the component table.\n\n12. **The options sleeve prices on a flat smile with proxy inputs.** VIX\n    stands in for SPY 1-month implied vol (an index-vs-ETF, 30d-vs-1M basis),\n    a single vol level covers every strike (no skew risk \u2014 precisely where a\n    95% put lives), q = 0 leans on the total-return spot series, and the\n    constant-moneyness re-strike removes theta, pin risk, and early exercise.\n    Each is the options sibling of a limitation already carried by the bond\n    proxies, and the parametric-IV VaR on the roadmap addresses the vol-risk\n    piece first.\n\n### 5.1 Quantified impacts (risks-not-in-VaR inventory)\n\nSummary of [docs/rniv.md](rniv.md), regenerated by `python -m risk.jobs.rniv`\n(as of 2026-08-06; Material \u2265 5% of the base measure, Monitor \u2265 1%):\n\n| ID | Limitation | Measured impact | Class |\n|---|---|---|---|\n| R1 | sqrt(10) scaling vs overlapping 10-day reval | \u2212$729k on the 10-day VaR (\u221220.3%) | Material |\n| R2 | Asynchronous closes hide co-movement | diversification 40.4% (1d) \u2192 38.4% (2d) | Monitor |\n| R3 | Forward-fill vol damping | +$38k on FHS VaR (+3.0%) | Monitor |\n| R4 | Fixed stressed window | in-force $2.61M is the max of candidates ($1.80M\u2013$2.06M) | Immaterial |\n| R5 | Position concentration of firm ES | top position 37.3%, top 3 86.6% | Monitor |\n| R6 | 1bp post-shock yield floor | unbinding; 230bp of headroom | Immaterial |\n| R7 | One-factor ytm proxy vs bootstrapped curve | rates VaR +1.9% curve-priced; KRDs diagonal at anchor by construction | Monitor |\n\nThe point of the exercise is the discipline, not the add-ons: every \u00a75 claim\nthat could be a number *is* a number, with the measurement code in the\nrepository and the classification rule stated up front.\n\n## 6. Model governance\n\nEvery tunable lives in one frozen dataclass (`RiskConfig`) \u2014 lookback 500,\nlambda 0.94, confidence pair (0.99, 0.975), forward-fill caps, the stressed\nwindow. Each batch run records the git SHA and a hash of that config on its\n`risk_runs` row, so any number in the results tables traces to exact code and\nparameters. The committed snapshot makes the whole history a fixture: on every\npush, CI rebuilds the database from scratch and asserts the firm 1-day VaR99\nequals $1,137,118.30 to the cent, runs the known-answer suite (worked examples\nfrom the literature encoded as tests), and executes the one-command demo path\nend-to-end. Data\nquality is enforced in-pipeline with persisted, severity-graded findings, and\nbatch runs are idempotent under an advisory-lock claim \u2014 a re-run can replace\na failed run but never silently duplicate a successful one.\n\nModel change control exists in miniature: a candidate model runs in parallel\nwith the champion over a regulatory window and is judged by pre-registered\npromotion criteria \u2014 fit health first, then outcomes, then adoption stability\n\u2014 with the change pack carrying the candidate's parameter hash and the git\nSHA (\u00a73.2's GARCH challenger is the live example, currently HOLD on the\nfit-health gate).\n\nIn SR 11-7 terms: this document is the development evidence; the known-answer\ntests and the 750-day out-of-sample backtest are validation; the nightly\nexception writes, traffic-light zones, DQ gate, flash check, and revision log\nare ongoing monitoring; \u00a75 is the limitations inventory, maintained with the\nsame seriousness as the code.\n"
+  },
+  "/api/v1/backtest/pla?scope=FIRM&window=250": {
+    "scope": "FIRM",
+    "window": 250,
+    "start": "2025-08-19",
+    "end": "2026-08-06",
+    "n_obs": 250,
+    "spearman": 0.9999,
+    "ks": 0.012,
+    "zone": "GREEN",
+    "points": [
+      {
+        "date": "2025-08-19",
+        "hpl": 51412.27,
+        "rtpl": 48882.14
+      },
+      {
+        "date": "2025-08-20",
+        "hpl": -175986.79,
+        "rtpl": -176557.32
+      },
+      {
+        "date": "2025-08-21",
+        "hpl": -228157.95,
+        "rtpl": -228013.14
+      },
+      {
+        "date": "2025-08-22",
+        "hpl": 756392.38,
+        "rtpl": 750765.07
+      },
+      {
+        "date": "2025-08-25",
+        "hpl": -140927.28,
+        "rtpl": -141344.99
+      },
+      {
+        "date": "2025-08-26",
+        "hpl": 73646.59,
+        "rtpl": 73146.65
+      },
+      {
+        "date": "2025-08-27",
+        "hpl": -90496.31,
+        "rtpl": -90648.16
+      },
+      {
+        "date": "2025-08-28",
+        "hpl": 284011.87,
+        "rtpl": 283552.9
+      },
+      {
+        "date": "2025-08-29",
+        "hpl": -332784.06,
+        "rtpl": -335208.27
+      },
+      {
+        "date": "2025-09-01",
+        "hpl": -1697.5,
+        "rtpl": -1739.99
+      },
+      {
+        "date": "2025-09-02",
+        "hpl": -561562.42,
+        "rtpl": -563033.65
+      },
+      {
+        "date": "2025-09-03",
+        "hpl": 829864.26,
+        "rtpl": 827543.38
+      },
+      {
+        "date": "2025-09-04",
+        "hpl": 456596.16,
+        "rtpl": 455256.36
+      },
+      {
+        "date": "2025-09-05",
+        "hpl": 554269.17,
+        "rtpl": 552736.57
+      },
+      {
+        "date": "2025-09-08",
+        "hpl": 875755.3,
+        "rtpl": 875822.55
+      },
+      {
+        "date": "2025-09-09",
+        "hpl": -400935.58,
+        "rtpl": -401620.76
+      },
+      {
+        "date": "2025-09-10",
+        "hpl": 361544.98,
+        "rtpl": 358525.42
+      },
+      {
+        "date": "2025-09-11",
+        "hpl": 543893.16,
+        "rtpl": 542716.43
+      },
+      {
+        "date": "2025-09-12",
+        "hpl": -107054.51,
+        "rtpl": -107910.5
+      },
+      {
+        "date": "2025-09-15",
+        "hpl": 414882.14,
+        "rtpl": 414303.81
+      },
+      {
+        "date": "2025-09-16",
+        "hpl": 93790.36,
+        "rtpl": 93019.08
+      },
+      {
+        "date": "2025-09-17",
+        "hpl": -236836.34,
+        "rtpl": -237735.27
+      },
+      {
+        "date": "2025-09-18",
+        "hpl": -295036.59,
+        "rtpl": -294982.93
+      },
+      {
+        "date": "2025-09-19",
+        "hpl": -222023.36,
+        "rtpl": -224428.76
+      },
+      {
+        "date": "2025-09-22",
+        "hpl": 103379.77,
+        "rtpl": 98936.18
+      },
+      {
+        "date": "2025-09-23",
+        "hpl": 380995.87,
+        "rtpl": 379141.2
+      },
+      {
+        "date": "2025-09-24",
+        "hpl": -542556.4,
+        "rtpl": -542921.65
+      },
+      {
+        "date": "2025-09-25",
+        "hpl": -33003.06,
+        "rtpl": -33853.64
+      },
+      {
+        "date": "2025-09-26",
+        "hpl": -60694.53,
+        "rtpl": -62096.21
+      },
+      {
+        "date": "2025-09-29",
+        "hpl": 539251.13,
+        "rtpl": 540036.7
+      },
+      {
+        "date": "2025-09-30",
+        "hpl": -107629.28,
+        "rtpl": -107757.86
+      },
+      {
+        "date": "2025-10-01",
+        "hpl": 30218.13,
+        "rtpl": 30432.18
+      },
+      {
+        "date": "2025-10-02",
+        "hpl": 68213.25,
+        "rtpl": 67450.62
+      },
+      {
+        "date": "2025-10-03",
+        "hpl": 27716.62,
+        "rtpl": 27486.25
+      },
+      {
+        "date": "2025-10-06",
+        "hpl": 72635.52,
+        "rtpl": 75963.85
+      },
+      {
+        "date": "2025-10-07",
+        "hpl": 311445.65,
+        "rtpl": 311411.97
+      },
+      {
+        "date": "2025-10-08",
+        "hpl": 335362.92,
+        "rtpl": 334837.79
+      },
+      {
+        "date": "2025-10-09",
+        "hpl": -167524.47,
+        "rtpl": -168636.85
+      },
+      {
+        "date": "2025-10-10",
+        "hpl": 204600.73,
+        "rtpl": 175056.91
+      },
+      {
+        "date": "2025-10-13",
+        "hpl": 172560.48,
+        "rtpl": 167268.1
+      },
+      {
+        "date": "2025-10-14",
+        "hpl": -96290.33,
+        "rtpl": -99529.66
+      },
+      {
+        "date": "2025-10-15",
+        "hpl": -81194.16,
+        "rtpl": -81435.3
+      },
+      {
+        "date": "2025-10-16",
+        "hpl": 549475.34,
+        "rtpl": 544954.92
+      },
+      {
+        "date": "2025-10-17",
+        "hpl": -240935.61,
+        "rtpl": -244310.79
+      },
+      {
+        "date": "2025-10-20",
+        "hpl": 411925.43,
+        "rtpl": 406133.38
+      },
+      {
+        "date": "2025-10-21",
+        "hpl": 288974.29,
+        "rtpl": 289348.64
+      },
+      {
+        "date": "2025-10-22",
+        "hpl": -16581.34,
+        "rtpl": -17456.63
+      },
+      {
+        "date": "2025-10-23",
+        "hpl": -128091.72,
+        "rtpl": -128731.43
+      },
+      {
+        "date": "2025-10-24",
+        "hpl": 128518.55,
+        "rtpl": 126384.78
+      },
+      {
+        "date": "2025-10-27",
+        "hpl": 506657.21,
+        "rtpl": 503371.19
+      },
+      {
+        "date": "2025-10-28",
+        "hpl": 277841.12,
+        "rtpl": 274808.97
+      },
+      {
+        "date": "2025-10-29",
+        "hpl": -697548.14,
+        "rtpl": -698534.08
+      },
+      {
+        "date": "2025-10-30",
+        "hpl": -476989.42,
+        "rtpl": -478063.82
+      },
+      {
+        "date": "2025-10-31",
+        "hpl": -245557.95,
+        "rtpl": -245987.64
+      },
+      {
+        "date": "2025-11-03",
+        "hpl": -43671.9,
+        "rtpl": -44187.64
+      },
+      {
+        "date": "2025-11-04",
+        "hpl": -350961.75,
+        "rtpl": -357535.27
+      },
+      {
+        "date": "2025-11-05",
+        "hpl": -556026.09,
+        "rtpl": -557122.3
+      },
+      {
+        "date": "2025-11-06",
+        "hpl": 155271.14,
+        "rtpl": 150617.12
+      },
+      {
+        "date": "2025-11-07",
+        "hpl": 149635.72,
+        "rtpl": 149270.89
+      },
+      {
+        "date": "2025-11-10",
+        "hpl": 372672.18,
+        "rtpl": 365823.8
+      },
+      {
+        "date": "2025-11-11",
+        "hpl": -59217.21,
+        "rtpl": -60504.51
+      },
+      {
+        "date": "2025-11-12",
+        "hpl": 691915.21,
+        "rtpl": 691679.53
+      },
+      {
+        "date": "2025-11-13",
+        "hpl": -368607.73,
+        "rtpl": -378691.14
+      },
+      {
+        "date": "2025-11-14",
+        "hpl": -420663.6,
+        "rtpl": -421765.05
+      },
+      {
+        "date": "2025-11-17",
+        "hpl": -34034.89,
+        "rtpl": -37484.07
+      },
+      {
+        "date": "2025-11-18",
+        "hpl": -279716.04,
+        "rtpl": -284202.55
+      },
+      {
+        "date": "2025-11-19",
+        "hpl": 81153.88,
+        "rtpl": 80173.74
+      },
+      {
+        "date": "2025-11-20",
+        "hpl": 67322.51,
+        "rtpl": 61451.29
+      },
+      {
+        "date": "2025-11-21",
+        "hpl": -25408.43,
+        "rtpl": -28812.08
+      },
+      {
+        "date": "2025-11-24",
+        "hpl": 499207.24,
+        "rtpl": 494501.82
+      },
+      {
+        "date": "2025-11-25",
+        "hpl": 207858.44,
+        "rtpl": 204612.86
+      },
+      {
+        "date": "2025-11-26",
+        "hpl": 545388.5,
+        "rtpl": 542833.75
+      },
+      {
+        "date": "2025-11-27",
+        "hpl": -42.21,
+        "rtpl": -42.24
+      },
+      {
+        "date": "2025-11-28",
+        "hpl": -114687.23,
+        "rtpl": -116375.18
+      },
+      {
+        "date": "2025-12-01",
+        "hpl": -694649.69,
+        "rtpl": -696010.21
+      },
+      {
+        "date": "2025-12-02",
+        "hpl": 137519.82,
+        "rtpl": 137067.35
+      },
+      {
+        "date": "2025-12-03",
+        "hpl": 100434.98,
+        "rtpl": 98179.52
+      },
+      {
+        "date": "2025-12-04",
+        "hpl": -181748.93,
+        "rtpl": -182617.26
+      },
+      {
+        "date": "2025-12-05",
+        "hpl": -222253.1,
+        "rtpl": -222532.33
+      },
+      {
+        "date": "2025-12-08",
+        "hpl": -43874.59,
+        "rtpl": -45240.11
+      },
+      {
+        "date": "2025-12-09",
+        "hpl": 163048.55,
+        "rtpl": 162354.14
+      },
+      {
+        "date": "2025-12-10",
+        "hpl": 87280.98,
+        "rtpl": 85069.86
+      },
+      {
+        "date": "2025-12-11",
+        "hpl": 177761.6,
+        "rtpl": 175437.03
+      },
+      {
+        "date": "2025-12-12",
+        "hpl": -616234.92,
+        "rtpl": -619791.19
+      },
+      {
+        "date": "2025-12-15",
+        "hpl": 26979.69,
+        "rtpl": 26408.41
+      },
+      {
+        "date": "2025-12-16",
+        "hpl": 308550.68,
+        "rtpl": 309501.56
+      },
+      {
+        "date": "2025-12-17",
+        "hpl": -327973.75,
+        "rtpl": -331623.02
+      },
+      {
+        "date": "2025-12-18",
+        "hpl": 458521.97,
+        "rtpl": 456813.97
+      },
+      {
+        "date": "2025-12-19",
+        "hpl": 255891.84,
+        "rtpl": 253393.86
+      },
+      {
+        "date": "2025-12-22",
+        "hpl": -1864.18,
+        "rtpl": -3287.97
+      },
+      {
+        "date": "2025-12-23",
+        "hpl": 119451.06,
+        "rtpl": 118324.3
+      },
+      {
+        "date": "2025-12-24",
+        "hpl": 278392.32,
+        "rtpl": 278201.24
+      },
+      {
+        "date": "2025-12-26",
+        "hpl": 44230.11,
+        "rtpl": 44342.76
+      },
+      {
+        "date": "2025-12-29",
+        "hpl": -105926.5,
+        "rtpl": -106395.98
+      },
+      {
+        "date": "2025-12-30",
+        "hpl": -97880.91,
+        "rtpl": -97969.88
+      },
+      {
+        "date": "2025-12-31",
+        "hpl": -369580.05,
+        "rtpl": -370732.76
+      },
+      {
+        "date": "2026-01-02",
+        "hpl": -60618.31,
+        "rtpl": -62162.52
+      },
+      {
+        "date": "2026-01-05",
+        "hpl": -13596.54,
+        "rtpl": -13405.94
+      },
+      {
+        "date": "2026-01-06",
+        "hpl": -110367.93,
+        "rtpl": -110398.46
+      },
+      {
+        "date": "2026-01-07",
+        "hpl": 294959.09,
+        "rtpl": 294355.53
+      },
+      {
+        "date": "2026-01-08",
+        "hpl": -533002.15,
+        "rtpl": -532759.29
+      },
+      {
+        "date": "2026-01-09",
+        "hpl": 312585.15,
+        "rtpl": 312498.94
+      },
+      {
+        "date": "2026-01-12",
+        "hpl": 94155.86,
+        "rtpl": 94496.85
+      },
+      {
+        "date": "2026-01-13",
+        "hpl": -28624.95,
+        "rtpl": -29534.07
+      },
+      {
+        "date": "2026-01-14",
+        "hpl": -63843.86,
+        "rtpl": -64202.96
+      },
+      {
+        "date": "2026-01-15",
+        "hpl": 48390.15,
+        "rtpl": 46558.53
+      },
+      {
+        "date": "2026-01-16",
+        "hpl": -579244.59,
+        "rtpl": -579450.13
+      },
+      {
+        "date": "2026-01-19",
+        "hpl": -6286.73,
+        "rtpl": -6923.21
+      },
+      {
+        "date": "2026-01-20",
+        "hpl": -580834.1,
+        "rtpl": -592956.39
+      },
+      {
+        "date": "2026-01-21",
+        "hpl": 422003.78,
+        "rtpl": 414984.65
+      },
+      {
+        "date": "2026-01-22",
+        "hpl": 397120.44,
+        "rtpl": 395358.03
+      },
+      {
+        "date": "2026-01-23",
+        "hpl": 304884.55,
+        "rtpl": 302540.03
+      },
+      {
+        "date": "2026-01-26",
+        "hpl": 150007.41,
+        "rtpl": 154004.99
+      },
+      {
+        "date": "2026-01-27",
+        "hpl": 42896.84,
+        "rtpl": 41516.71
+      },
+      {
+        "date": "2026-01-28",
+        "hpl": -194077.5,
+        "rtpl": -194152.12
+      },
+      {
+        "date": "2026-01-29",
+        "hpl": -436812.79,
+        "rtpl": -457086.08
+      },
+      {
+        "date": "2026-01-30",
+        "hpl": -253473.23,
+        "rtpl": -253269.17
+      },
+      {
+        "date": "2026-02-02",
+        "hpl": -254070.88,
+        "rtpl": -258228.68
+      },
+      {
+        "date": "2026-02-03",
+        "hpl": 19206.83,
+        "rtpl": 15023.12
+      },
+      {
+        "date": "2026-02-04",
+        "hpl": -128170.51,
+        "rtpl": -130287.96
+      },
+      {
+        "date": "2026-02-05",
+        "hpl": 177790.92,
+        "rtpl": 167219.94
+      },
+      {
+        "date": "2026-02-06",
+        "hpl": 513190.09,
+        "rtpl": 496683.41
+      },
+      {
+        "date": "2026-02-09",
+        "hpl": 240053.51,
+        "rtpl": 237236.91
+      },
+      {
+        "date": "2026-02-10",
+        "hpl": 138266.74,
+        "rtpl": 139714.98
+      },
+      {
+        "date": "2026-02-11",
+        "hpl": -684989.4,
+        "rtpl": -684282.02
+      },
+      {
+        "date": "2026-02-12",
+        "hpl": 399329.45,
+        "rtpl": 387701.46
+      },
+      {
+        "date": "2026-02-13",
+        "hpl": 359955.87,
+        "rtpl": 358394.64
+      },
+      {
+        "date": "2026-02-16",
+        "hpl": -992.68,
+        "rtpl": -1011.16
+      },
+      {
+        "date": "2026-02-17",
+        "hpl": 166616.75,
+        "rtpl": 164530.72
+      },
+      {
+        "date": "2026-02-18",
+        "hpl": -214858.94,
+        "rtpl": -214105.22
+      },
+      {
+        "date": "2026-02-19",
+        "hpl": -220958.64,
+        "rtpl": -222249.44
+      },
+      {
+        "date": "2026-02-20",
+        "hpl": 297796.45,
+        "rtpl": 296793.63
+      },
+      {
+        "date": "2026-02-23",
+        "hpl": -122736.02,
+        "rtpl": -127603.61
+      },
+      {
+        "date": "2026-02-24",
+        "hpl": 465308.99,
+        "rtpl": 464068.9
+      },
+      {
+        "date": "2026-02-25",
+        "hpl": 310746.35,
+        "rtpl": 307301.12
+      },
+      {
+        "date": "2026-02-26",
+        "hpl": -60749.26,
+        "rtpl": -65770.92
+      },
+      {
+        "date": "2026-02-27",
+        "hpl": -113574.63,
+        "rtpl": -118409.11
+      },
+      {
+        "date": "2026-03-02",
+        "hpl": -681427.49,
+        "rtpl": -683680.53
+      },
+      {
+        "date": "2026-03-03",
+        "hpl": -504031.8,
+        "rtpl": -509210.17
+      },
+      {
+        "date": "2026-03-04",
+        "hpl": -37997.31,
+        "rtpl": -39967.36
+      },
+      {
+        "date": "2026-03-05",
+        "hpl": -376160.22,
+        "rtpl": -378586.04
+      },
+      {
+        "date": "2026-03-06",
+        "hpl": -409177.07,
+        "rtpl": -418074.12
+      },
+      {
+        "date": "2026-03-09",
+        "hpl": 571774.0,
+        "rtpl": 568315.16
+      },
+      {
+        "date": "2026-03-10",
+        "hpl": -18076.82,
+        "rtpl": -20597.88
+      },
+      {
+        "date": "2026-03-11",
+        "hpl": -858465.31,
+        "rtpl": -858480.03
+      },
+      {
+        "date": "2026-03-12",
+        "hpl": -807473.74,
+        "rtpl": -813912.17
+      },
+      {
+        "date": "2026-03-13",
+        "hpl": -618099.51,
+        "rtpl": -620418.67
+      },
+      {
+        "date": "2026-03-16",
+        "hpl": 716862.3,
+        "rtpl": 712018.89
+      },
+      {
+        "date": "2026-03-17",
+        "hpl": 313107.6,
+        "rtpl": 313110.5
+      },
+      {
+        "date": "2026-03-18",
+        "hpl": -436025.54,
+        "rtpl": -441002.41
+      },
+      {
+        "date": "2026-03-19",
+        "hpl": -170896.09,
+        "rtpl": -171043.05
+      },
+      {
+        "date": "2026-03-20",
+        "hpl": -1139059.59,
+        "rtpl": -1143776.3
+      },
+      {
+        "date": "2026-03-23",
+        "hpl": 640618.79,
+        "rtpl": 639140.29
+      },
+      {
+        "date": "2026-03-24",
+        "hpl": -433597.77,
+        "rtpl": -434083.42
+      },
+      {
+        "date": "2026-03-25",
+        "hpl": 610022.69,
+        "rtpl": 609243.29
+      },
+      {
+        "date": "2026-03-26",
+        "hpl": -746740.11,
+        "rtpl": -752512.55
+      },
+      {
+        "date": "2026-03-27",
+        "hpl": -856271.53,
+        "rtpl": -863499.02
+      },
+      {
+        "date": "2026-03-30",
+        "hpl": 148081.28,
+        "rtpl": 147066.66
+      },
+      {
+        "date": "2026-03-31",
+        "hpl": 856851.74,
+        "rtpl": 841170.94
+      },
+      {
+        "date": "2026-04-01",
+        "hpl": 469507.77,
+        "rtpl": 469931.5
+      },
+      {
+        "date": "2026-04-02",
+        "hpl": 141738.51,
+        "rtpl": 140995.74
+      },
+      {
+        "date": "2026-04-03",
+        "hpl": -343302.94,
+        "rtpl": -343341.45
+      },
+      {
+        "date": "2026-04-06",
+        "hpl": 307695.57,
+        "rtpl": 307754.61
+      },
+      {
+        "date": "2026-04-07",
+        "hpl": 37752.21,
+        "rtpl": 37021.11
+      },
+      {
+        "date": "2026-04-08",
+        "hpl": 1022410.48,
+        "rtpl": 1009751.91
+      },
+      {
+        "date": "2026-04-09",
+        "hpl": 212603.86,
+        "rtpl": 211331.6
+      },
+      {
+        "date": "2026-04-10",
+        "hpl": 149079.49,
+        "rtpl": 148714.88
+      },
+      {
+        "date": "2026-04-13",
+        "hpl": 241796.86,
+        "rtpl": 239666.58
+      },
+      {
+        "date": "2026-04-14",
+        "hpl": 663398.45,
+        "rtpl": 659644.57
+      },
+      {
+        "date": "2026-04-15",
+        "hpl": 148529.36,
+        "rtpl": 143352.95
+      },
+      {
+        "date": "2026-04-16",
+        "hpl": -330618.25,
+        "rtpl": -331076.26
+      },
+      {
+        "date": "2026-04-17",
+        "hpl": 657811.58,
+        "rtpl": 657726.83
+      },
+      {
+        "date": "2026-04-20",
+        "hpl": 53843.75,
+        "rtpl": 52992.51
+      },
+      {
+        "date": "2026-04-21",
+        "hpl": -274408.21,
+        "rtpl": -276213.78
+      },
+      {
+        "date": "2026-04-22",
+        "hpl": 89214.96,
+        "rtpl": 86383.29
+      },
+      {
+        "date": "2026-04-23",
+        "hpl": -537851.19,
+        "rtpl": -540694.06
+      },
+      {
+        "date": "2026-04-24",
+        "hpl": 390570.3,
+        "rtpl": 386842.1
+      },
+      {
+        "date": "2026-04-27",
+        "hpl": -116319.34,
+        "rtpl": -119027.87
+      },
+      {
+        "date": "2026-04-28",
+        "hpl": -133689.79,
+        "rtpl": -134022.59
+      },
+      {
+        "date": "2026-04-29",
+        "hpl": -632926.6,
+        "rtpl": -633066.2
+      },
+      {
+        "date": "2026-04-30",
+        "hpl": -631913.47,
+        "rtpl": -633804.78
+      },
+      {
+        "date": "2026-05-01",
+        "hpl": 525512.45,
+        "rtpl": 523046.4
+      },
+      {
+        "date": "2026-05-04",
+        "hpl": -762697.96,
+        "rtpl": -764329.71
+      },
+      {
+        "date": "2026-05-05",
+        "hpl": 634279.92,
+        "rtpl": 631536.35
+      },
+      {
+        "date": "2026-05-06",
+        "hpl": 792065.84,
+        "rtpl": 789674.88
+      },
+      {
+        "date": "2026-05-07",
+        "hpl": -165785.02,
+        "rtpl": -166745.77
+      },
+      {
+        "date": "2026-05-08",
+        "hpl": 444699.23,
+        "rtpl": 443399.62
+      },
+      {
+        "date": "2026-05-11",
+        "hpl": -217234.12,
+        "rtpl": -216145.08
+      },
+      {
+        "date": "2026-05-12",
+        "hpl": -543910.76,
+        "rtpl": -544691.62
+      },
+      {
+        "date": "2026-05-13",
+        "hpl": 106929.09,
+        "rtpl": 106113.99
+      },
+      {
+        "date": "2026-05-14",
+        "hpl": 72940.0,
+        "rtpl": 69140.27
+      },
+      {
+        "date": "2026-05-15",
+        "hpl": -1244417.1,
+        "rtpl": -1250947.22
+      },
+      {
+        "date": "2026-05-18",
+        "hpl": -22195.91,
+        "rtpl": -22658.94
+      },
+      {
+        "date": "2026-05-19",
+        "hpl": -732042.25,
+        "rtpl": -733213.92
+      },
+      {
+        "date": "2026-05-20",
+        "hpl": 1059873.25,
+        "rtpl": 1059905.03
+      },
+      {
+        "date": "2026-05-21",
+        "hpl": -54415.05,
+        "rtpl": -55224.07
+      },
+      {
+        "date": "2026-05-22",
+        "hpl": 243480.0,
+        "rtpl": 242563.15
+      },
+      {
+        "date": "2026-05-25",
+        "hpl": 262.47,
+        "rtpl": 261.52
+      },
+      {
+        "date": "2026-05-26",
+        "hpl": 615683.89,
+        "rtpl": 617503.77
+      },
+      {
+        "date": "2026-05-27",
+        "hpl": 112256.98,
+        "rtpl": 111617.4
+      },
+      {
+        "date": "2026-05-28",
+        "hpl": 482559.16,
+        "rtpl": 479957.2
+      },
+      {
+        "date": "2026-05-29",
+        "hpl": 219908.55,
+        "rtpl": 215148.51
+      },
+      {
+        "date": "2026-06-01",
+        "hpl": -21835.75,
+        "rtpl": -27683.65
+      },
+      {
+        "date": "2026-06-02",
+        "hpl": 263448.86,
+        "rtpl": 257994.38
+      },
+      {
+        "date": "2026-06-03",
+        "hpl": -669346.0,
+        "rtpl": -673919.75
+      },
+      {
+        "date": "2026-06-04",
+        "hpl": 337986.75,
+        "rtpl": 336749.33
+      },
+      {
+        "date": "2026-06-05",
+        "hpl": -1329217.37,
+        "rtpl": -1369082.58
+      },
+      {
+        "date": "2026-06-08",
+        "hpl": -123619.17,
+        "rtpl": -125982.15
+      },
+      {
+        "date": "2026-06-09",
+        "hpl": 63237.28,
+        "rtpl": 60313.5
+      },
+      {
+        "date": "2026-06-10",
+        "hpl": -360907.55,
+        "rtpl": -368579.42
+      },
+      {
+        "date": "2026-06-11",
+        "hpl": 875243.92,
+        "rtpl": 869331.93
+      },
+      {
+        "date": "2026-06-12",
+        "hpl": 37632.25,
+        "rtpl": 34374.06
+      },
+      {
+        "date": "2026-06-15",
+        "hpl": 512525.75,
+        "rtpl": 508961.21
+      },
+      {
+        "date": "2026-06-16",
+        "hpl": 375574.02,
+        "rtpl": 373070.31
+      },
+      {
+        "date": "2026-06-17",
+        "hpl": -545877.93,
+        "rtpl": -553397.5
+      },
+      {
+        "date": "2026-06-18",
+        "hpl": 30248.52,
+        "rtpl": 24057.96
+      },
+      {
+        "date": "2026-06-19",
+        "hpl": -920.73,
+        "rtpl": -932.32
+      },
+      {
+        "date": "2026-06-22",
+        "hpl": -550608.81,
+        "rtpl": -552798.57
+      },
+      {
+        "date": "2026-06-23",
+        "hpl": -407781.61,
+        "rtpl": -416996.87
+      },
+      {
+        "date": "2026-06-24",
+        "hpl": 432522.51,
+        "rtpl": 431913.95
+      },
+      {
+        "date": "2026-06-25",
+        "hpl": -191557.8,
+        "rtpl": -201151.79
+      },
+      {
+        "date": "2026-06-26",
+        "hpl": 227235.6,
+        "rtpl": 222487.32
+      },
+      {
+        "date": "2026-06-29",
+        "hpl": 85510.75,
+        "rtpl": 83923.05
+      },
+      {
+        "date": "2026-06-30",
+        "hpl": -44309.18,
+        "rtpl": -47617.66
+      },
+      {
+        "date": "2026-07-01",
+        "hpl": -404576.37,
+        "rtpl": -407275.12
+      },
+      {
+        "date": "2026-07-02",
+        "hpl": 37902.1,
+        "rtpl": 34987.52
+      },
+      {
+        "date": "2026-07-03",
+        "hpl": 854.9,
+        "rtpl": 845.38
+      },
+      {
+        "date": "2026-07-06",
+        "hpl": 291825.87,
+        "rtpl": 292186.01
+      },
+      {
+        "date": "2026-07-07",
+        "hpl": -844448.51,
+        "rtpl": -842469.72
+      },
+      {
+        "date": "2026-07-08",
+        "hpl": -507.36,
+        "rtpl": -3576.77
+      },
+      {
+        "date": "2026-07-09",
+        "hpl": 451055.16,
+        "rtpl": 449963.37
+      },
+      {
+        "date": "2026-07-10",
+        "hpl": -111553.34,
+        "rtpl": -113791.54
+      },
+      {
+        "date": "2026-07-13",
+        "hpl": -496201.93,
+        "rtpl": -499534.93
+      },
+      {
+        "date": "2026-07-14",
+        "hpl": 460995.2,
+        "rtpl": 457470.81
+      },
+      {
+        "date": "2026-07-15",
+        "hpl": 611956.3,
+        "rtpl": 607396.65
+      },
+      {
+        "date": "2026-07-16",
+        "hpl": -166215.6,
+        "rtpl": -168919.57
+      },
+      {
+        "date": "2026-07-17",
+        "hpl": -140342.98,
+        "rtpl": -145170.77
+      },
+      {
+        "date": "2026-07-20",
+        "hpl": -371142.33,
+        "rtpl": -372678.7
+      },
+      {
+        "date": "2026-07-21",
+        "hpl": -117992.36,
+        "rtpl": -120282.19
+      },
+      {
+        "date": "2026-07-22",
+        "hpl": -337521.12,
+        "rtpl": -337969.58
+      },
+      {
+        "date": "2026-07-23",
+        "hpl": -673398.91,
+        "rtpl": -679393.81
+      },
+      {
+        "date": "2026-07-24",
+        "hpl": 322206.13,
+        "rtpl": 319680.01
+      },
+      {
+        "date": "2026-07-27",
+        "hpl": 278894.01,
+        "rtpl": 274633.01
+      },
+      {
+        "date": "2026-07-28",
+        "hpl": 462954.37,
+        "rtpl": 462368.72
+      },
+      {
+        "date": "2026-07-29",
+        "hpl": -1073013.88,
+        "rtpl": -1081699.78
+      },
+      {
+        "date": "2026-07-30",
+        "hpl": 449019.54,
+        "rtpl": 414294.97
+      },
+      {
+        "date": "2026-07-31",
+        "hpl": -612089.57,
+        "rtpl": -627999.25
+      },
+      {
+        "date": "2026-08-03",
+        "hpl": 602563.5,
+        "rtpl": 596568.24
+      },
+      {
+        "date": "2026-08-04",
+        "hpl": 736300.36,
+        "rtpl": 736246.35
+      },
+      {
+        "date": "2026-08-06",
+        "hpl": 51681.7,
+        "rtpl": 51029.31
+      }
+    ]
+  },
+  "/api/v1/backtest/pla?scope=EQUITY&window=250": {
+    "scope": "EQUITY",
+    "window": 250,
+    "start": "2025-08-19",
+    "end": "2026-08-06",
+    "n_obs": 250,
+    "spearman": 0.9999,
+    "ks": 0.02,
+    "zone": "GREEN",
+    "points": [
+      {
+        "date": "2025-08-19",
+        "hpl": -196709.7,
+        "rtpl": -199197.56
+      },
+      {
+        "date": "2025-08-20",
+        "hpl": -122615.64,
+        "rtpl": -123284.87
+      },
+      {
+        "date": "2025-08-21",
+        "hpl": -53693.49,
+        "rtpl": -54255.12
+      },
+      {
+        "date": "2025-08-22",
+        "hpl": 136216.14,
+        "rtpl": 131244.93
+      },
+      {
+        "date": "2025-08-25",
+        "hpl": -26139.81,
+        "rtpl": -26747.94
+      },
+      {
+        "date": "2025-08-26",
+        "hpl": 74991.19,
+        "rtpl": 74470.1
+      },
+      {
+        "date": "2025-08-27",
+        "hpl": 36796.66,
+        "rtpl": 36726.17
+      },
+      {
+        "date": "2025-08-28",
+        "hpl": 52789.05,
+        "rtpl": 52346.68
+      },
+      {
+        "date": "2025-08-29",
+        "hpl": -161289.16,
+        "rtpl": -163660.89
+      },
+      {
+        "date": "2025-09-01",
+        "hpl": -1697.5,
+        "rtpl": -1739.99
+      },
+      {
+        "date": "2025-09-02",
+        "hpl": -135095.99,
+        "rtpl": -137037.25
+      },
+      {
+        "date": "2025-09-03",
+        "hpl": 172170.95,
+        "rtpl": 170006.06
+      },
+      {
+        "date": "2025-09-04",
+        "hpl": 81644.19,
+        "rtpl": 80199.36
+      },
+      {
+        "date": "2025-09-05",
+        "hpl": -162128.85,
+        "rtpl": -164346.01
+      },
+      {
+        "date": "2025-09-08",
+        "hpl": 14626.72,
+        "rtpl": 14421.93
+      },
+      {
+        "date": "2025-09-09",
+        "hpl": 16362.51,
+        "rtpl": 15666.5
+      },
+      {
+        "date": "2025-09-10",
+        "hpl": 10110.62,
+        "rtpl": 7122.72
+      },
+      {
+        "date": "2025-09-11",
+        "hpl": 71985.74,
+        "rtpl": 70973.82
+      },
+      {
+        "date": "2025-09-12",
+        "hpl": 139444.85,
+        "rtpl": 138351.09
+      },
+      {
+        "date": "2025-09-15",
+        "hpl": 101416.55,
+        "rtpl": 101540.46
+      },
+      {
+        "date": "2025-09-16",
+        "hpl": -103193.51,
+        "rtpl": -103678.89
+      },
+      {
+        "date": "2025-09-17",
+        "hpl": -52778.14,
+        "rtpl": -53603.28
+      },
+      {
+        "date": "2025-09-18",
+        "hpl": 125531.71,
+        "rtpl": 124444.49
+      },
+      {
+        "date": "2025-09-19",
+        "hpl": 198819.22,
+        "rtpl": 196587.64
+      },
+      {
+        "date": "2025-09-22",
+        "hpl": 236993.94,
+        "rtpl": 232677.96
+      },
+      {
+        "date": "2025-09-23",
+        "hpl": -202946.25,
+        "rtpl": -204337.61
+      },
+      {
+        "date": "2025-09-24",
+        "hpl": -56331.39,
+        "rtpl": -56312.9
+      },
+      {
+        "date": "2025-09-25",
+        "hpl": 2223.26,
+        "rtpl": 1319.99
+      },
+      {
+        "date": "2025-09-26",
+        "hpl": 10984.45,
+        "rtpl": 9736.74
+      },
+      {
+        "date": "2025-09-29",
+        "hpl": 95984.77,
+        "rtpl": 96379.51
+      },
+      {
+        "date": "2025-09-30",
+        "hpl": 90617.39,
+        "rtpl": 90256.23
+      },
+      {
+        "date": "2025-10-01",
+        "hpl": 30166.36,
+        "rtpl": 29988.81
+      },
+      {
+        "date": "2025-10-02",
+        "hpl": 13793.36,
+        "rtpl": 13530.92
+      },
+      {
+        "date": "2025-10-03",
+        "hpl": -39614.41,
+        "rtpl": -39283.46
+      },
+      {
+        "date": "2025-10-06",
+        "hpl": 47585.6,
+        "rtpl": 46327.61
+      },
+      {
+        "date": "2025-10-07",
+        "hpl": -72907.71,
+        "rtpl": -73614.32
+      },
+      {
+        "date": "2025-10-08",
+        "hpl": 83508.72,
+        "rtpl": 81985.94
+      },
+      {
+        "date": "2025-10-09",
+        "hpl": -22179.63,
+        "rtpl": -22973.29
+      },
+      {
+        "date": "2025-10-10",
+        "hpl": -390086.54,
+        "rtpl": -419580.76
+      },
+      {
+        "date": "2025-10-13",
+        "hpl": 172560.48,
+        "rtpl": 167268.1
+      },
+      {
+        "date": "2025-10-14",
+        "hpl": -146729.01,
+        "rtpl": -149948.4
+      },
+      {
+        "date": "2025-10-15",
+        "hpl": 50119.81,
+        "rtpl": 49933.31
+      },
+      {
+        "date": "2025-10-16",
+        "hpl": -56239.2,
+        "rtpl": -60648.94
+      },
+      {
+        "date": "2025-10-17",
+        "hpl": 77366.32,
+        "rtpl": 73904.14
+      },
+      {
+        "date": "2025-10-20",
+        "hpl": 185107.94,
+        "rtpl": 179345.72
+      },
+      {
+        "date": "2025-10-21",
+        "hpl": -10318.97,
+        "rtpl": -10549.96
+      },
+      {
+        "date": "2025-10-22",
+        "hpl": -114284.75,
+        "rtpl": -115150.02
+      },
+      {
+        "date": "2025-10-23",
+        "hpl": 46023.39,
+        "rtpl": 44936.15
+      },
+      {
+        "date": "2025-10-24",
+        "hpl": 201538.14,
+        "rtpl": 199434.25
+      },
+      {
+        "date": "2025-10-27",
+        "hpl": 255580.75,
+        "rtpl": 252292.97
+      },
+      {
+        "date": "2025-10-28",
+        "hpl": 275162.07,
+        "rtpl": 271720.2
+      },
+      {
+        "date": "2025-10-29",
+        "hpl": 68657.11,
+        "rtpl": 67667.52
+      },
+      {
+        "date": "2025-10-30",
+        "hpl": -173997.24,
+        "rtpl": -176658.01
+      },
+      {
+        "date": "2025-10-31",
+        "hpl": -59458.12,
+        "rtpl": -59851.48
+      },
+      {
+        "date": "2025-11-03",
+        "hpl": 70041.82,
+        "rtpl": 69631.05
+      },
+      {
+        "date": "2025-11-04",
+        "hpl": -170002.44,
+        "rtpl": -175888.17
+      },
+      {
+        "date": "2025-11-05",
+        "hpl": -66101.55,
+        "rtpl": -67394.8
+      },
+      {
+        "date": "2025-11-06",
+        "hpl": -229298.57,
+        "rtpl": -234365.38
+      },
+      {
+        "date": "2025-11-07",
+        "hpl": -50286.52,
+        "rtpl": -49902.38
+      },
+      {
+        "date": "2025-11-10",
+        "hpl": 260945.42,
+        "rtpl": 253846.31
+      },
+      {
+        "date": "2025-11-11",
+        "hpl": -59217.21,
+        "rtpl": -60504.51
+      },
+      {
+        "date": "2025-11-12",
+        "hpl": 47463.98,
+        "rtpl": 47382.41
+      },
+      {
+        "date": "2025-11-13",
+        "hpl": -277907.72,
+        "rtpl": -287519.17
+      },
+      {
+        "date": "2025-11-14",
+        "hpl": 37818.12,
+        "rtpl": 36957.6
+      },
+      {
+        "date": "2025-11-17",
+        "hpl": -182790.81,
+        "rtpl": -186369.67
+      },
+      {
+        "date": "2025-11-18",
+        "hpl": -231895.53,
+        "rtpl": -236358.88
+      },
+      {
+        "date": "2025-11-19",
+        "hpl": 60551.21,
+        "rtpl": 59080.3
+      },
+      {
+        "date": "2025-11-20",
+        "hpl": -227220.15,
+        "rtpl": -233348.79
+      },
+      {
+        "date": "2025-11-21",
+        "hpl": 7797.83,
+        "rtpl": 4187.4
+      },
+      {
+        "date": "2025-11-24",
+        "hpl": 158726.51,
+        "rtpl": 154048.91
+      },
+      {
+        "date": "2025-11-25",
+        "hpl": 26812.5,
+        "rtpl": 23794.46
+      },
+      {
+        "date": "2025-11-26",
+        "hpl": 137779.54,
+        "rtpl": 135620.15
+      },
+      {
+        "date": "2025-11-27",
+        "hpl": -42.21,
+        "rtpl": -42.24
+      },
+      {
+        "date": "2025-11-28",
+        "hpl": 52753.93,
+        "rtpl": 51121.11
+      },
+      {
+        "date": "2025-12-01",
+        "hpl": 23381.32,
+        "rtpl": 21600.25
+      },
+      {
+        "date": "2025-12-02",
+        "hpl": 108440.14,
+        "rtpl": 107885.7
+      },
+      {
+        "date": "2025-12-03",
+        "hpl": -157517.09,
+        "rtpl": -159067.86
+      },
+      {
+        "date": "2025-12-04",
+        "hpl": 90113.07,
+        "rtpl": 89282.13
+      },
+      {
+        "date": "2025-12-05",
+        "hpl": -1904.2,
+        "rtpl": -2159.53
+      },
+      {
+        "date": "2025-12-08",
+        "hpl": 94665.46,
+        "rtpl": 93155.84
+      },
+      {
+        "date": "2025-12-09",
+        "hpl": -93449.45,
+        "rtpl": -94572.71
+      },
+      {
+        "date": "2025-12-10",
+        "hpl": -123796.68,
+        "rtpl": -126089.95
+      },
+      {
+        "date": "2025-12-11",
+        "hpl": -2720.68,
+        "rtpl": -3744.48
+      },
+      {
+        "date": "2025-12-12",
+        "hpl": -153300.94,
+        "rtpl": -156884.4
+      },
+      {
+        "date": "2025-12-15",
+        "hpl": -73671.35,
+        "rtpl": -74214.11
+      },
+      {
+        "date": "2025-12-16",
+        "hpl": 107458.65,
+        "rtpl": 108391.35
+      },
+      {
+        "date": "2025-12-17",
+        "hpl": -221128.82,
+        "rtpl": -224842.4
+      },
+      {
+        "date": "2025-12-18",
+        "hpl": 159483.75,
+        "rtpl": 157906.45
+      },
+      {
+        "date": "2025-12-19",
+        "hpl": 194995.33,
+        "rtpl": 190496.68
+      },
+      {
+        "date": "2025-12-22",
+        "hpl": 9419.25,
+        "rtpl": 8111.77
+      },
+      {
+        "date": "2025-12-23",
+        "hpl": 130819.58,
+        "rtpl": 129687.61
+      },
+      {
+        "date": "2025-12-24",
+        "hpl": 30773.53,
+        "rtpl": 30458.15
+      },
+      {
+        "date": "2025-12-26",
+        "hpl": 15889.3,
+        "rtpl": 15665.55
+      },
+      {
+        "date": "2025-12-29",
+        "hpl": -85177.88,
+        "rtpl": -85719.69
+      },
+      {
+        "date": "2025-12-30",
+        "hpl": -21898.81,
+        "rtpl": -21981.27
+      },
+      {
+        "date": "2025-12-31",
+        "hpl": -82263.25,
+        "rtpl": -83388.38
+      },
+      {
+        "date": "2026-01-02",
+        "hpl": -83651.85,
+        "rtpl": -84713.11
+      },
+      {
+        "date": "2026-01-05",
+        "hpl": -16377.24,
+        "rtpl": -16168.7
+      },
+      {
+        "date": "2026-01-06",
+        "hpl": 63081.6,
+        "rtpl": 63225.58
+      },
+      {
+        "date": "2026-01-07",
+        "hpl": 9987.15,
+        "rtpl": 9403.67
+      },
+      {
+        "date": "2026-01-08",
+        "hpl": -157369.9,
+        "rtpl": -156956.34
+      },
+      {
+        "date": "2026-01-09",
+        "hpl": 18969.0,
+        "rtpl": 18176.43
+      },
+      {
+        "date": "2026-01-12",
+        "hpl": -62468.53,
+        "rtpl": -61783.34
+      },
+      {
+        "date": "2026-01-13",
+        "hpl": -172703.6,
+        "rtpl": -173902.26
+      },
+      {
+        "date": "2026-01-14",
+        "hpl": -275617.83,
+        "rtpl": -276365.69
+      },
+      {
+        "date": "2026-01-15",
+        "hpl": 33195.85,
+        "rtpl": 32181.1
+      },
+      {
+        "date": "2026-01-16",
+        "hpl": -12673.86,
+        "rtpl": -13003.08
+      },
+      {
+        "date": "2026-01-19",
+        "hpl": -6286.73,
+        "rtpl": -6923.21
+      },
+      {
+        "date": "2026-01-20",
+        "hpl": -370548.39,
+        "rtpl": -380749.0
+      },
+      {
+        "date": "2026-01-21",
+        "hpl": -10561.35,
+        "rtpl": -16591.45
+      },
+      {
+        "date": "2026-01-22",
+        "hpl": 106614.57,
+        "rtpl": 105068.59
+      },
+      {
+        "date": "2026-01-23",
+        "hpl": 91159.15,
+        "rtpl": 88879.28
+      },
+      {
+        "date": "2026-01-26",
+        "hpl": 130916.67,
+        "rtpl": 129263.35
+      },
+      {
+        "date": "2026-01-27",
+        "hpl": 95470.83,
+        "rtpl": 94736.4
+      },
+      {
+        "date": "2026-01-28",
+        "hpl": -15899.95,
+        "rtpl": -16037.59
+      },
+      {
+        "date": "2026-01-29",
+        "hpl": -372662.19,
+        "rtpl": -393239.03
+      },
+      {
+        "date": "2026-01-30",
+        "hpl": -55344.64,
+        "rtpl": -55767.47
+      },
+      {
+        "date": "2026-02-02",
+        "hpl": 45186.43,
+        "rtpl": 40927.15
+      },
+      {
+        "date": "2026-02-03",
+        "hpl": -284112.76,
+        "rtpl": -287556.07
+      },
+      {
+        "date": "2026-02-04",
+        "hpl": -50534.59,
+        "rtpl": -52887.86
+      },
+      {
+        "date": "2026-02-05",
+        "hpl": -277040.05,
+        "rtpl": -286895.12
+      },
+      {
+        "date": "2026-02-06",
+        "hpl": 314672.07,
+        "rtpl": 298852.36
+      },
+      {
+        "date": "2026-02-09",
+        "hpl": 113588.13,
+        "rtpl": 111090.73
+      },
+      {
+        "date": "2026-02-10",
+        "hpl": -63116.88,
+        "rtpl": -63480.97
+      },
+      {
+        "date": "2026-02-11",
+        "hpl": -145880.16,
+        "rtpl": -146221.75
+      },
+      {
+        "date": "2026-02-12",
+        "hpl": -281662.52,
+        "rtpl": -293223.83
+      },
+      {
+        "date": "2026-02-13",
+        "hpl": -100588.36,
+        "rtpl": -102024.71
+      },
+      {
+        "date": "2026-02-16",
+        "hpl": -992.68,
+        "rtpl": -1011.16
+      },
+      {
+        "date": "2026-02-17",
+        "hpl": 159849.89,
+        "rtpl": 157835.87
+      },
+      {
+        "date": "2026-02-18",
+        "hpl": 2519.2,
+        "rtpl": 2852.26
+      },
+      {
+        "date": "2026-02-19",
+        "hpl": -85394.45,
+        "rtpl": -85900.63
+      },
+      {
+        "date": "2026-02-20",
+        "hpl": 202431.87,
+        "rtpl": 201997.28
+      },
+      {
+        "date": "2026-02-23",
+        "hpl": -230586.55,
+        "rtpl": -235448.06
+      },
+      {
+        "date": "2026-02-24",
+        "hpl": 157714.85,
+        "rtpl": 155572.96
+      },
+      {
+        "date": "2026-02-25",
+        "hpl": 222532.73,
+        "rtpl": 218892.64
+      },
+      {
+        "date": "2026-02-26",
+        "hpl": -134226.74,
+        "rtpl": -139009.42
+      },
+      {
+        "date": "2026-02-27",
+        "hpl": -440360.23,
+        "rtpl": -445044.71
+      },
+      {
+        "date": "2026-03-02",
+        "hpl": 84056.93,
+        "rtpl": 82826.53
+      },
+      {
+        "date": "2026-03-03",
+        "hpl": 40430.52,
+        "rtpl": 38052.71
+      },
+      {
+        "date": "2026-03-04",
+        "hpl": 99193.97,
+        "rtpl": 97277.5
+      },
+      {
+        "date": "2026-03-05",
+        "hpl": 17850.78,
+        "rtpl": 16137.87
+      },
+      {
+        "date": "2026-03-06",
+        "hpl": -189144.26,
+        "rtpl": -197526.92
+      },
+      {
+        "date": "2026-03-09",
+        "hpl": 116524.93,
+        "rtpl": 113020.04
+      },
+      {
+        "date": "2026-03-10",
+        "hpl": 30467.43,
+        "rtpl": 30504.74
+      },
+      {
+        "date": "2026-03-11",
+        "hpl": -45205.49,
+        "rtpl": -44588.89
+      },
+      {
+        "date": "2026-03-12",
+        "hpl": -204565.85,
+        "rtpl": -209832.92
+      },
+      {
+        "date": "2026-03-13",
+        "hpl": -207537.12,
+        "rtpl": -208713.68
+      },
+      {
+        "date": "2026-03-16",
+        "hpl": 114783.6,
+        "rtpl": 111054.76
+      },
+      {
+        "date": "2026-03-17",
+        "hpl": 30769.3,
+        "rtpl": 30982.62
+      },
+      {
+        "date": "2026-03-18",
+        "hpl": -139824.42,
+        "rtpl": -144858.72
+      },
+      {
+        "date": "2026-03-19",
+        "hpl": -75221.82,
+        "rtpl": -75285.05
+      },
+      {
+        "date": "2026-03-20",
+        "hpl": -190703.28,
+        "rtpl": -195981.75
+      },
+      {
+        "date": "2026-03-23",
+        "hpl": 105636.7,
+        "rtpl": 104512.45
+      },
+      {
+        "date": "2026-03-24",
+        "hpl": -149965.93,
+        "rtpl": -150466.23
+      },
+      {
+        "date": "2026-03-25",
+        "hpl": 61577.46,
+        "rtpl": 60921.34
+      },
+      {
+        "date": "2026-03-26",
+        "hpl": -220568.92,
+        "rtpl": -226367.44
+      },
+      {
+        "date": "2026-03-27",
+        "hpl": -347630.51,
+        "rtpl": -353037.37
+      },
+      {
+        "date": "2026-03-30",
+        "hpl": -71262.63,
+        "rtpl": -71570.53
+      },
+      {
+        "date": "2026-03-31",
+        "hpl": 421842.74,
+        "rtpl": 406612.44
+      },
+      {
+        "date": "2026-04-01",
+        "hpl": 203005.33,
+        "rtpl": 206263.5
+      },
+      {
+        "date": "2026-04-02",
+        "hpl": 70308.53,
+        "rtpl": 69978.49
+      },
+      {
+        "date": "2026-04-03",
+        "hpl": -23.81,
+        "rtpl": 0.0
+      },
+      {
+        "date": "2026-04-06",
+        "hpl": 33107.57,
+        "rtpl": 33400.69
+      },
+      {
+        "date": "2026-04-07",
+        "hpl": -43817.1,
+        "rtpl": -44492.49
+      },
+      {
+        "date": "2026-04-08",
+        "hpl": 344725.05,
+        "rtpl": 336676.38
+      },
+      {
+        "date": "2026-04-09",
+        "hpl": 82039.68,
+        "rtpl": 80796.04
+      },
+      {
+        "date": "2026-04-10",
+        "hpl": 111741.59,
+        "rtpl": 111407.81
+      },
+      {
+        "date": "2026-04-13",
+        "hpl": 145793.47,
+        "rtpl": 143636.54
+      },
+      {
+        "date": "2026-04-14",
+        "hpl": 221848.68,
+        "rtpl": 218879.24
+      },
+      {
+        "date": "2026-04-15",
+        "hpl": 292845.86,
+        "rtpl": 287680.22
+      },
+      {
+        "date": "2026-04-16",
+        "hpl": 43226.84,
+        "rtpl": 42820.68
+      },
+      {
+        "date": "2026-04-17",
+        "hpl": 283300.71,
+        "rtpl": 282770.84
+      },
+      {
+        "date": "2026-04-20",
+        "hpl": 36828.89,
+        "rtpl": 35988.11
+      },
+      {
+        "date": "2026-04-21",
+        "hpl": -72877.4,
+        "rtpl": -74834.36
+      },
+      {
+        "date": "2026-04-22",
+        "hpl": 207146.3,
+        "rtpl": 204430.68
+      },
+      {
+        "date": "2026-04-23",
+        "hpl": -250918.02,
+        "rtpl": -253732.89
+      },
+      {
+        "date": "2026-04-24",
+        "hpl": 224056.45,
+        "rtpl": 220392.58
+      },
+      {
+        "date": "2026-04-27",
+        "hpl": 124677.09,
+        "rtpl": 122015.63
+      },
+      {
+        "date": "2026-04-28",
+        "hpl": -49112.08,
+        "rtpl": -49404.24
+      },
+      {
+        "date": "2026-04-29",
+        "hpl": -172119.6,
+        "rtpl": -172069.65
+      },
+      {
+        "date": "2026-04-30",
+        "hpl": -217993.69,
+        "rtpl": -226406.87
+      },
+      {
+        "date": "2026-05-01",
+        "hpl": 206701.59,
+        "rtpl": 204751.4
+      },
+      {
+        "date": "2026-05-04",
+        "hpl": -68823.75,
+        "rtpl": -69764.02
+      },
+      {
+        "date": "2026-05-05",
+        "hpl": 50707.84,
+        "rtpl": 48382.49
+      },
+      {
+        "date": "2026-05-06",
+        "hpl": 391447.36,
+        "rtpl": 388801.3
+      },
+      {
+        "date": "2026-05-07",
+        "hpl": 112480.51,
+        "rtpl": 111542.85
+      },
+      {
+        "date": "2026-05-08",
+        "hpl": 132640.97,
+        "rtpl": 131372.47
+      },
+      {
+        "date": "2026-05-11",
+        "hpl": -53839.71,
+        "rtpl": -52806.24
+      },
+      {
+        "date": "2026-05-12",
+        "hpl": -19651.75,
+        "rtpl": -19917.29
+      },
+      {
+        "date": "2026-05-13",
+        "hpl": 24340.72,
+        "rtpl": 23710.29
+      },
+      {
+        "date": "2026-05-14",
+        "hpl": 162778.52,
+        "rtpl": 159104.57
+      },
+      {
+        "date": "2026-05-15",
+        "hpl": -126645.82,
+        "rtpl": -131863.16
+      },
+      {
+        "date": "2026-05-18",
+        "hpl": -110242.38,
+        "rtpl": -110278.14
+      },
+      {
+        "date": "2026-05-19",
+        "hpl": -144159.77,
+        "rtpl": -144941.34
+      },
+      {
+        "date": "2026-05-20",
+        "hpl": 277419.18,
+        "rtpl": 277680.42
+      },
+      {
+        "date": "2026-05-21",
+        "hpl": -22591.05,
+        "rtpl": -23249.06
+      },
+      {
+        "date": "2026-05-22",
+        "hpl": -4323.64,
+        "rtpl": -5162.27
+      },
+      {
+        "date": "2026-05-25",
+        "hpl": 262.47,
+        "rtpl": 261.52
+      },
+      {
+        "date": "2026-05-26",
+        "hpl": 98918.48,
+        "rtpl": 100754.33
+      },
+      {
+        "date": "2026-05-27",
+        "hpl": -35634.17,
+        "rtpl": -36222.63
+      },
+      {
+        "date": "2026-05-28",
+        "hpl": 188091.14,
+        "rtpl": 185534.73
+      },
+      {
+        "date": "2026-05-29",
+        "hpl": 239201.42,
+        "rtpl": 234561.78
+      },
+      {
+        "date": "2026-06-01",
+        "hpl": 136641.8,
+        "rtpl": 130978.51
+      },
+      {
+        "date": "2026-06-02",
+        "hpl": -33947.75,
+        "rtpl": -39151.84
+      },
+      {
+        "date": "2026-06-03",
+        "hpl": -363032.75,
+        "rtpl": -367406.51
+      },
+      {
+        "date": "2026-06-04",
+        "hpl": 92210.84,
+        "rtpl": 91052.08
+      },
+      {
+        "date": "2026-06-05",
+        "hpl": -417587.12,
+        "rtpl": -455113.72
+      },
+      {
+        "date": "2026-06-08",
+        "hpl": -82504.54,
+        "rtpl": -84691.34
+      },
+      {
+        "date": "2026-06-09",
+        "hpl": -218521.6,
+        "rtpl": -221380.07
+      },
+      {
+        "date": "2026-06-10",
+        "hpl": -245205.64,
+        "rtpl": -252897.17
+      },
+      {
+        "date": "2026-06-11",
+        "hpl": 193243.45,
+        "rtpl": 187582.12
+      },
+      {
+        "date": "2026-06-12",
+        "hpl": -30478.11,
+        "rtpl": -32535.99
+      },
+      {
+        "date": "2026-06-15",
+        "hpl": 442522.21,
+        "rtpl": 439023.4
+      },
+      {
+        "date": "2026-06-16",
+        "hpl": -62931.29,
+        "rtpl": -65424.93
+      },
+      {
+        "date": "2026-06-17",
+        "hpl": -206502.54,
+        "rtpl": -213948.97
+      },
+      {
+        "date": "2026-06-18",
+        "hpl": 220814.25,
+        "rtpl": 217278.02
+      },
+      {
+        "date": "2026-06-19",
+        "hpl": -920.73,
+        "rtpl": -932.32
+      },
+      {
+        "date": "2026-06-22",
+        "hpl": -161473.68,
+        "rtpl": -163478.16
+      },
+      {
+        "date": "2026-06-23",
+        "hpl": -233611.17,
+        "rtpl": -241171.92
+      },
+      {
+        "date": "2026-06-24",
+        "hpl": -73265.4,
+        "rtpl": -73574.24
+      },
+      {
+        "date": "2026-06-25",
+        "hpl": -412732.83,
+        "rtpl": -421887.96
+      },
+      {
+        "date": "2026-06-26",
+        "hpl": 101963.09,
+        "rtpl": 97437.45
+      },
+      {
+        "date": "2026-06-29",
+        "hpl": -5504.24,
+        "rtpl": -6912.25
+      },
+      {
+        "date": "2026-06-30",
+        "hpl": 256592.39,
+        "rtpl": 253179.12
+      },
+      {
+        "date": "2026-07-01",
+        "hpl": 150372.28,
+        "rtpl": 147921.13
+      },
+      {
+        "date": "2026-07-02",
+        "hpl": 91550.63,
+        "rtpl": 88194.77
+      },
+      {
+        "date": "2026-07-03",
+        "hpl": 854.9,
+        "rtpl": 845.38
+      },
+      {
+        "date": "2026-07-06",
+        "hpl": 128398.28,
+        "rtpl": 127831.24
+      },
+      {
+        "date": "2026-07-07",
+        "hpl": -163360.96,
+        "rtpl": -161372.85
+      },
+      {
+        "date": "2026-07-08",
+        "hpl": 87365.88,
+        "rtpl": 84549.71
+      },
+      {
+        "date": "2026-07-09",
+        "hpl": 178896.86,
+        "rtpl": 178195.79
+      },
+      {
+        "date": "2026-07-10",
+        "hpl": 125938.24,
+        "rtpl": 123329.89
+      },
+      {
+        "date": "2026-07-13",
+        "hpl": -167269.58,
+        "rtpl": -170954.4
+      },
+      {
+        "date": "2026-07-14",
+        "hpl": 111018.56,
+        "rtpl": 107668.02
+      },
+      {
+        "date": "2026-07-15",
+        "hpl": 365754.86,
+        "rtpl": 361649.22
+      },
+      {
+        "date": "2026-07-16",
+        "hpl": -41388.5,
+        "rtpl": -44067.71
+      },
+      {
+        "date": "2026-07-17",
+        "hpl": -211953.57,
+        "rtpl": -216523.42
+      },
+      {
+        "date": "2026-07-20",
+        "hpl": -6560.53,
+        "rtpl": -7869.76
+      },
+      {
+        "date": "2026-07-21",
+        "hpl": 18858.86,
+        "rtpl": 16621.16
+      },
+      {
+        "date": "2026-07-22",
+        "hpl": -101157.27,
+        "rtpl": -101605.31
+      },
+      {
+        "date": "2026-07-23",
+        "hpl": -280781.1,
+        "rtpl": -286307.9
+      },
+      {
+        "date": "2026-07-24",
+        "hpl": 96392.64,
+        "rtpl": 94016.96
+      },
+      {
+        "date": "2026-07-27",
+        "hpl": -9199.94,
+        "rtpl": -13398.51
+      },
+      {
+        "date": "2026-07-28",
+        "hpl": 114984.52,
+        "rtpl": 114467.7
+      },
+      {
+        "date": "2026-07-29",
+        "hpl": -292868.73,
+        "rtpl": -301340.39
+      },
+      {
+        "date": "2026-07-30",
+        "hpl": 667716.22,
+        "rtpl": 626651.7
+      },
+      {
+        "date": "2026-07-31",
+        "hpl": -76387.9,
+        "rtpl": -92351.79
+      },
+      {
+        "date": "2026-08-03",
+        "hpl": 269798.8,
+        "rtpl": 263807.08
+      },
+      {
+        "date": "2026-08-04",
+        "hpl": 279915.74,
+        "rtpl": 279869.4
+      },
+      {
+        "date": "2026-08-06",
+        "hpl": 51681.7,
+        "rtpl": 51029.31
+      }
+    ]
+  },
+  "/api/v1/backtest/summary?model=HS&scope=FIRM&window=250": {
+    "scope": "FIRM",
+    "model": "HS",
+    "measure": "VAR_HS",
+    "window": 250,
+    "start": "2025-08-19",
+    "end": "2026-08-06",
+    "n_obs": 250,
+    "n_exceptions": 2,
+    "expected_exceptions": 2.5,
+    "kupiec": {
+      "name": "kupiec_pof",
+      "statistic": 0.10843521623679919,
+      "p_value": 0.7419327009526281,
+      "df": 1,
+      "reject_5pct": false,
+      "details": {
+        "n_obs": 250,
+        "n_exceptions": 2,
+        "expected": 2.5,
+        "p": 0.01
+      }
+    },
+    "christoffersen_independence": {
+      "name": "christoffersen_independence",
+      "statistic": 0.032389017899152606,
+      "p_value": 0.8571765192955558,
+      "df": 1,
+      "reject_5pct": false,
+      "details": {
+        "n00": 245,
+        "n01": 2,
+        "n10": 2,
+        "n11": 0
+      }
+    },
+    "christoffersen_cc": {
+      "name": "christoffersen_cc",
+      "statistic": 0.1408242341359518,
+      "p_value": 0.9320096436669197,
+      "df": 2,
+      "reject_5pct": false,
+      "details": {
+        "lr_pof": 0.10843521623679919,
+        "lr_ind": 0.032389017899152606
+      }
+    },
+    "traffic_light": {
+      "zone": "GREEN",
+      "n_exceptions": 2,
+      "n_obs": 250,
+      "plus_factor": 0.0,
+      "multiplier": 3.0,
+      "regulatory_window": true
+    },
+    "exceptions": [
+      {
+        "date": "2026-05-15",
+        "var_value": 1141075.54,
+        "pnl_value": -1244417.1
+      },
+      {
+        "date": "2026-06-05",
+        "var_value": 1161336.27,
+        "pnl_value": -1329217.37
+      }
+    ]
+  },
+  "/api/v1/backtest/summary?model=FHS&scope=FIRM&window=250": {
+    "scope": "FIRM",
+    "model": "FHS",
+    "measure": "VAR_FHS",
+    "window": 250,
+    "start": "2025-08-19",
+    "end": "2026-08-06",
+    "n_obs": 250,
+    "n_exceptions": 4,
+    "expected_exceptions": 2.5,
+    "kupiec": {
+      "name": "kupiec_pof",
+      "statistic": 0.7691383643858458,
+      "p_value": 0.380483738238954,
+      "df": 1,
+      "reject_5pct": false,
+      "details": {
+        "n_obs": 250,
+        "n_exceptions": 4,
+        "expected": 2.5,
+        "p": 0.01
+      }
+    },
+    "christoffersen_independence": {
+      "name": "christoffersen_independence",
+      "statistic": 0.13061804808766198,
+      "p_value": 0.7177920842954111,
+      "df": 1,
+      "reject_5pct": false,
+      "details": {
+        "n00": 241,
+        "n01": 4,
+        "n10": 4,
+        "n11": 0
+      }
+    },
+    "christoffersen_cc": {
+      "name": "christoffersen_cc",
+      "statistic": 0.8997564124735078,
+      "p_value": 0.637705815483302,
+      "df": 2,
+      "reject_5pct": false,
+      "details": {
+        "lr_pof": 0.7691383643858458,
+        "lr_ind": 0.13061804808766198
+      }
+    },
+    "traffic_light": {
+      "zone": "GREEN",
+      "n_exceptions": 4,
+      "n_obs": 250,
+      "plus_factor": 0.0,
+      "multiplier": 3.0,
+      "regulatory_window": true
+    },
+    "exceptions": [
+      {
+        "date": "2026-03-20",
+        "var_value": 999347.97,
+        "pnl_value": -1139059.59
+      },
+      {
+        "date": "2026-05-15",
+        "var_value": 819381.89,
+        "pnl_value": -1244417.1
+      },
+      {
+        "date": "2026-06-05",
+        "var_value": 907677.62,
+        "pnl_value": -1329217.37
+      },
+      {
+        "date": "2026-07-29",
+        "var_value": 866646.0,
+        "pnl_value": -1073013.88
+      }
+    ]
+  },
+  "/api/v1/risk/history?scope=desk:EQUITY&window=60": {
+    "scope": "EQUITY",
+    "start": "2026-05-14",
+    "end": "2026-08-06",
+    "points": [
+      {
+        "date": "2026-05-14",
+        "var_hs": 592218.6,
+        "var_fhs": 610332.0,
+        "es_975": 570037.23,
+        "pnl": 162778.52,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-15",
+        "var_hs": 574623.3,
+        "var_fhs": 590321.57,
+        "es_975": 557591.88,
+        "pnl": -126645.82,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-18",
+        "var_hs": 569288.84,
+        "var_fhs": 571105.52,
+        "es_975": 555586.11,
+        "pnl": -110242.38,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-19",
+        "var_hs": 560677.06,
+        "var_fhs": 553842.56,
+        "es_975": 551198.96,
+        "pnl": -144159.77,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-20",
+        "var_hs": 580908.22,
+        "var_fhs": 551228.68,
+        "es_975": 559958.06,
+        "pnl": 277419.18,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-21",
+        "var_hs": 582902.25,
+        "var_fhs": 546855.91,
+        "es_975": 559260.55,
+        "pnl": -22591.05,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-22",
+        "var_hs": 583350.53,
+        "var_fhs": 547573.35,
+        "es_975": 557446.17,
+        "pnl": -4323.64,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-25",
+        "var_hs": 583840.33,
+        "var_fhs": 532434.62,
+        "es_975": 557780.17,
+        "pnl": 262.47,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-26",
+        "var_hs": 588326.39,
+        "var_fhs": 509726.16,
+        "es_975": 556010.99,
+        "pnl": 98918.48,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-27",
+        "var_hs": 590072.0,
+        "var_fhs": 508465.92,
+        "es_975": 555735.76,
+        "pnl": -35634.17,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-28",
+        "var_hs": 601184.21,
+        "var_fhs": 518710.17,
+        "es_975": 563441.51,
+        "pnl": 188091.14,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-29",
+        "var_hs": 611543.95,
+        "var_fhs": 542519.5,
+        "es_975": 567136.69,
+        "pnl": 239201.42,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-01",
+        "var_hs": 614594.96,
+        "var_fhs": 572552.05,
+        "es_975": 577613.38,
+        "pnl": 136641.8,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-02",
+        "var_hs": 618746.01,
+        "var_fhs": 616766.79,
+        "es_975": 576660.68,
+        "pnl": -33947.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-03",
+        "var_hs": 596121.31,
+        "var_fhs": 605543.26,
+        "es_975": 561196.02,
+        "pnl": -363032.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-04",
+        "var_hs": 606840.47,
+        "var_fhs": 620274.97,
+        "es_975": 569928.86,
+        "pnl": 92210.84,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-05",
+        "var_hs": 559376.54,
+        "var_fhs": 627679.85,
+        "es_975": 534240.57,
+        "pnl": -417587.12,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-08",
+        "var_hs": 563430.58,
+        "var_fhs": 629133.57,
+        "es_975": 540070.6,
+        "pnl": -82504.54,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-09",
+        "var_hs": 548309.72,
+        "var_fhs": 650166.79,
+        "es_975": 531382.53,
+        "pnl": -218521.6,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-10",
+        "var_hs": 526294.43,
+        "var_fhs": 634796.9,
+        "es_975": 515937.81,
+        "pnl": -245205.64,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-11",
+        "var_hs": 550024.15,
+        "var_fhs": 645752.89,
+        "es_975": 528571.64,
+        "pnl": 193243.45,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-12",
+        "var_hs": 554672.65,
+        "var_fhs": 641419.33,
+        "es_975": 532868.7,
+        "pnl": -30478.11,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-15",
+        "var_hs": 587002.49,
+        "var_fhs": 672390.6,
+        "es_975": 550458.99,
+        "pnl": 442522.21,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-16",
+        "var_hs": 583825.01,
+        "var_fhs": 667697.01,
+        "es_975": 544811.74,
+        "pnl": -62931.29,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-17",
+        "var_hs": 565872.61,
+        "var_fhs": 652565.35,
+        "es_975": 530692.52,
+        "pnl": -206502.54,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-18",
+        "var_hs": 581623.24,
+        "var_fhs": 657117.21,
+        "es_975": 543567.67,
+        "pnl": 220814.25,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-19",
+        "var_hs": 580351.04,
+        "var_fhs": 636569.12,
+        "es_975": 542417.68,
+        "pnl": -920.73,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-22",
+        "var_hs": 573106.49,
+        "var_fhs": 624888.99,
+        "es_975": 536159.37,
+        "pnl": -161473.68,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-23",
+        "var_hs": 552777.06,
+        "var_fhs": 617824.26,
+        "es_975": 516862.47,
+        "pnl": -233611.17,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-24",
+        "var_hs": 553670.49,
+        "var_fhs": 604635.7,
+        "es_975": 515874.17,
+        "pnl": -73265.4,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-25",
+        "var_hs": 527534.67,
+        "var_fhs": 617587.28,
+        "es_975": 502626.15,
+        "pnl": -412732.83,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-26",
+        "var_hs": 534390.63,
+        "var_fhs": 641146.89,
+        "es_975": 509276.35,
+        "pnl": 101963.09,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-29",
+        "var_hs": 538062.53,
+        "var_fhs": 644100.33,
+        "es_975": 513072.77,
+        "pnl": -5504.24,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-30",
+        "var_hs": 486554.15,
+        "var_fhs": 646585.57,
+        "es_975": 511971.62,
+        "pnl": 256592.39,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-01",
+        "var_hs": 486958.12,
+        "var_fhs": 627232.6,
+        "es_975": 514659.88,
+        "pnl": 150372.28,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-02",
+        "var_hs": 490968.35,
+        "var_fhs": 621377.54,
+        "es_975": 521637.56,
+        "pnl": 91550.63,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-03",
+        "var_hs": 492016.86,
+        "var_fhs": 603137.86,
+        "es_975": 522699.4,
+        "pnl": 854.9,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-06",
+        "var_hs": 496838.83,
+        "var_fhs": 593914.1,
+        "es_975": 526429.09,
+        "pnl": 128398.28,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-07",
+        "var_hs": 493778.43,
+        "var_fhs": 591424.45,
+        "es_975": 524843.66,
+        "pnl": -163360.96,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-08",
+        "var_hs": 499960.11,
+        "var_fhs": 613533.26,
+        "es_975": 528424.53,
+        "pnl": 87365.88,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-09",
+        "var_hs": 504471.01,
+        "var_fhs": 600206.7,
+        "es_975": 533180.24,
+        "pnl": 178896.86,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-10",
+        "var_hs": 517305.14,
+        "var_fhs": 632066.69,
+        "es_975": 537049.39,
+        "pnl": 125938.24,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-13",
+        "var_hs": 500089.02,
+        "var_fhs": 604051.72,
+        "es_975": 523800.77,
+        "pnl": -167269.58,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-14",
+        "var_hs": 511475.02,
+        "var_fhs": 617388.28,
+        "es_975": 532022.44,
+        "pnl": 111018.56,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-15",
+        "var_hs": 521251.88,
+        "var_fhs": 649291.58,
+        "es_975": 543857.33,
+        "pnl": 365754.86,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-16",
+        "var_hs": 513156.29,
+        "var_fhs": 630985.46,
+        "es_975": 538658.21,
+        "pnl": -41388.5,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-17",
+        "var_hs": 499664.84,
+        "var_fhs": 614768.54,
+        "es_975": 526277.97,
+        "pnl": -211953.57,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-20",
+        "var_hs": 498450.3,
+        "var_fhs": 605932.09,
+        "es_975": 524892.41,
+        "pnl": -6560.53,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-21",
+        "var_hs": 507816.26,
+        "var_fhs": 607083.38,
+        "es_975": 533371.79,
+        "pnl": 18858.86,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-22",
+        "var_hs": 513073.71,
+        "var_fhs": 598896.98,
+        "es_975": 536723.91,
+        "pnl": -101157.27,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-23",
+        "var_hs": 499137.14,
+        "var_fhs": 577953.6,
+        "es_975": 523899.25,
+        "pnl": -280781.1,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-24",
+        "var_hs": 501613.47,
+        "var_fhs": 586465.11,
+        "es_975": 528123.82,
+        "pnl": 96392.64,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-27",
+        "var_hs": 491527.87,
+        "var_fhs": 597654.48,
+        "es_975": 522267.54,
+        "pnl": -9199.94,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-28",
+        "var_hs": 495917.66,
+        "var_fhs": 589637.37,
+        "es_975": 526546.39,
+        "pnl": 114984.52,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-29",
+        "var_hs": 480744.46,
+        "var_fhs": 576019.65,
+        "es_975": 511229.5,
+        "pnl": -292868.73,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-30",
+        "var_hs": 499951.64,
+        "var_fhs": 786922.74,
+        "es_975": 536179.57,
+        "pnl": 667716.22,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-31",
+        "var_hs": 505343.54,
+        "var_fhs": 862648.38,
+        "es_975": 537014.79,
+        "pnl": -76387.9,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-03",
+        "var_hs": 517756.93,
+        "var_fhs": 893203.07,
+        "es_975": 546582.72,
+        "pnl": 269798.8,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-04",
+        "var_hs": 525891.78,
+        "var_fhs": 905554.82,
+        "es_975": 555561.4,
+        "pnl": 279915.74,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-06",
+        "var_hs": 541030.44,
+        "var_fhs": 887177.66,
+        "es_975": 569250.51,
+        "pnl": 51681.7,
+        "exception_hs": false,
+        "exception_fhs": false
+      }
+    ]
+  },
+  "/api/v1/desks/EQUITY/decomposition": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "desk_code": "EQUITY",
+    "desk_name": "Cash Equities",
+    "var_hs_1d": 541030.44,
+    "buckets": [
+      {
+        "factor_class": "EQ",
+        "standalone_var": 1024297.59
+      }
+    ],
+    "diversification": -483267.15,
+    "exposures": [
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "EQ.AAPL",
+        "tenor_years": null,
+        "value": 4000097.69
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "EQ.JNJ",
+        "tenor_years": null,
+        "value": -2499901.55
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "EQ.JPM",
+        "tenor_years": null,
+        "value": 1500022.95
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "EQ.MSFT",
+        "tenor_years": null,
+        "value": 3999879.6
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "EQ.NVDA",
+        "tenor_years": null,
+        "value": 2999944.09
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "EQ.SPY",
+        "tenor_years": null,
+        "value": 3702721.17
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "EQ.XOM",
+        "tenor_years": null,
+        "value": -2500046.58
+      },
+      {
+        "measure": "VEGA",
+        "factor_code": "VOL.SPX.IV30",
+        "tenor_years": null,
+        "value": -2748.66
+      }
+    ]
+  },
+  "/api/v1/desks/EQUITY/positions": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "desk_code": "EQUITY",
+    "desk_name": "Cash Equities",
+    "positions": [
+      {
+        "ticker": "NVDA",
+        "instrument_type": "STOCK",
+        "quantity": 13699.0,
+        "factor_class": "EQ",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 220857.83,
+        "component_es": 211350.79,
+        "marginal_var": 140931.91,
+        "pct_of_desk": 0.3713
+      },
+      {
+        "ticker": "SPY",
+        "instrument_type": "ETF",
+        "quantity": 7807.0,
+        "factor_class": "EQ",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 159841.17,
+        "component_es": 144016.95,
+        "marginal_var": 60578.44,
+        "pct_of_desk": 0.253
+      },
+      {
+        "ticker": "AAPL",
+        "instrument_type": "STOCK",
+        "quantity": 12804.0,
+        "factor_class": "EQ",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 199283.78,
+        "component_es": 143121.59,
+        "marginal_var": 109426.02,
+        "pct_of_desk": 0.2514
+      },
+      {
+        "ticker": "MSFT",
+        "instrument_type": "STOCK",
+        "quantity": 8002.0,
+        "factor_class": "EQ",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 158721.07,
+        "component_es": 111064.88,
+        "marginal_var": 74518.33,
+        "pct_of_desk": 0.1951
+      },
+      {
+        "ticker": "JPM",
+        "instrument_type": "STOCK",
+        "quantity": 4210.0,
+        "factor_class": "EQ",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 64863.84,
+        "component_es": 36773.11,
+        "marginal_var": 21367.5,
+        "pct_of_desk": 0.0646
+      },
+      {
+        "ticker": "JNJ",
+        "instrument_type": "STOCK",
+        "quantity": -9728.0,
+        "factor_class": "EQ",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 82282.42,
+        "component_es": 14804.57,
+        "marginal_var": -6972.93,
+        "pct_of_desk": 0.026
+      },
+      {
+        "ticker": "SPY_CALL_103",
+        "instrument_type": "OPTION",
+        "quantity": -7800.0,
+        "factor_class": "EQ",
+        "option_type": "CALL",
+        "moneyness": 1.03,
+        "maturity_years": 0.08333,
+        "standalone_var": 32539.01,
+        "component_es": -9660.95,
+        "marginal_var": -8891.6,
+        "pct_of_desk": -0.017
+      },
+      {
+        "ticker": "XOM",
+        "instrument_type": "STOCK",
+        "quantity": -16146.0,
+        "factor_class": "EQ",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 93288.2,
+        "component_es": -26960.21,
+        "marginal_var": -51685.78,
+        "pct_of_desk": -0.0474
+      },
+      {
+        "ticker": "SPY_PUT_95",
+        "instrument_type": "OPTION",
+        "quantity": 7800.0,
+        "factor_class": "EQ",
+        "option_type": "PUT",
+        "moneyness": 0.95,
+        "maturity_years": 0.08333,
+        "standalone_var": 12620.27,
+        "component_es": -55260.22,
+        "marginal_var": -46479.28,
+        "pct_of_desk": -0.0971
+      }
+    ]
+  },
+  "/api/v1/risk/history?scope=desk:FX&window=60": {
+    "scope": "FX",
+    "start": "2026-05-14",
+    "end": "2026-08-06",
+    "points": [
+      {
+        "date": "2026-05-14",
+        "var_hs": 629716.58,
+        "var_fhs": 468392.76,
+        "es_975": 606910.68,
+        "pnl": -81133.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-15",
+        "var_hs": 625929.76,
+        "var_fhs": 494603.93,
+        "es_975": 603002.03,
+        "pnl": -271362.46,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-18",
+        "var_hs": 626251.58,
+        "var_fhs": 492868.99,
+        "es_975": 604160.59,
+        "pnl": 214205.65,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-19",
+        "var_hs": 624556.15,
+        "var_fhs": 480275.88,
+        "es_975": 602093.68,
+        "pnl": -151300.6,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-20",
+        "var_hs": 626529.45,
+        "var_fhs": 475252.96,
+        "es_975": 603902.07,
+        "pnl": 99664.82,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-21",
+        "var_hs": 625051.69,
+        "var_fhs": 464863.73,
+        "es_975": 602332.03,
+        "pnl": -89933.26,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-22",
+        "var_hs": 625178.32,
+        "var_fhs": 454132.88,
+        "es_975": 602866.16,
+        "pnl": 92847.67,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-25",
+        "var_hs": 625178.32,
+        "var_fhs": 440383.41,
+        "es_975": 602866.16,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-26",
+        "var_hs": 624111.43,
+        "var_fhs": 427321.62,
+        "es_975": 602495.32,
+        "pnl": 50679.21,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-27",
+        "var_hs": 622730.24,
+        "var_fhs": 415701.95,
+        "es_975": 601669.58,
+        "pnl": -5988.99,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-28",
+        "var_hs": 623610.26,
+        "var_fhs": 405361.12,
+        "es_975": 602566.06,
+        "pnl": 44210.68,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-29",
+        "var_hs": 622858.25,
+        "var_fhs": 396514.77,
+        "es_975": 602578.97,
+        "pnl": 64915.7,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-01",
+        "var_hs": 622141.71,
+        "var_fhs": 388624.21,
+        "es_975": 601332.75,
+        "pnl": -76378.19,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-02",
+        "var_hs": 622663.78,
+        "var_fhs": 388513.58,
+        "es_975": 602461.97,
+        "pnl": 181028.93,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-03",
+        "var_hs": 622540.02,
+        "var_fhs": 381550.57,
+        "es_975": 601611.8,
+        "pnl": -122665.26,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-04",
+        "var_hs": 622624.48,
+        "var_fhs": 372373.1,
+        "es_975": 602174.87,
+        "pnl": 83543.99,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-05",
+        "var_hs": 619588.12,
+        "var_fhs": 429493.77,
+        "es_975": 597826.16,
+        "pnl": -426840.5,
+        "exception_hs": false,
+        "exception_fhs": true
+      },
+      {
+        "date": "2026-06-08",
+        "var_hs": 621298.11,
+        "var_fhs": 423761.85,
+        "es_975": 599283.95,
+        "pnl": 66704.43,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-09",
+        "var_hs": 620911.56,
+        "var_fhs": 414597.93,
+        "es_975": 599445.07,
+        "pnl": 89870.2,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-10",
+        "var_hs": 620512.56,
+        "var_fhs": 402630.98,
+        "es_975": 599288.98,
+        "pnl": 47594.9,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-11",
+        "var_hs": 621805.03,
+        "var_fhs": 396676.39,
+        "es_975": 599549.78,
+        "pnl": -74145.19,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-12",
+        "var_hs": 624511.28,
+        "var_fhs": 416451.02,
+        "es_975": 602885.3,
+        "pnl": 296398.91,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-15",
+        "var_hs": 624354.69,
+        "var_fhs": 404266.39,
+        "es_975": 603257.75,
+        "pnl": 68138.17,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-16",
+        "var_hs": 623346.34,
+        "var_fhs": 392856.45,
+        "es_975": 602995.04,
+        "pnl": 73215.01,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-17",
+        "var_hs": 624730.76,
+        "var_fhs": 382234.95,
+        "es_975": 603393.71,
+        "pnl": -87986.43,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-18",
+        "var_hs": 619847.59,
+        "var_fhs": 446851.85,
+        "es_975": 597688.9,
+        "pnl": -389801.03,
+        "exception_hs": false,
+        "exception_fhs": true
+      },
+      {
+        "date": "2026-06-19",
+        "var_hs": 619847.59,
+        "var_fhs": 433324.81,
+        "es_975": 597688.9,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-22",
+        "var_hs": 621089.37,
+        "var_fhs": 427748.51,
+        "es_975": 598211.94,
+        "pnl": 17045.97,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-23",
+        "var_hs": 617979.65,
+        "var_fhs": 458280.3,
+        "es_975": 594506.44,
+        "pnl": -353331.03,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-24",
+        "var_hs": 616666.97,
+        "var_fhs": 451574.01,
+        "es_975": 592860.6,
+        "pnl": -133433.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-25",
+        "var_hs": 617781.33,
+        "var_fhs": 452414.65,
+        "es_975": 594598.48,
+        "pnl": 192195.79,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-26",
+        "var_hs": 618941.62,
+        "var_fhs": 446531.12,
+        "es_975": 595946.8,
+        "pnl": 123304.36,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-29",
+        "var_hs": 616188.87,
+        "var_fhs": 438181.33,
+        "es_975": 594485.12,
+        "pnl": 39698.36,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-30",
+        "var_hs": 529607.73,
+        "var_fhs": 425351.37,
+        "es_975": 570817.19,
+        "pnl": 167036.32,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-01",
+        "var_hs": 529688.18,
+        "var_fhs": 420096.74,
+        "es_975": 569891.17,
+        "pnl": -157064.47,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-02",
+        "var_hs": 534045.97,
+        "var_fhs": 446885.79,
+        "es_975": 573644.59,
+        "pnl": 17664.32,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-03",
+        "var_hs": 534045.97,
+        "var_fhs": 433322.67,
+        "es_975": 573644.59,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-06",
+        "var_hs": 530680.27,
+        "var_fhs": 427080.07,
+        "es_975": 571691.52,
+        "pnl": 199216.56,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-07",
+        "var_hs": 531339.53,
+        "var_fhs": 416697.13,
+        "es_975": 571381.14,
+        "pnl": -120385.03,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-08",
+        "var_hs": 528885.34,
+        "var_fhs": 419950.32,
+        "es_975": 568181.73,
+        "pnl": -66172.44,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-09",
+        "var_hs": 493009.43,
+        "var_fhs": 422510.22,
+        "es_975": 555540.39,
+        "pnl": 151176.87,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-10",
+        "var_hs": 493160.1,
+        "var_fhs": 415569.81,
+        "es_975": 519411.64,
+        "pnl": -89758.74,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-13",
+        "var_hs": 491169.3,
+        "var_fhs": 407040.13,
+        "es_975": 517730.33,
+        "pnl": 41784.45,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-14",
+        "var_hs": 492100.81,
+        "var_fhs": 401124.15,
+        "es_975": 519006.3,
+        "pnl": 90005.4,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-15",
+        "var_hs": 492892.14,
+        "var_fhs": 412940.11,
+        "es_975": 520028.04,
+        "pnl": 150886.67,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-16",
+        "var_hs": 491861.39,
+        "var_fhs": 402129.01,
+        "es_975": 519195.46,
+        "pnl": 15095.12,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-17",
+        "var_hs": 491601.7,
+        "var_fhs": 398588.81,
+        "es_975": 517865.35,
+        "pnl": -129407.83,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-20",
+        "var_hs": 491410.8,
+        "var_fhs": 394122.26,
+        "es_975": 518427.3,
+        "pnl": 23960.81,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-21",
+        "var_hs": 490532.56,
+        "var_fhs": 387898.14,
+        "es_975": 518540.84,
+        "pnl": 76745.78,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-22",
+        "var_hs": 490220.92,
+        "var_fhs": 376253.76,
+        "es_975": 518497.76,
+        "pnl": 23966.65,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-23",
+        "var_hs": 487983.31,
+        "var_fhs": 387431.73,
+        "es_975": 515612.14,
+        "pnl": -142825.4,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-24",
+        "var_hs": 488170.44,
+        "var_fhs": 381359.86,
+        "es_975": 516727.78,
+        "pnl": 97287.89,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-27",
+        "var_hs": 488440.62,
+        "var_fhs": 371834.99,
+        "es_975": 516683.81,
+        "pnl": -38996.5,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-28",
+        "var_hs": 488519.4,
+        "var_fhs": 362766.68,
+        "es_975": 517242.75,
+        "pnl": 67137.02,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-29",
+        "var_hs": 487838.04,
+        "var_fhs": 359995.91,
+        "es_975": 515570.85,
+        "pnl": -113378.99,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-30",
+        "var_hs": 497494.21,
+        "var_fhs": 520460.17,
+        "es_975": 523828.12,
+        "pnl": -135758.98,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-31",
+        "var_hs": 497987.81,
+        "var_fhs": 505593.24,
+        "es_975": 524349.91,
+        "pnl": -37471.69,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-03",
+        "var_hs": 497987.81,
+        "var_fhs": 490232.05,
+        "es_975": 524349.91,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-04",
+        "var_hs": 497987.81,
+        "var_fhs": 475336.35,
+        "es_975": 524349.91,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-06",
+        "var_hs": 497987.81,
+        "var_fhs": 446885.75,
+        "es_975": 524349.91,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      }
+    ]
+  },
+  "/api/v1/desks/FX/decomposition": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "desk_code": "FX",
+    "desk_name": "FX Spot",
+    "var_hs_1d": 497987.81,
+    "buckets": [
+      {
+        "factor_class": "FX",
+        "standalone_var": 1130988.34
+      }
+    ],
+    "diversification": -633000.53,
+    "exposures": [
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "FX.EURUSD",
+        "tenor_years": null,
+        "value": 22000000.0
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "FX.GBPUSD",
+        "tenor_years": null,
+        "value": 11000000.0
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "FX.JPYUSD",
+        "tenor_years": null,
+        "value": -27000018.59
+      },
+      {
+        "measure": "DELTA_USD",
+        "factor_code": "FX.MXNUSD",
+        "tenor_years": null,
+        "value": 18000001.38
+      }
+    ]
+  },
+  "/api/v1/desks/FX/positions": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "desk_code": "FX",
+    "desk_name": "FX Spot",
+    "positions": [
+      {
+        "ticker": "MXNUSD_SPOT",
+        "instrument_type": "FX_SPOT",
+        "quantity": 311823000.0,
+        "factor_class": "FX",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 302014.65,
+        "component_es": 240694.65,
+        "marginal_var": 165609.89,
+        "pct_of_desk": 0.459
+      },
+      {
+        "ticker": "JPYUSD_SPOT",
+        "instrument_type": "FX_SPOT",
+        "quantity": -4297320000.0,
+        "factor_class": "FX",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 463566.1,
+        "component_es": 163419.38,
+        "marginal_var": -43757.33,
+        "pct_of_desk": 0.3117
+      },
+      {
+        "ticker": "EURUSD_SPOT",
+        "instrument_type": "FX_SPOT",
+        "quantity": 19098880.11,
+        "factor_class": "FX",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 233436.17,
+        "component_es": 76722.15,
+        "marginal_var": -9486.16,
+        "pct_of_desk": 0.1463
+      },
+      {
+        "ticker": "GBPUSD_SPOT",
+        "instrument_type": "FX_SPOT",
+        "quantity": 8166295.47,
+        "factor_class": "FX",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": null,
+        "standalone_var": 131971.42,
+        "component_es": 43513.73,
+        "marginal_var": 11359.5,
+        "pct_of_desk": 0.083
+      }
+    ]
+  },
+  "/api/v1/risk/history?scope=desk:RATES&window=60": {
+    "scope": "RATES",
+    "start": "2026-05-14",
+    "end": "2026-08-06",
+    "points": [
+      {
+        "date": "2026-05-14",
+        "var_hs": 950153.59,
+        "var_fhs": 674661.91,
+        "es_975": 974617.21,
+        "pnl": -8704.78,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-15",
+        "var_hs": 933511.16,
+        "var_fhs": 810698.13,
+        "es_975": 962340.89,
+        "pnl": -846408.83,
+        "exception_hs": false,
+        "exception_fhs": true
+      },
+      {
+        "date": "2026-05-18",
+        "var_hs": 930320.18,
+        "var_fhs": 790016.78,
+        "es_975": 958960.93,
+        "pnl": -126159.19,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-19",
+        "var_hs": 922983.08,
+        "var_fhs": 797158.09,
+        "es_975": 951335.46,
+        "pnl": -436581.87,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-20",
+        "var_hs": 935313.52,
+        "var_fhs": 876390.16,
+        "es_975": 964246.05,
+        "pnl": 682789.25,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-21",
+        "var_hs": 936815.62,
+        "var_fhs": 853194.01,
+        "es_975": 965816.49,
+        "pnl": 58109.26,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-22",
+        "var_hs": 940989.37,
+        "var_fhs": 843099.59,
+        "es_975": 970299.78,
+        "pnl": 154955.97,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-25",
+        "var_hs": 940989.37,
+        "var_fhs": 817582.42,
+        "es_975": 970299.78,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-26",
+        "var_hs": 948190.7,
+        "var_fhs": 856301.6,
+        "es_975": 977849.66,
+        "pnl": 466086.2,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-27",
+        "var_hs": 951391.58,
+        "var_fhs": 837217.44,
+        "es_975": 981255.84,
+        "pnl": 153880.15,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-28",
+        "var_hs": 956371.13,
+        "var_fhs": 827629.39,
+        "es_975": 986519.81,
+        "pnl": 250257.34,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-05-29",
+        "var_hs": 954898.98,
+        "var_fhs": 800866.25,
+        "es_975": 984965.65,
+        "pnl": -84208.57,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-01",
+        "var_hs": 954316.6,
+        "var_fhs": 784030.89,
+        "es_975": 984394.21,
+        "pnl": -82099.37,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-02",
+        "var_hs": 957084.66,
+        "var_fhs": 765355.01,
+        "es_975": 987403.19,
+        "pnl": 116367.68,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-03",
+        "var_hs": 953532.35,
+        "var_fhs": 746889.85,
+        "es_975": 983653.46,
+        "pnl": -183647.99,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-04",
+        "var_hs": 956657.7,
+        "var_fhs": 731885.52,
+        "es_975": 987002.99,
+        "pnl": 162231.92,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-05",
+        "var_hs": 934409.93,
+        "var_fhs": 760700.71,
+        "es_975": 962644.07,
+        "pnl": -484789.75,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-08",
+        "var_hs": 931171.91,
+        "var_fhs": 741304.2,
+        "es_975": 959652.88,
+        "pnl": -107819.06,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-09",
+        "var_hs": 935127.36,
+        "var_fhs": 731667.36,
+        "es_975": 963397.71,
+        "pnl": 191888.68,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-10",
+        "var_hs": 931487.65,
+        "var_fhs": 714881.19,
+        "es_975": 959958.32,
+        "pnl": -163296.81,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-11",
+        "var_hs": 946668.09,
+        "var_fhs": 826907.45,
+        "es_975": 974400.19,
+        "pnl": 756145.66,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-12",
+        "var_hs": 942674.09,
+        "var_fhs": 810646.07,
+        "es_975": 970546.66,
+        "pnl": -228288.56,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-15",
+        "var_hs": 942908.26,
+        "var_fhs": 784470.23,
+        "es_975": 970713.28,
+        "pnl": 1865.38,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-16",
+        "var_hs": 950290.36,
+        "var_fhs": 790716.93,
+        "es_975": 977760.97,
+        "pnl": 365290.3,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-17",
+        "var_hs": 948308.98,
+        "var_fhs": 787725.64,
+        "es_975": 975675.24,
+        "pnl": -251388.96,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-18",
+        "var_hs": 953672.98,
+        "var_fhs": 782770.15,
+        "es_975": 980625.02,
+        "pnl": 199235.3,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-19",
+        "var_hs": 953672.98,
+        "var_fhs": 759140.59,
+        "es_975": 980625.02,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-22",
+        "var_hs": 944723.37,
+        "var_fhs": 773123.76,
+        "es_975": 972204.92,
+        "pnl": -406181.09,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-23",
+        "var_hs": 946382.4,
+        "var_fhs": 754615.68,
+        "es_975": 973968.57,
+        "pnl": 179160.59,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-24",
+        "var_hs": 961281.19,
+        "var_fhs": 844651.61,
+        "es_975": 987912.89,
+        "pnl": 639220.9,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-25",
+        "var_hs": 961603.57,
+        "var_fhs": 819774.66,
+        "es_975": 988224.74,
+        "pnl": 28979.24,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-26",
+        "var_hs": 960933.07,
+        "var_fhs": 796624.19,
+        "es_975": 987623.31,
+        "pnl": 1968.15,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-29",
+        "var_hs": 962544.44,
+        "var_fhs": 775127.53,
+        "es_975": 989133.23,
+        "pnl": 51316.63,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-06-30",
+        "var_hs": 952903.66,
+        "var_fhs": 791199.43,
+        "es_975": 979976.38,
+        "pnl": -467937.89,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-01",
+        "var_hs": 942991.36,
+        "var_fhs": 793600.37,
+        "es_975": 970742.41,
+        "pnl": -397884.18,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-02",
+        "var_hs": 941001.94,
+        "var_fhs": 772370.43,
+        "es_975": 968878.41,
+        "pnl": -71312.84,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-03",
+        "var_hs": 941001.94,
+        "var_fhs": 748975.56,
+        "es_975": 968878.41,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-06",
+        "var_hs": 939955.19,
+        "var_fhs": 726037.65,
+        "es_975": 967887.58,
+        "pnl": -35788.96,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-07",
+        "var_hs": 928827.29,
+        "var_fhs": 764829.91,
+        "es_975": 957281.73,
+        "pnl": -560702.52,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-08",
+        "var_hs": 927331.72,
+        "var_fhs": 736785.77,
+        "es_975": 956011.11,
+        "pnl": -21700.8,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-09",
+        "var_hs": 929304.6,
+        "var_fhs": 721428.3,
+        "es_975": 957898.81,
+        "pnl": 120981.43,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-10",
+        "var_hs": 927247.38,
+        "var_fhs": 707157.29,
+        "es_975": 955870.06,
+        "pnl": -147732.85,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-13",
+        "var_hs": 877143.49,
+        "var_fhs": 713758.85,
+        "es_975": 929475.87,
+        "pnl": -370716.8,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-14",
+        "var_hs": 880806.52,
+        "var_fhs": 717867.67,
+        "es_975": 933374.94,
+        "pnl": 259971.23,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-15",
+        "var_hs": 881753.57,
+        "var_fhs": 702539.9,
+        "es_975": 934377.84,
+        "pnl": 95314.77,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-16",
+        "var_hs": 879807.77,
+        "var_fhs": 685682.39,
+        "es_975": 932314.62,
+        "pnl": -139922.22,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-17",
+        "var_hs": 884174.57,
+        "var_fhs": 679993.77,
+        "es_975": 936969.81,
+        "pnl": 201018.42,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-20",
+        "var_hs": 876594.34,
+        "var_fhs": 690633.75,
+        "es_975": 928879.71,
+        "pnl": -388542.61,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-21",
+        "var_hs": 873257.67,
+        "var_fhs": 680552.97,
+        "es_975": 925325.33,
+        "pnl": -213597.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-22",
+        "var_hs": 869442.44,
+        "var_fhs": 677246.55,
+        "es_975": 921276.41,
+        "pnl": -260330.5,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-23",
+        "var_hs": 865754.8,
+        "var_fhs": 672226.9,
+        "es_975": 917355.38,
+        "pnl": -249792.41,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-24",
+        "var_hs": 867556.11,
+        "var_fhs": 656327.02,
+        "es_975": 919272.73,
+        "pnl": 128525.59,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-27",
+        "var_hs": 873665.27,
+        "var_fhs": 670031.24,
+        "es_975": 925782.36,
+        "pnl": 327090.45,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-28",
+        "var_hs": 878499.76,
+        "var_fhs": 672679.68,
+        "es_975": 930937.69,
+        "pnl": 280832.83,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-29",
+        "var_hs": 863586.01,
+        "var_fhs": 812985.61,
+        "es_975": 915007.63,
+        "pnl": -666766.16,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-30",
+        "var_hs": 862098.24,
+        "var_fhs": 788574.39,
+        "es_975": 913421.38,
+        "pnl": -82937.7,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-07-31",
+        "var_hs": 852916.88,
+        "var_fhs": 817245.69,
+        "es_975": 903632.46,
+        "pnl": -498229.97,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-03",
+        "var_hs": 859132.61,
+        "var_fhs": 826958.83,
+        "es_975": 910259.48,
+        "pnl": 332764.7,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-04",
+        "var_hs": 867285.47,
+        "var_fhs": 858498.66,
+        "es_975": 918944.3,
+        "pnl": 456384.62,
+        "exception_hs": false,
+        "exception_fhs": false
+      },
+      {
+        "date": "2026-08-06",
+        "var_hs": 868455.07,
+        "var_fhs": 809921.47,
+        "es_975": 920191.41,
+        "pnl": 0.0,
+        "exception_hs": false,
+        "exception_fhs": false
+      }
+    ]
+  },
+  "/api/v1/desks/RATES/decomposition": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "desk_code": "RATES",
+    "desk_name": "US Rates",
+    "var_hs_1d": 868455.07,
+    "buckets": [
+      {
+        "factor_class": "IR",
+        "standalone_var": 1607546.18
+      }
+    ],
+    "diversification": -739091.11,
+    "exposures": [
+      {
+        "measure": "KRD_DV01",
+        "factor_code": "IR.UST.10Y",
+        "tenor_years": 10.0,
+        "value": 48003.88
+      },
+      {
+        "measure": "KRD_DV01",
+        "factor_code": "IR.UST.2Y",
+        "tenor_years": 2.0,
+        "value": 17114.33
+      },
+      {
+        "measure": "KRD_DV01",
+        "factor_code": "IR.UST.30Y",
+        "tenor_years": 30.0,
+        "value": 46598.15
+      },
+      {
+        "measure": "KRD_DV01",
+        "factor_code": "IR.UST.3M",
+        "tenor_years": 0.25,
+        "value": 0.0
+      },
+      {
+        "measure": "KRD_DV01",
+        "factor_code": "IR.UST.5Y",
+        "tenor_years": 5.0,
+        "value": -26774.25
+      }
+    ]
+  },
+  "/api/v1/desks/RATES/positions": {
+    "as_of": "2026-08-06",
+    "run_id": 329,
+    "desk_code": "RATES",
+    "desk_name": "US Rates",
+    "positions": [
+      {
+        "ticker": "UST_10Y",
+        "instrument_type": "GOVT_BOND",
+        "quantity": 60000000.0,
+        "factor_class": "IR",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": 10.0,
+        "standalone_var": 568364.01,
+        "component_es": 538774.93,
+        "marginal_var": 491915.32,
+        "pct_of_desk": 0.5855
+      },
+      {
+        "ticker": "UST_30Y",
+        "instrument_type": "GOVT_BOND",
+        "quantity": 30000000.0,
+        "factor_class": "IR",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": 30.0,
+        "standalone_var": 538876.44,
+        "component_es": 531295.52,
+        "marginal_var": 488385.52,
+        "pct_of_desk": 0.5774
+      },
+      {
+        "ticker": "UST_2Y",
+        "instrument_type": "GOVT_BOND",
+        "quantity": 90000000.0,
+        "factor_class": "IR",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": 2.0,
+        "standalone_var": 205041.53,
+        "component_es": 110294.23,
+        "marginal_var": 47643.04,
+        "pct_of_desk": 0.1199
+      },
+      {
+        "ticker": "UST_5Y",
+        "instrument_type": "GOVT_BOND",
+        "quantity": -60000000.0,
+        "factor_class": "IR",
+        "option_type": null,
+        "moneyness": null,
+        "maturity_years": 5.0,
+        "standalone_var": 295264.2,
+        "component_es": -260173.27,
+        "marginal_var": -303592.81,
+        "pct_of_desk": -0.2827
+      }
+    ]
+  }
+}

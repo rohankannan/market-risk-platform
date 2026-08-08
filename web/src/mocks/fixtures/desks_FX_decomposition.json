@@ -1,0 +1,40 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 329,
+  "desk_code": "FX",
+  "desk_name": "FX Spot",
+  "var_hs_1d": 497987.81,
+  "buckets": [
+    {
+      "factor_class": "FX",
+      "standalone_var": 1130988.34
+    }
+  ],
+  "diversification": -633000.53,
+  "exposures": [
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "FX.EURUSD",
+      "tenor_years": null,
+      "value": 22000000.0
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "FX.GBPUSD",
+      "tenor_years": null,
+      "value": 11000000.0
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "FX.JPYUSD",
+      "tenor_years": null,
+      "value": -27000018.59
+    },
+    {
+      "measure": "DELTA_USD",
+      "factor_code": "FX.MXNUSD",
+      "tenor_years": null,
+      "value": 18000001.38
+    }
+  ]
+}
