@@ -20,9 +20,15 @@ from risk_engine.config import DEFAULT_CONFIG
 
 DEFAULT_DB_URL = "postgresql+psycopg://riskdesk:riskdesk@localhost:5432/riskdesk"
 
+# serverless Postgres (Neon) suspends idle computes and closes pooled server
+# connections from its side; pre-ping revalidates every checkout and recycle
+# bounds connection age below typical idle-timeout windows
+POOL_RECYCLE_S = 300
+
 
 def make_engine(url: str | None = None) -> Engine:
-    return create_engine(url or os.getenv("DATABASE_URL", DEFAULT_DB_URL))
+    return create_engine(url or os.getenv("DATABASE_URL", DEFAULT_DB_URL),
+                         pool_pre_ping=True, pool_recycle=POOL_RECYCLE_S)
 
 
 def code_version() -> str:
