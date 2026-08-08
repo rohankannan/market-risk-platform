@@ -25,7 +25,10 @@ SNAPSHOT_PATH = WEB_DIR / "public" / "snapshot.json"
 
 HISTORY_WINDOW_FIRM = 90        # Overview chart
 HISTORY_WINDOW_DESK = 60        # Desk pages
-BACKTEST_WINDOW = 250
+BACKTEST_WINDOWS = (250, 500, 750)   # Backtesting page selector
+ROLLING_WINDOW = 250            # the page over-fetches history by this much
+HISTORY_CAP = 1000
+BACKTEST_WINDOW = BACKTEST_WINDOWS[0]
 
 
 def canonical(path: str, params: dict) -> str:
@@ -47,6 +50,8 @@ def slug(key: str) -> str:
 
 
 def request_list(desks: list[str]) -> list[tuple[str, dict]]:
+    """Every request the pages issue at their default and selectable states -
+    the offline demo must cover the whole surface, not just the landing view."""
     reqs: list[tuple[str, dict]] = [
         ("/api/v1/meta", {}),
         ("/api/v1/risk/summary", {}),
@@ -56,18 +61,26 @@ def request_list(desks: list[str]) -> list[tuple[str, dict]]:
         ("/api/v1/scenarios", {}),
         ("/api/v1/scenarios/results", {}),
         ("/api/v1/modeldoc", {}),
-        ("/api/v1/backtest/pla", {"scope": "FIRM", "window": BACKTEST_WINDOW}),
-        ("/api/v1/backtest/pla", {"scope": "EQUITY", "window": BACKTEST_WINDOW}),
     ]
-    for model in ("HS", "FHS"):
-        reqs.append(("/api/v1/backtest/summary",
-                     {"scope": "FIRM", "model": model, "window": BACKTEST_WINDOW}))
+    for w in BACKTEST_WINDOWS:
+        reqs.append(("/api/v1/risk/history",
+                     {"scope": "FIRM", "window": min(w + ROLLING_WINDOW, HISTORY_CAP)}))
+        reqs.append(("/api/v1/backtest/pla", {"scope": "FIRM", "window": w}))
+        for model in ("HS", "FHS"):
+            reqs.append(("/api/v1/backtest/summary",
+                         {"scope": "FIRM", "model": model, "window": w}))
     for desk in desks:
         reqs += [
             ("/api/v1/risk/history", {"scope": f"desk:{desk}", "window": HISTORY_WINDOW_DESK}),
+            ("/api/v1/risk/history",
+             {"scope": f"desk:{desk}", "window": BACKTEST_WINDOW + ROLLING_WINDOW}),
+            ("/api/v1/backtest/pla", {"scope": desk, "window": BACKTEST_WINDOW}),
             (f"/api/v1/desks/{desk}/decomposition", {}),
             (f"/api/v1/desks/{desk}/positions", {}),
         ]
+        for model in ("HS", "FHS"):
+            reqs.append(("/api/v1/backtest/summary",
+                         {"scope": desk, "model": model, "window": BACKTEST_WINDOW}))
     return reqs
 
 

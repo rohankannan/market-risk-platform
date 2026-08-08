@@ -41,7 +41,7 @@ test("an errored page does not brick the shell: boundary resets on navigation", 
 
   // other routes stay healthy...
   fireEvent.click(await screen.findByRole("link", { name: "Backtesting" }));
-  expect(await screen.findByRole("heading", { name: "Backtesting" })).toBeInTheDocument();
+  expect(await screen.findByLabelText("Scope")).toBeInTheDocument();
   expect(screen.queryByRole("alert")).toBeNull();
 
   // ...and once the API recovers, revisiting the errored route recovers too
@@ -52,6 +52,7 @@ test("an errored page does not brick the shell: boundary resets on navigation", 
 });
 
 test("network failure falls back to the snapshot with the demo badge", async () => {
+  window.history.pushState({}, "", "/"); // a prior test may have navigated away
   server.use(
     http.get(`${API_URL}/api/v1/*`, () => HttpResponse.error()),
     http.get("/snapshot.json", () => HttpResponse.json(snapshot)),
