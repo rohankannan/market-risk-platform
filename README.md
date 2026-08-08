@@ -2,6 +2,8 @@
 
 [![ci](https://github.com/rohankannan/market-risk-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/rohankannan/market-risk-platform/actions/workflows/ci.yml)
 
+**Live:** [dashboard](https://riskdeskdash.onrender.com) · [API docs](https://riskdesk.onrender.com/docs) — refreshed nightly by a scheduled batch; free-tier hosting, so the first load after idle takes ~30–60 s.
+
 An end-of-day **market-risk platform** for a mock three-desk trading book (cash equities, FX spot, US rates), built the way a bank's risk desk runs its nightly cycle: ingest market data → data-quality gate → revalue the book → VaR / Expected Shortfall → limit checks → stress replay → regulatory backtesting → dashboard.
 
 > Every night, a bank's market-risk function runs exactly this loop. This is a small but complete version of it — real market data, a real database, tested math, and the validation statistics regulators actually use.
@@ -62,7 +64,8 @@ Three Streamlit pages over the API — tiles, limits, and the P&L-vs-VaR timelin
 | Streamlit dashboard, 3 pages reading the API (Overview w/ tiles + limit table + P&L-vs-VaR chart, Backtesting w/ Kupiec/Christoffersen/zone, Stress w/ per-desk scenario P&L) | ✅ (`dashboard/`) |
 | One-command Docker Compose stack (bootstrap + API + dashboard + opt-in APScheduler night cycle); CI runs tests, the full pipeline against Postgres, and the compose acceptance path | ✅ (`Dockerfile`, `docker-compose.yml`, `.github/workflows/`) |
 | SR 11-7-structured model documentation with a full assumptions-and-limitations inventory | ✅ (`docs/model_doc.md`) |
-| Hosted deploy: Neon Postgres + public API/dashboard URLs; demo video | 🔜 milestone 3 (by Oct 15) |
+| Hosted deploy: Neon Postgres, API + dashboard on Render, nightly EOD batch via GitHub Actions cron | ✅ (links above) |
+| ≤90s demo video | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
 
 ## Quickstart
