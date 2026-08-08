@@ -35,6 +35,21 @@ def render() -> None:
              "Status": d["limit_status"] or "-"} for d in summary["desks"]]
     st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
 
+    st.subheader("Rates DV01 by key rate")
+    exposures = api_client.fetch("/api/v1/risk/exposures", as_of=as_of)
+    if exposures["rows"]:
+        krd = pd.DataFrame(exposures["rows"])
+        krd["node"] = krd["factor_code"].str.removeprefix("IR.UST.")
+        wide = krd.pivot(index="desk_code", columns="node", values="value")
+        wide = wide[krd.sort_values("tenor_years")["node"].unique()]
+        wide["Total"] = wide.sum(axis=1)
+        st.dataframe(wide.map(fmt_usd), width="stretch")
+        st.caption(f"{exposures['unit']} per node, bootstrapped par curve, "
+                   "curve re-solved per bump. Off-diagonal risk grows as coupons "
+                   "drift from par (see the model doc's R7).")
+    else:
+        st.caption("No key-rate exposures for this run - backfill runs skip the curve step.")
+
     st.subheader(f"Firm P&L vs VaR, trailing {HISTORY_DAYS} runs")
     history = api_client.fetch("/api/v1/risk/history", scope="FIRM",
                                window=HISTORY_DAYS, as_of=as_of)

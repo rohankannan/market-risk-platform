@@ -15,6 +15,7 @@ section 5 against the same snapshot the model runs on.
 | R4 | 8 | Fixed stressed window vs candidate crisis windows | in-force $2,737,390 is the max of the candidates (COVID year $1,911,190, 2022 hiking year $2,104,569) | Immaterial | Programmatic worst-window search is the roadmap replacement |
 | R5 | 11 | Position concentration of firm ES | top position 33.9% of firm ES, top 3 79.5% | Monitor | Euler components monitored; factor-model idiosyncratic add-on on the roadmap |
 | R6 | 9 | 1bp post-shock yield floor | unbinding; minimum post-shock yield 2.31% (230bp of headroom) | Immaterial | Re-measure if front-end yields fall below ~1.5% |
+| R7 | 2 | One-factor ytm proxy vs bootstrapped-curve pricing | rates-desk VaR $884,667 curve-priced vs $868,455 proxy (+1.9%); KRDs diagonal at the anchor by construction, spillover grows as coupons drift off par | Monitor | Curve view reported (key-rate DV01s in the nightly batch); VaR keeps the proxy |
 
 ## R1 — Horizon scaling
 
@@ -61,3 +62,25 @@ Firm ES $1,181,538 allocates across positions as below; negative components are 
 ## R6 — Yield floor
 
 Across the full 500-day scenario set and the GFC replay, the minimum post-shock yield is 2.31% - 230bp above the 0.01% pricing floor. The floor currently truncates nothing.
+
+## R7 — Curve-pricing basis and key-rate DV01s
+
+The VaR path prices each proxy bond off its own constant-maturity yield. Repricing the bond book on a bootstrapped zero curve (par inputs bumped jointly by each historical scenario) gives a rates-desk VaR of $884,667 vs $868,455 under the proxy (+1.9%) - the pricing-model basis between the two views. Par key-rate DV01s (USD per +1bp bump of one input node, curve re-bootstrapped):
+
+| Position | 3M | 2Y | 5Y | 10Y | 30Y | Total |
+|---|---|---|---|---|---|---|
+| UST_2Y | $0 | $17,114 | $0 | $0 | $0 | $17,114 |
+| UST_5Y | $0 | $0 | -$26,774 | $0 | $0 | -$26,774 |
+| UST_10Y | $0 | $0 | $0 | $48,004 | $0 | $48,004 |
+| UST_30Y | $0 | $0 | $0 | $0 | $46,598 | $46,598 |
+
+The matrix is diagonal **by construction**, not by accident: each position is a par bond struck at the anchor date, measured on the anchor date - it *is* the bootstrap's calibration instrument, so any other node's bump re-solves the curve to hold it at par exactly. Cross-tenor risk appears exactly as coupons drift off par. The same book after a 100bp par rally (coupons held):
+
+| Position | 3M | 2Y | 5Y | 10Y | 30Y | Total |
+|---|---|---|---|---|---|---|
+| UST_2Y | $60 | $17,476 | $0 | $0 | $0 | $17,536 |
+| UST_5Y | -$36 | -$299 | -$27,878 | $0 | $0 | -$28,213 |
+| UST_10Y | $30 | $249 | $1,044 | $51,528 | $0 | $52,850 |
+| UST_30Y | $6 | $49 | $206 | $2,258 | $56,451 | $58,970 |
+
+That drift is also why the scenario-level basis above is nonzero: shocked curves un-par the coupons inside every scenario. The nightly batch writes the live KRD table per run (risk_exposures) - on dates after the anchor the off-diagonals are real and grow with the drift - and the API and dashboard surface it.

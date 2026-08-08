@@ -118,6 +118,16 @@ def backtest_series(conn: Connection, scope: str, measure: str, end: dt.date,
     return rows[::-1]
 
 
+def exposure_rows(conn: Connection, run_id: int) -> list[dict]:
+    return [dict(r) for r in conn.execute(text("""
+        SELECT d.desk_code, rf.factor_code, re.value::float AS value
+        FROM risk_exposures re
+        JOIN desks d USING (desk_id)
+        JOIN risk_factors rf USING (factor_id)
+        WHERE re.run_id = :r AND re.measure = 'KRD_DV01'
+        ORDER BY d.desk_code, rf.factor_code"""), {"r": run_id}).mappings()]
+
+
 def scenario_rows(conn: Connection, run_id: int) -> list[dict]:
     return [dict(r) for r in conn.execute(text("""
         SELECT s.scenario_code, s.scenario_name, s.scenario_type, s.window_start,

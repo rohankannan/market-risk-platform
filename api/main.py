@@ -126,6 +126,16 @@ def risk_history(response: Response, scope: str = Scope,
                                  queries.exception_rows(conn, code, start, end))
 
 
+@app.get("/api/v1/risk/exposures", response_model=schemas.KeyRateExposures)
+def risk_exposures(response: Response, as_of: dt.date | None = AsOf,
+                   conn: Connection = Depends(get_conn)) -> schemas.KeyRateExposures:
+    """Key-rate DV01s per desk from the run's bootstrapped par curve - empty
+    rows for runs that skip the curve step (backfill runs do)."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    return schemas.build_key_rate_exposures(run, queries.exposure_rows(conn, run["run_id"]))
+
+
 @app.get("/api/v1/backtest/summary", response_model=schemas.BacktestSummary)
 def backtest_summary(response: Response, scope: str = Scope,
                      model: Literal["HS", "FHS"] = Query("HS"),

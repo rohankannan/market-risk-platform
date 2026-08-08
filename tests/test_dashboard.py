@@ -91,6 +91,18 @@ PAYLOADS = {
                         "pnl_value": -1_394_732.46}]},
     "/api/v1/scenarios/results": {"as_of": "2026-08-06", "run_id": 328,
                                   "results": SCENARIOS},
+    "/api/v1/risk/exposures": {
+        "as_of": "2026-08-06", "run_id": 328, "unit": "USD per 1bp",
+        "rows": [
+            {"desk_code": "FIRM", "factor_code": "IR.UST.2Y", "tenor_years": 2.0,
+             "value": 17114.0},
+            {"desk_code": "FIRM", "factor_code": "IR.UST.10Y", "tenor_years": 10.0,
+             "value": 48004.0},
+            {"desk_code": "RATES", "factor_code": "IR.UST.2Y", "tenor_years": 2.0,
+             "value": 17114.0},
+            {"desk_code": "RATES", "factor_code": "IR.UST.10Y", "tenor_years": 10.0,
+             "value": 48004.0},
+        ]},
 }
 
 
@@ -131,6 +143,9 @@ def test_overview_renders(stub_api):
     assert at.title[0].value == "Overview"
     assert at.metric[0].value == "$1.17M"                        # firm HS VaR tile
     assert at.metric[5].value == "40.3%"                         # diversification
+    krd = at.dataframe[1].value                                  # key-rate table
+    assert list(krd.columns) == ["2Y", "10Y", "Total"]           # tenor order
+    assert krd.loc["RATES", "10Y"] == "$48k"
 
 
 def test_backtesting_renders(stub_api):

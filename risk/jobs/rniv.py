@@ -17,6 +17,12 @@ import pandas as pd
 
 from risk.jobs.backfill import load_inputs
 from risk_engine.config import DEFAULT_CONFIG as CFG
+from risk_engine.curve import (
+    NODE_TENORS,
+    bootstrap_zero_curve,
+    key_rate_dv01s,
+    price_bond_on_curve,
+)
 from risk_engine.engine import aggregate, component_es, revalue
 from risk_engine.es import stressed_window
 from risk_engine.factors import build_scenarios_fhs, build_scenarios_hs
@@ -30,6 +36,7 @@ from risk_engine.stress import REPLAY_WINDOWS, compute_replay_shock
 from risk_engine.var import ewma_vol_forecast, ewma_volatility, var_es_from_pnl
 
 K_SYNC = 2                       # aggregation horizon that washes out close-time gaps
+AGED_DEMO_RALLY_BP = 100.0       # par rally used to un-pin the R7 demonstration matrix
 MATERIAL_PCT = 0.05              # >= 5% of the base measure
 MONITOR_PCT = 0.01               # 1-5%: monitor; below: immaterial
 YIELD_FLOOR_PCT = 0.01           # pricing floor, in percent (1bp)
@@ -44,6 +51,8 @@ CANDIDATE_WINDOWS: dict[str, tuple[dt.date, dt.date]] = {
 
 
 def _fmt_usd(v: float) -> str:
+    if abs(v) < 0.5:                 # keep "-$0" artifacts out of the tables
+        return "$0"
     return f"-${abs(v):,.0f}" if v < 0 else f"${v:,.0f}"
 
 
@@ -161,12 +170,51 @@ def measure(snapshot: str, portfolio: str) -> dict:
     post_gfc = (lvl_t[ir] + gfc[ir] / 100.0).min()
     out["r6"] = {"min_post_pct": float(min(post_hs, post_gfc)),
                  "headroom_bp": float((min(post_hs, post_gfc) - YIELD_FLOOR_PCT) * 100)}
+
+    # R7 - one-factor ytm proxy vs bootstrapped-curve pricing for the bond book
+    tenor_of = NODE_TENORS
+    code_of = {v: k for k, v in tenor_of.items()}
+    par = pd.Series({tenor_of[c]: lvl_t[c] / 100.0 for c in tenor_of}).sort_index()
+    bonds = book[book["instrument_type"] == "GOVT_BOND"]
+    krd_rows = {}
+    for b in bonds.itertuples(index=False):
+        krd = key_rate_dv01s(par, b.coupon, b.maturity_years, float(b.quantity))
+        krd_rows[b.ticker] = krd.rename(code_of)
+    krd_matrix = pd.DataFrame(krd_rows).T
+    own = {b.ticker: float(krd_rows[b.ticker][code_of[b.maturity_years]]
+                           / krd_rows[b.ticker].sum())
+           for b in bonds.itertuples(index=False)}
+
+    base_curve = bootstrap_zero_curve(par)
+    base_px = {b.ticker: price_bond_on_curve(base_curve, b.coupon, b.maturity_years,
+                                             float(b.quantity))
+               for b in bonds.itertuples(index=False)}
+    curve_pnl = []
+    ir_shocks = hs_window[[code_of[t] for t in par.index]].to_numpy() / 1e4
+    for shock in ir_shocks:
+        shocked = bootstrap_zero_curve(pd.Series(par.to_numpy() + shock, index=par.index))
+        curve_pnl.append(sum(
+            price_bond_on_curve(shocked, b.coupon, b.maturity_years, float(b.quantity))
+            - base_px[b.ticker] for b in bonds.itertuples(index=False)))
+    var_curve = var_es_from_pnl(pd.Series(curve_pnl), CFG.alpha_var, CFG.alpha_es,
+                                method="curve")
+    rates_proxy = aggregate(revalue(book, lvl_t, hs_window), book)["RATES"]
+    var_proxy = var_es_from_pnl(rates_proxy, CFG.alpha_var, CFG.alpha_es, method="proxy")
+    aged = par - AGED_DEMO_RALLY_BP / 1e4      # pars rally, coupons stay at anchor
+    aged_rows = {b.ticker: key_rate_dv01s(aged, b.coupon, b.maturity_years,
+                                          float(b.quantity)).rename(code_of)
+                 for b in bonds.itertuples(index=False)}
+    out["r7"] = {"krd": krd_matrix, "own_share": own,
+                 "krd_aged": pd.DataFrame(aged_rows).T,
+                 "var_proxy": var_proxy, "var_curve": var_curve,
+                 "pct": var_curve.var / var_proxy.var - 1.0}
     return out
 
 
 def render(m: dict) -> str:
     base_var = m["base"]["FIRM"].var
     r1, r2, r3, r4, r5, r6 = m["r1"], m["r2"], m["r3"], m["r4"], m["r5"], m["r6"]
+    r7 = m["r7"]
     rows = [
         ("R1", "1", "sqrt(10) horizon scaling vs overlapping 10-day revaluation",
          f"{_fmt_usd(r1['measured'].var - r1['scaled'].var)} on the 10-day VaR "
@@ -197,6 +245,12 @@ def render(m: dict) -> str:
          f"unbinding; minimum post-shock yield {r6['min_post_pct']:.2f}% "
          f"({r6['headroom_bp']:.0f}bp of headroom)", "Immaterial",
          "Re-measure if front-end yields fall below ~1.5%"),
+        ("R7", "2", "One-factor ytm proxy vs bootstrapped-curve pricing",
+         f"rates-desk VaR {_fmt_usd(r7['var_curve'].var)} curve-priced vs "
+         f"{_fmt_usd(r7['var_proxy'].var)} proxy ({r7['pct']:+.1%}); KRDs diagonal "
+         "at the anchor by construction, spillover grows as coupons drift off par",
+         _classify(r7["pct"]),
+         "Curve view reported (key-rate DV01s in the nightly batch); VaR keeps the proxy"),
     ]
 
     lines = [
@@ -298,8 +352,44 @@ def render(m: dict) -> str:
         f"above the {YIELD_FLOOR_PCT:.2f}% pricing floor. The floor currently "
         "truncates nothing.",
         "",
+        "## R7 — Curve-pricing basis and key-rate DV01s",
+        "",
+        f"The VaR path prices each proxy bond off its own constant-maturity "
+        f"yield. Repricing the bond book on a bootstrapped zero curve (par "
+        f"inputs bumped jointly by each historical scenario) gives a rates-desk "
+        f"VaR of {_fmt_usd(r7['var_curve'].var)} vs {_fmt_usd(r7['var_proxy'].var)} "
+        f"under the proxy ({r7['pct']:+.1%}) - the pricing-model basis between "
+        "the two views. Par key-rate DV01s (USD per +1bp bump of one input "
+        "node, curve re-bootstrapped):",
+        "",
+        _krd_table(r7["krd"]),
+        "",
+        "The matrix is diagonal **by construction**, not by accident: each "
+        "position is a par bond struck at the anchor date, measured on the "
+        "anchor date - it *is* the bootstrap's calibration instrument, so any "
+        "other node's bump re-solves the curve to hold it at par exactly. "
+        "Cross-tenor risk appears exactly as coupons drift off par. The same "
+        f"book after a {AGED_DEMO_RALLY_BP:.0f}bp par rally (coupons held):",
+        "",
+        _krd_table(r7["krd_aged"]),
+        "",
+        "That drift is also why the scenario-level basis above is nonzero: "
+        "shocked curves un-par the coupons inside every scenario. The nightly "
+        "batch writes the live KRD table per run (risk_exposures) - on dates "
+        "after the anchor the off-diagonals are real and grow with the drift - "
+        "and the API and dashboard surface it.",
+        "",
     ]
     return "\n".join(lines)
+
+
+def _krd_table(krd: pd.DataFrame) -> str:
+    cols = list(krd.columns)
+    head = "| Position | " + " | ".join(c.removeprefix("IR.UST.") for c in cols) + " | Total |"
+    sep = "|---" * (len(cols) + 2) + "|"
+    body = [f"| {t} | " + " | ".join(_fmt_usd(v) for v in row) + f" | {_fmt_usd(row.sum())} |"
+            for t, row in krd.iterrows()]
+    return "\n".join([head, sep, *body])
 
 
 def main(argv: list[str] | None = None) -> int:

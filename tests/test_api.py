@@ -134,6 +134,26 @@ def test_scenarios_worst_first_and_worst_desk_excludes_firm():
     assert gfc.impacts["FIRM"] == -400.0                         # FIRM stays in impacts
 
 
+EXPOSURE_ROWS = [
+    {"desk_code": "RATES", "factor_code": "IR.UST.10Y", "value": 48004.0},
+    {"desk_code": "RATES", "factor_code": "IR.UST.2Y", "value": 17114.0},
+    {"desk_code": "FIRM", "factor_code": "IR.UST.2Y", "value": 17114.0},
+]
+
+
+def test_key_rate_exposures_maps_tenors_and_sorts_firm_first():
+    e = schemas.build_key_rate_exposures(RUN, EXPOSURE_ROWS)
+    assert e.unit == "USD per 1bp"
+    assert e.rows[0].desk_code == "FIRM"
+    rates = [r for r in e.rows if r.desk_code == "RATES"]
+    assert [r.tenor_years for r in rates] == [2.0, 10.0]         # tenor order, not lexical
+    assert rates[1].value == 48004.0
+
+
+def test_key_rate_exposures_empty_rows_ok():
+    assert schemas.build_key_rate_exposures(RUN, []).rows == []
+
+
 # ---------------------------------------------------------------- routes
 
 class _FakeResult:
@@ -253,6 +273,14 @@ def test_history_scope_parsing_and_unknown_scope(client, monkeypatch):
     body = client.get("/api/v1/risk/history?scope=desk:rates").json()
     assert body["scope"] == "RATES" and body["points"][0]["var_hs"] == 60.0
     assert client.get("/api/v1/risk/history?scope=CREDIT").status_code == 404
+
+
+def test_exposures_endpoint(client, monkeypatch):
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(queries, "exposure_rows", lambda conn, run_id: EXPOSURE_ROWS)
+    body = client.get("/api/v1/risk/exposures").json()
+    assert body["unit"] == "USD per 1bp" and len(body["rows"]) == 3
+    assert body["rows"][0]["desk_code"] == "FIRM"
 
 
 def test_backtest_endpoint_insufficient_history(client, monkeypatch):

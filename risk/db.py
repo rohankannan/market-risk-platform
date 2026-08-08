@@ -169,6 +169,18 @@ def write_risk_results(conn: Connection, run_id: int, rows: list[dict]) -> None:
         [{**r, "run_id": run_id} for r in rows])
 
 
+def write_exposures(conn: Connection, run_id: int, rows: list[dict]) -> None:
+    """rows: desk_id, factor_id, measure, value."""
+    if not rows:
+        return
+    conn.execute(text("""
+        INSERT INTO risk_exposures (run_id, desk_id, factor_id, measure, value)
+        VALUES (:run_id, :desk_id, :factor_id, :measure, :value)
+        ON CONFLICT (run_id, desk_id, factor_id, measure)
+        DO UPDATE SET value = EXCLUDED.value"""),
+        [{**r, "run_id": run_id} for r in rows])
+
+
 def write_pnl(conn: Connection, rows: list[dict]) -> None:
     """rows: desk_id, pnl_date, pnl_type, amount."""
     if not rows:

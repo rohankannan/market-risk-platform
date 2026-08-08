@@ -33,6 +33,7 @@ from risk_engine import dq
 from risk_engine.backfill import run_backfill
 from risk_engine.backtest import basel_traffic_light
 from risk_engine.config import DEFAULT_CONFIG as CFG
+from risk_engine.curve import NODE_TENORS, key_rate_dv01s
 from risk_engine.engine import aggregate, revalue
 from risk_engine.es import stressed_window
 from risk_engine.factors import align_levels, build_scenarios_fhs, build_scenarios_hs, to_returns
@@ -219,6 +220,23 @@ def step_risk(ctx: dict) -> None:
         results.append({"desk_id": desks[scope], "measure": "ES_STRESSED",
                         "confidence": CFG.alpha_es, "horizon_days": 1, "value": round(r.es, 2)})
     db.write_risk_results(conn, ctx["run_id"], results)
+
+    # key-rate DV01s off the bootstrapped par curve (curve view is reporting;
+    # VaR pricing keeps the documented one-factor proxy - model doc R7)
+    fids = dict(zip(meta["factor_code"], meta["factor_id"]))
+    code_of = {t: c for c, t in NODE_TENORS.items()}
+    par = pd.Series({t: lvl_t[c] / 100.0 for c, t in NODE_TENORS.items()}).sort_index()
+    krd_rows: list[dict] = []
+    desk_krd: dict[tuple[str, float], float] = {}
+    for b in book[book["instrument_type"] == "GOVT_BOND"].itertuples(index=False):
+        krd = key_rate_dv01s(par, b.coupon, b.maturity_years, float(b.quantity))
+        for tenor, v in krd.items():
+            desk_krd[(b.desk_code, tenor)] = desk_krd.get((b.desk_code, tenor), 0.0) + float(v)
+            desk_krd[("FIRM", tenor)] = desk_krd.get(("FIRM", tenor), 0.0) + float(v)
+    krd_rows = [{"desk_id": desks[d], "factor_id": fids[code_of[t]],
+                 "measure": "KRD_DV01", "value": round(v, 2)}
+                for (d, t), v in desk_krd.items()]
+    db.write_exposures(conn, ctx["run_id"], krd_rows)
 
     # clean P&L for run_date (frozen book, prior-day levels, actual move) + exception check
     idx = returns.index.get_loc(ts_run)

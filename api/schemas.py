@@ -20,6 +20,7 @@ from risk_engine.backtest import (
     kupiec_pof,
 )
 from risk_engine.config import DEFAULT_CONFIG as CFG
+from risk_engine.curve import NODE_TENORS
 
 # Basel traffic-light zone boundaries are calibrated to a 250-day window;
 # other realized window lengths are reported but flagged non-regulatory.
@@ -162,6 +163,31 @@ def build_history(scope: str, risk_rows: list[dict], pnl_rows: list[dict],
                            exception_fhs=(d, "VAR_FHS") in exc)
               for d, v in sorted(by_date.items())]
     return RiskHistory(scope=scope, start=points[0].date, end=points[-1].date, points=points)
+
+
+# ---------------------------------------------------------------- exposures
+
+class KeyRateRow(BaseModel):
+    desk_code: str
+    factor_code: str
+    tenor_years: float
+    value: float                            # USD per +1bp bump of the par node
+
+
+class KeyRateExposures(BaseModel):
+    as_of: dt.date
+    run_id: int
+    unit: str
+    rows: list[KeyRateRow]                  # empty for runs that skip the curve step
+
+
+def build_key_rate_exposures(run: dict, rows: list[dict]) -> KeyRateExposures:
+    built = [KeyRateRow(desk_code=r["desk_code"], factor_code=r["factor_code"],
+                        tenor_years=NODE_TENORS.get(r["factor_code"], 0.0),
+                        value=r["value"]) for r in rows]
+    built.sort(key=lambda r: (not r.desk_code == "FIRM", r.desk_code, r.tenor_years))
+    return KeyRateExposures(as_of=run["run_date"], run_id=run["run_id"],
+                            unit="USD per 1bp", rows=built)
 
 
 # ---------------------------------------------------------------- backtest
