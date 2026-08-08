@@ -1,6 +1,6 @@
 # Model change pack — challenger vol filter for FHS VaR
 
-*Champion: EWMA (lambda = 0.94). Candidate: GARCH(1,1), Gaussian QMLE per factor, parameters frozen at 2025-08-19 (no look-ahead into the 250-day evaluation window ending 2026-08-06). Candidate hash `1976d3184878`, code `57e075f-dirty`. Regenerate: `python -m risk.jobs.challenger`.*
+*Champion: EWMA (lambda = 0.94). Candidate: GARCH(1,1), Gaussian QMLE per factor, parameters frozen at 2025-08-19 (no look-ahead into the 250-day evaluation window ending 2026-08-06). Candidate hash `1976d3184878`, code `9496dfb`. Regenerate: `python -m risk.jobs.challenger`.*
 
 ## Promotion criteria (pre-registered)
 
