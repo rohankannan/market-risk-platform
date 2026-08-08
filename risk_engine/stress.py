@@ -2,8 +2,8 @@
 
 Historical replays are DATA-DRIVEN: only the window dates are hardcoded; the
 shock vector is computed from stored history (sum of log returns / total bp
-move), with sanity assertions in tests (e.g. GFC window: SPX log ~ -0.51,
-UST 2Y ~ -115bp, JPY safe-haven ~ +12%).
+move), with anchors pinned against the snapshot in tests/test_stress.py
+(GFC window: SPX log ~ -0.50, UST 2Y ~ -118bp, JPY safe-haven ~ +12%).
 """
 
 from __future__ import annotations

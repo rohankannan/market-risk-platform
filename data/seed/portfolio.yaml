@@ -28,7 +28,7 @@ factors:
   - {code: EQ.JPM,  type: PRICE, conv: LOG, source: YFINANCE, symbol: JPM,  fallback: {source: STOOQ, symbol: jpm.us}}
   - {code: EQ.XOM,  type: PRICE, conv: LOG, source: YFINANCE, symbol: XOM,  fallback: {source: STOOQ, symbol: xom.us}}
   - {code: EQ.JNJ,  type: PRICE, conv: LOG, source: YFINANCE, symbol: JNJ,  fallback: {source: STOOQ, symbol: jnj.us}}
-  # FX - FRED H.10 backbone (weekly publication lag -> ffill_limit 7, yfinance top-up),
+  # FX - FRED H.10 backbone (weekly publication lag -> ffill_limit 7),
   # everything normalized at ingest to USD per 1 unit of foreign currency
   - {code: FX.EURUSD, type: FX_RATE, conv: LOG, source: FRED, symbol: DEXUSEU, ffill_limit: 7}
   - {code: FX.GBPUSD, type: FX_RATE, conv: LOG, source: FRED, symbol: DEXUSUK, ffill_limit: 7}
