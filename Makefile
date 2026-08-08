@@ -1,4 +1,6 @@
+# override for environments without the venv (CI: make migrate PY=python ALEMBIC=alembic)
 PY ?= .venv/bin/python
+ALEMBIC ?= .venv/bin/alembic
 
 # demo window: snapshot history ends 2026-08-06; backfill stops one day short
 # so the final date runs through the full EOD path (DQ + scenarios included)
@@ -26,7 +28,7 @@ db-down:
 	docker compose down
 
 migrate:
-	.venv/bin/alembic upgrade head
+	$(ALEMBIC) upgrade head
 
 seed:
 	$(PY) -m risk.jobs.seed

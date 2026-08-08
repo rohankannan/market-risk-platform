@@ -10,7 +10,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - name: Install
         run: |
           python -m pip install -U pip
@@ -24,3 +26,64 @@ jobs:
             --exclude-dir=.venv . || (echo "possible hardcoded secret" && exit 1)
       - name: Tests
         run: pytest
+
+  # the README quickstart, executed: migrate -> seed -> backfill -> EOD against
+  # a real Postgres, all offline from the committed snapshot, then an API smoke
+  pipeline:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: riskdesk
+          POSTGRES_PASSWORD: riskdesk
+          POSTGRES_DB: riskdesk
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U riskdesk -h 127.0.0.1"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://riskdesk:riskdesk@localhost:5432/riskdesk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install
+        run: |
+          python -m pip install -U pip
+          pip install -e .
+      - name: Migrate + seed + backfill + EOD
+        run: make migrate seed backfill eod PY=python ALEMBIC=alembic
+      - name: API smoke
+        run: |
+          uvicorn api.main:app --port 8000 &
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:8000/healthz >/dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:8000/healthz
+          curl -sf "http://127.0.0.1:8000/api/v1/risk/summary" | python -c "import json,sys; s=json.load(sys.stdin); f=[d for d in s['desks'] if d['is_aggregate']][0]; assert f['var_hs_1d'] and f['limit_status'], s; print('firm VaR99 1d:', f['var_hs_1d'], f['limit_status'])"
+          curl -sf "http://127.0.0.1:8000/api/v1/scenarios/results" | python -c "import json,sys; s=json.load(sys.stdin); assert len(s['results']) == 5, s; print('scenarios:', [r['scenario_code'] for r in s['results']])"
+
+  # the acceptance path: clone -> docker compose up -> both surfaces serve
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose up (build + bootstrap + serve)
+        run: GIT_SHA=$(git rev-parse --short HEAD) docker compose up -d --build
+      - name: Wait for the API, then check both surfaces
+        run: |
+          for i in $(seq 1 90); do curl -sf http://localhost:8000/healthz >/dev/null && break; sleep 2; done
+          curl -sf http://localhost:8000/healthz
+          curl -sf http://localhost:8000/api/v1/meta | python3 -c "import json,sys; m=json.load(sys.stdin); assert m['latest_as_of'], m; print('as of', m['latest_as_of'], m['batch_status'])"
+          for i in $(seq 1 30); do curl -sf http://localhost:8501/_stcore/health >/dev/null && break; sleep 2; done
+          curl -sf http://localhost:8501/_stcore/health
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --tail 120
+      - name: Down
+        if: always()
+        run: docker compose down -v

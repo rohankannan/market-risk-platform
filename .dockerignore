@@ -1,0 +1,17 @@
+.git
+.github
+.venv
+.pytest_cache
+.ruff_cache
+**/__pycache__
+**/*.pyc
+**/*.egg-info
+notebooks
+tests
+docs/img
+.env
+.dockerignore
+Dockerfile
+docker-compose.yml
+CLAUDE.md
+.claude

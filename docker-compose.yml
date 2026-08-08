@@ -1,3 +1,9 @@
+# all services run the same image; GIT_SHA stamps risk_runs.code_version
+x-build: &riskdesk-build
+  context: .
+  args:
+    GIT_SHA: ${GIT_SHA:-}
+
 services:
   db:
     image: postgres:16-alpine     # matches Neon's major version in prod
@@ -8,21 +14,60 @@ services:
     ports: ["5432:5432"]
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U riskdesk"]
+      # -h forces TCP: the entrypoint's temporary init-time server answers the
+      # Unix socket only, so a socket probe would pass before the real server is up
+      test: ["CMD-SHELL", "pg_isready -U riskdesk -h 127.0.0.1"]
       interval: 5s
       timeout: 3s
       retries: 10
 
-  # milestone 3 (Sep 15-28): api + scheduler services
-  # api:
-  #   build: .
-  #   command: uvicorn api.main:app --host 0.0.0.0 --port 8000
-  #   ports: ["8000:8000"]
-  #   depends_on: {db: {condition: service_healthy}}
-  # scheduler:
-  #   build: .
-  #   command: python -m risk.jobs.scheduler   # APScheduler, 18:30 America/New_York
-  #   depends_on: {db: {condition: service_healthy}}
+  # one-shot bootstrap: schema + book + 300-day backfill + one full EOD run,
+  # entirely offline from the committed snapshot (demo dates match the Makefile).
+  # every leg is re-runnable, so a second 'up' against a populated volume works
+  init:
+    build: *riskdesk-build
+    command: ["sh", "-c", "alembic upgrade head && python -m risk.jobs.seed --force && python -m risk.jobs.eod backfill --start ${DEMO_BF_START:-2025-05-01} --end ${DEMO_BF_END:-2026-08-05} --resume && python -m risk.jobs.eod run --date ${DEMO_DATE:-2026-08-06} --no-fetch --force"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://riskdesk:riskdesk@db:5432/riskdesk
+    depends_on:
+      db: {condition: service_healthy}
+
+  api:
+    build: *riskdesk-build
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql+psycopg://riskdesk:riskdesk@db:5432/riskdesk
+    ports: ["8000:8000"]
+    depends_on:
+      db: {condition: service_healthy}
+      init: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  dashboard:
+    build: *riskdesk-build
+    command: streamlit run dashboard/app.py --server.headless true --server.address 0.0.0.0 --server.port 8501
+    environment:
+      RISKDESK_API_URL: http://api:8000
+    ports: ["8501:8501"]
+    depends_on:
+      api: {condition: service_healthy}
+
+  # nightly EOD with live fetch (18:30 America/New_York) - opt-in so the plain
+  # demo stays fully offline: docker compose --profile nightly up
+  scheduler:
+    build: *riskdesk-build
+    command: python -m risk.jobs.scheduler
+    environment:
+      DATABASE_URL: postgresql+psycopg://riskdesk:riskdesk@db:5432/riskdesk
+      FRED_API_KEY: ${FRED_API_KEY:-}
+    depends_on:
+      init: {condition: service_completed_successfully}
+    profiles: ["nightly"]
 
 volumes:
   pgdata:

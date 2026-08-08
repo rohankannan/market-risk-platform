@@ -1,5 +1,7 @@
 # RiskDesk
 
+[![ci](https://github.com/rohankannan/market-risk-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/rohankannan/market-risk-platform/actions/workflows/ci.yml)
+
 An end-of-day **market-risk platform** for a mock three-desk trading book (cash equities, FX spot, US rates), built the way a bank's risk desk runs its nightly cycle: ingest market data → data-quality gate → revalue the book → VaR / Expected Shortfall → limit checks → stress replay → regulatory backtesting → dashboard.
 
 > Every night, a bank's market-risk function runs exactly this loop. This is a small but complete version of it — real market data, a real database, tested math, and the validation statistics regulators actually use.
@@ -48,10 +50,19 @@ The equal-weight 500-day window makes plain historical sim slow in both directio
 | Stress replays (GFC 2008, COVID 2020) + hypothetical shocks, written per run | ✅ |
 | FastAPI read layer over the results tables: meta, risk summary w/ limit utilization + diversification, history, backtest stats, scenario results; typed response models, immutable caching on pinned `as_of` | ✅ (`api/`) |
 | Streamlit dashboard, 3 pages reading the API (Overview w/ tiles + limit table + P&L-vs-VaR chart, Backtesting w/ Kupiec/Christoffersen/zone, Stress w/ per-desk scenario P&L) | ✅ (`dashboard/`) |
-| Neon deploy + nightly cron | 🔜 milestone 3 (by Oct 15) |
+| One-command Docker Compose stack (bootstrap + API + dashboard + opt-in APScheduler night cycle); CI runs tests, the full pipeline against Postgres, and the compose acceptance path | ✅ (`Dockerfile`, `docker-compose.yml`, `.github/workflows/`) |
+| Hosted deploy: Neon Postgres + public API/dashboard URLs | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, options sleeve → PLA test, CCAR-style scenarios, React dashboard | 🔜 winter |
 
 ## Quickstart
+
+One command, no local Python needed — Docker builds one image, bootstraps the database from the committed snapshot (schema → book → 300-day backfill → one full EOD run, all offline), then serves both surfaces:
+
+```bash
+docker compose up
+```
+
+API on <http://localhost:8000/docs>, dashboard on <http://localhost:8501>. CI runs this exact path on every push. For development:
 
 ```bash
 make venv        # python3.11+ virtualenv, editable install
@@ -60,6 +71,11 @@ make demo        # db-up + migrate + seed + 300-day backfill + EOD run, all offl
 make api         # serve the API; interactive docs at http://localhost:8000/docs
 make dashboard   # Streamlit UI on http://localhost:8501 (needs the API running)
 ```
+
+## The nightly cycle in operation
+
+- **Locally:** `docker compose --profile nightly up` adds the APScheduler service, which runs the EOD batch (with live market-data fetch) at 18:30 America/New_York on weekdays — after the NYSE close and the Fed's ~16:15 ET H.15 yield publication.
+- **Deployed:** [`.github/workflows/eod.yml`](.github/workflows/eod.yml) runs the same entrypoint at 23:30 UTC weekdays against the hosted Postgres (repo secrets `DATABASE_URL`, `FRED_API_KEY`). Re-runs are safe: the batch claims `(run_date, run_type)` under an advisory lock and is idempotent.
 
 ## Design rules
 

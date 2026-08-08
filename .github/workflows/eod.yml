@@ -1,0 +1,42 @@
+name: nightly-eod
+on:
+  schedule:
+    # 23:30 UTC = 18:30/19:30 New York (EST/EDT): after the NYSE close and the
+    # Fed's ~16:15 ET H.15 publication; Actions cron is UTC-only. The compose
+    # scheduler service runs the same entrypoint at 18:30 America/New_York.
+    - cron: "30 23 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: nightly-eod
+  cancel-in-progress: false
+
+jobs:
+  eod:
+    if: github.repository_owner == 'rohankannan'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install
+        run: |
+          python -m pip install -U pip
+          pip install -e .
+      - name: Run the EOD batch
+        timeout-minutes: 30
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "DATABASE_URL secret not configured yet (hosted DB pending) - nothing to do"
+            exit 0
+          fi
+          # pin the date to the New York calendar rather than the runner's UTC
+          # clock: Actions crons can fire late, and 23:30 UTC is only 30 min
+          # from a UTC date roll; market holidays surface as DQ forward-fills
+          python -m risk.jobs.eod run --date "$(TZ=America/New_York date +%F)"
