@@ -1,0 +1,113 @@
+.layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 860px);
+  gap: 24px;
+  align-items: start;
+}
+
+.toc {
+  position: sticky;
+  top: 12px;
+  background: var(--rd-panel);
+  border: 1px solid var(--rd-divider);
+  padding: 10px 0;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+.tocTitle {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--rd-gold);
+  font-weight: 700;
+  padding: 0 12px 8px;
+  border-bottom: 1px solid var(--rd-divider);
+  margin-bottom: 6px;
+}
+
+.toc a {
+  display: block;
+  padding: 3px 12px;
+  font-size: 11px;
+  color: var(--rd-muted);
+  text-decoration: none;
+}
+
+.toc a:hover {
+  color: var(--rd-text);
+}
+
+.toc a.h3 {
+  padding-left: 24px;
+  font-size: 10px;
+}
+
+/* the rendered SR 11-7 document, terminal-legible */
+.doc {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.doc h1 {
+  font-size: 18px;
+  border-bottom: 2px solid var(--rd-gold-rush);
+  padding-bottom: 6px;
+}
+
+.doc h2 {
+  font-size: 15px;
+  margin-top: 28px;
+  border-bottom: 1px solid var(--rd-divider);
+  padding-bottom: 4px;
+}
+
+.doc h3 {
+  font-size: 13px;
+  margin-top: 20px;
+  color: var(--rd-gold);
+}
+
+.doc code {
+  background: var(--rd-panel);
+  border: 1px solid var(--rd-hairline);
+  padding: 0 4px;
+  font-size: 12px;
+}
+
+.doc pre {
+  background: var(--rd-panel);
+  border: 1px solid var(--rd-divider);
+  padding: 10px 12px;
+  overflow-x: auto;
+}
+
+.doc pre code {
+  border: none;
+  padding: 0;
+}
+
+.doc table {
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 12px 0;
+}
+
+.doc th,
+.doc td {
+  border: 1px solid var(--rd-divider);
+  padding: 4px 10px;
+  text-align: left;
+}
+
+.doc th {
+  color: var(--rd-muted);
+  font-weight: 600;
+  background: var(--rd-panel);
+}
+
+.doc blockquote {
+  border-left: 2px solid var(--rd-gold);
+  margin: 12px 0;
+  padding: 2px 14px;
+  color: var(--rd-muted);
+}

@@ -39,13 +39,13 @@ The equal-weight 500-day window makes plain historical sim slow in both directio
 
 ## The dashboard
 
-Three Streamlit pages over the API — tiles, limits, and the P&L-vs-VaR timeline on Overview; Kupiec/Christoffersen/traffic-light statistics on Backtesting; per-desk scenario P&L on Stress. (The richer React dashboard is the winter roadmap.)
+A single-screen terminal over the API — limit utilization with warn thresholds, the firm's measures, day-over-day VaR movers with factor drivers, a 250-day clean-P&L-vs-VaR chart with an HS/FHS method toggle, stress scenarios worst-first, and the 3-desk book over the factor tape. Desk drill-downs add the VaR-decomposition waterfall and per-position component/marginal VaR; Backtesting carries the full Kupiec/Christoffersen/traffic-light panel and the P&L-attribution test; the SR 11-7 model document ships as a page. If the API is unreachable, the site falls back to a frozen snapshot under a demo badge. The original three-page Streamlit build stays as the compose-bundled ops view.
 
-![Overview: firm tiles, desk limit table, P&L vs VaR with exception dots](docs/img/dashboard_overview.png)
+![Overview: limit utilization, firm measures, P&L vs VaR with the method toggle, stress and the book](docs/img/dashboard_overview.png)
 
-![Backtesting: exceptions vs expected, Basel zone, test statistics, timeline](docs/img/dashboard_backtesting.png)
+![Backtesting: coverage and independence statistics, the linked exception panels, and the P&L-attribution test](docs/img/dashboard_backtesting.png)
 
-![Stress: per-desk scenario P&L, worst-first, with firm totals](docs/img/dashboard_stress.png)
+![Scenarios: compare rail, per-desk impacts with firm diamonds, and the drill-down waterfall](docs/img/dashboard_stress.png)
 
 ## What's implemented (honest status)
 
@@ -68,9 +68,10 @@ Three Streamlit pages over the API — tiles, limits, and the P&L-vs-VaR timelin
 | Champion/challenger harness: hand-rolled GARCH(1,1) QMLE vs the EWMA champion, parallel-run over 250 days under pre-registered promotion criteria with a fit-health gate — current verdict HOLD, boundary fits named | ✅ (`docs/challenger_garch.md`, `risk/jobs/challenger.py`) |
 | Ops controls: day-over-day flash check (firm VaR moves arrive pre-explained with desk and vol attribution) and a vendor-revision log with classified before-images and a `--force` restatement path | ✅ (`risk_engine/dq.py`, `data_revisions`) |
 | Options sleeve: SPY collar priced with hand-rolled Black-Scholes (constant-maturity, constant-moneyness proxies), vega exposures in the nightly batch, risk-theoretical P&L — and a **real P&L-attribution test** (Spearman + KS, MAR32-style zones) served at `/backtest/pla` with the HPL-vs-RTPL scatter on the dashboard | ✅ (`risk_engine/{options,pla}.py`) |
+| React terminal dashboard: typed API client generated from the committed OpenAPI spec, single-screen overview w/ factor tape and method-toggled backtest chart, desk drill-downs, linked backtesting panels, scenario compare, model-doc page, offline snapshot fallback | ✅ (`web/`) |
 | Hosted deploy: Neon Postgres, API + dashboard on Render, nightly EOD batch via GitHub Actions cron | ✅ (links above) |
 | ≤90s demo video | 🔜 milestone 3 (by Oct 15) |
-| Parametric VaR w/ implied vol, CCAR-style scenarios, React dashboard | 🔜 winter |
+| Parametric VaR w/ implied vol, CCAR-style scenarios, stressed-window auto-search | 🔜 winter |
 
 ## Quickstart
 
@@ -80,7 +81,7 @@ One command, no local Python needed — Docker builds one image, bootstraps the 
 docker compose up
 ```
 
-API on <http://localhost:8000/docs>, dashboard on <http://localhost:8501>. CI runs this exact path on every push. For development:
+API on <http://localhost:8000/docs>, Streamlit ops view on <http://localhost:8501>. CI runs this exact path on every push. For development:
 
 ```bash
 make venv        # python3.11+ virtualenv, editable install
@@ -88,6 +89,7 @@ make test        # known-answer test suite (no network, no DB needed)
 make demo        # db-up + migrate + seed + 300-day backfill + EOD run, all offline
 make api         # serve the API; interactive docs at http://localhost:8000/docs
 make dashboard   # Streamlit UI on http://localhost:8501 (needs the API running)
+cd web && npm ci && npm run dev   # React terminal on http://localhost:5173
 ```
 
 ## The nightly cycle in operation
