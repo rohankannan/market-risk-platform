@@ -28,8 +28,11 @@ from risk_engine.var import var_es_from_pnl
 
 MAX_SCALE = 10.0  # |scale| beyond this is a fat finger, not a hedge
 
-# a shock past these is a unit error, not a stress: the worst 20-day moves in
-# ~20 years of snapshot are ~380bp, ~50% in log terms, ~60 vol points
+# A shock past these is a unit error, not a stress. The worst 20-day moves in
+# the committed snapshot are 190bp, 0.69 in log terms and 69 vol points, so
+# each bound clears the observed extreme by roughly an order of magnitude -
+# wide enough to price any defensible hypothetical, narrow enough that a
+# convention mistake (bp posted as a log return) cannot pass.
 SHOCK_BOUNDS = {"ABSOLUTE_BP": 2000.0, "RELATIVE": 1.5, "ABSOLUTE": 150.0}
 CONV_OF_TYPE = {"RELATIVE": "LOG", "ABSOLUTE_BP": "ABS_BP", "ABSOLUTE": "ABS"}
 

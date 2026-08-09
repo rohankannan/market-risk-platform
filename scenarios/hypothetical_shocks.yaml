@@ -95,7 +95,7 @@
     EQ.JPM:  {type: RELATIVE, value: -0.2379}
     EQ.XOM:  {type: RELATIVE, value: -0.2226}
     EQ.JNJ:  {type: RELATIVE, value: -0.1273}
-    VOL.SPX.IV30: {type: ABSOLUTE, value: 29.0}
+    VOL.SPX.IV30: {type: ABSOLUTE, value: 28.999}
     IR.UST.3M:  {type: ABSOLUTE_BP, value: -56.46}
     IR.UST.2Y:  {type: ABSOLUTE_BP, value: -46.90}
     IR.UST.5Y:  {type: ABSOLUTE_BP, value: -36.00}

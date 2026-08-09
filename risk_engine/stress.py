@@ -16,7 +16,7 @@ import pandas as pd
 # whatever the market delivered. Both crises are flight-to-quality episodes
 # where a long-duration book GAINS on the rates leg, which is exactly why the
 # 2022 window is here - the correlated stock-bond selloff (10Y +258bp with SPY
-# -19.5% over the window) is this book's genuinely adverse regime, and a
+# -17.7% over the window) is this book's genuinely adverse regime, and a
 # catalog of only 2008 and 2020 would never show it.
 REPLAY_WINDOWS: dict[str, tuple[dt.date, dt.date]] = {
     "GFC_2008": (dt.date(2008, 9, 12), dt.date(2008, 11, 20)),

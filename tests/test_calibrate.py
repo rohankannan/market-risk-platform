@@ -156,3 +156,41 @@ def test_shock_type_validation_runs_before_anything_is_written():
     unknown = [{"code": "X", "shocks": {"EQ.NOPE": {"type": "RELATIVE", "value": 0.1}}}]
     with pytest.raises(RuntimeError, match="unknown factor"):
         validate_shock_types(unknown, convs)
+
+
+def test_risk_off_magnitudes_recompute_from_the_committed_snapshot():
+    """The catalog claims RISK_OFF is the conditional tail mean over the
+    windows where 20-day SPY sat at or below its 1st percentile. Recompute it
+    and hold the YAML to it - the provenance is only real if it reproduces."""
+    from risk.jobs.backfill import load_inputs
+
+    _, _, returns, _ = load_inputs("data/seed/market_snapshot.parquet",
+                                   "data/seed/portfolio.yaml")
+    ctm = conditional_tail_mean(returns, "EQ.SPY")
+    catalog = {s["code"]: s for s in yaml.safe_load(open(SHOCKS_YAML))}
+    shocks = catalog["RISK_OFF"]["shocks"]
+    assert len(shocks) == len(returns.columns), "every factor co-moves in a scenario row"
+    for factor, spec in shocks.items():
+        # the YAML rounds for legibility; 2dp on bp and 4dp on log/points
+        places = 2 if spec["type"] == "ABSOLUTE_BP" else 4
+        assert spec["value"] == pytest.approx(round(float(ctm[factor]), places), abs=1e-9), (
+            f"RISK_OFF {factor} is {spec['value']} but the snapshot gives "
+            f"{float(ctm[factor]):.6f}")
+
+
+def test_sensitivity_severities_match_their_cited_percentiles():
+    """Each round ladder cites where it sits in the measured distribution.
+    Recompute those citations so a recalibrated snapshot cannot leave the
+    catalog quoting a percentile that is no longer true."""
+    from risk.jobs.backfill import load_inputs
+
+    _, _, returns, _ = load_inputs("data/seed/market_snapshot.parquet",
+                                   "data/seed/portfolio.yaml")
+    for factor, magnitude, cited_pct, cited_hits in [
+        ("IR.UST.10Y", 100.0, 99.64, 18),      # RATES_UP_100
+        ("EQ.SPY", -0.223, 99.52, 24),         # EQUITY_DOWN_20
+        ("FX.EURUSD", -0.105, 99.78, 11),      # USD_UP_10
+    ]:
+        q, hits = quantile_of(returns, factor, magnitude)
+        assert round(q * 100, 2) == pytest.approx(cited_pct, abs=0.01), factor
+        assert hits == cited_hits, factor
