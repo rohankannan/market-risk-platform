@@ -16,6 +16,7 @@ section 5 against the same snapshot the model runs on.
 | R5 | 11 | Position concentration of firm ES | top position 37.3% of firm ES, top 3 86.6% | Monitor | Euler components monitored; factor-model idiosyncratic add-on on the roadmap |
 | R6 | 9 | 1bp post-shock yield floor | unbinding; minimum post-shock yield 2.31% (230bp of headroom) | Immaterial | Re-measure if front-end yields fall below ~1.5% |
 | R7 | 2 | One-factor ytm proxy vs bootstrapped-curve pricing | rates-desk VaR $884,667 curve-priced vs $868,455 proxy (+1.9%); KRDs diagonal at the anchor by construction, spillover grows as coupons drift off par | Monitor | Curve view reported (key-rate DV01s in the nightly batch); VaR keeps the proxy |
+| R8 | 13 | Backtest values today's book on every historical date | FHS sits 1 exception from amber (4/250); 3 of 10 defensible compositions cross it, taking the Basel multiplier 3.00 -> 3.40 (+13.3%) | Material | Disclosed, not fixed: a dated position store needs trade flow this project has no source for |
 
 ## R1 — Horizon scaling
 
@@ -84,3 +85,28 @@ The matrix is diagonal **by construction**, not by accident: each position is a 
 | UST_30Y | $6 | $49 | $206 | $2,258 | $56,451 | $58,970 |
 
 That drift is also why the scenario-level basis above is nonzero: shocked curves un-par the coupons inside every scenario. The nightly batch writes the live KRD table per run (risk_exposures) - on dates after the anchor the off-diagonals are real and grow with the drift - and the API and dashboard surface it.
+
+## R8 — Static book in the backtest
+
+`read_book` takes no date argument, so the 750-day backfill values one composition - today's - on every historical date. The book actually held in 2023 never existed, so there is no truth to measure a bias against; what can be measured is how much of the published verdict is the model and how much is the book. Each composition below is re-backfilled end to end and re-tested:
+
+| Composition | HS exc / 750d | HS zone | FHS exc / 750d | FHS exc / 250d | FHS zone | Multiplier |
+|---|---|---|---|---|---|---|
+| published | 6 | GREEN | 10 | 4 | GREEN | 3.00 |
+| no collar (pre-sleeve book) | 5 | GREEN | 10 | 4 | GREEN | 3.00 |
+| peer mix 52/28/20 ** | 8 | GREEN | 11 | 5 | AMBER | 3.40 |
+| config target 45/30/25 | 6 | GREEN | 10 | 4 | GREEN | 3.00 |
+| equity x0.5 | 6 | GREEN | 10 | 4 | GREEN | 3.00 |
+| equity x1.5 ** | 7 | GREEN | 11 | 5 | AMBER | 3.40 |
+| fx x0.5 ** | 7 | GREEN | 10 | 5 | AMBER | 3.40 |
+| fx x1.5 | 6 | GREEN | 10 | 3 | GREEN | 3.00 |
+| rates x0.5 | 5 | GREEN | 8 | 3 | GREEN | 3.00 |
+| rates x1.5 | 7 | GREEN | 10 | 4 | GREEN | 3.00 |
+
+Coverage is robust and the zone is not. HS exceptions stay inside 5-8 against 6 published, and no variant makes Kupiec reject. But the published FHS run sits at 4 exceptions in the 250-day traffic-light window - one short of amber at 5 - and equity x1.5, fx x0.5, peer mix 52/28/20 cross it. At a bank that is not a presentational difference: the capital multiplier moves 3.00 to 3.40.
+
+Two of the crossing variants deserve naming. The peer mix is not a hypothetical - `data/seed/portfolio.yaml` cites it as the FY2025 average across the GS/MS/JPM/Citi/BofA trading-VaR tables and sizes the book against it, so the composition this project holds up as its realism reference is one that would put the challenger model in amber. Halving FX crossing is the counter-intuitive one, and the mechanism is measurable: FX carries $497,965 of standalone VaR but only $53,309 of it survives into the firm number, against $387,717 of $868,455 for rates. FX is close to pure offset here, so cutting it removes hedge and exposure at nearly the same rate and the firm tail does not shrink with it. Note the mixes are reweighted with the equity desk pinned, so these are mix effects rather than size effects; scaling a single desk is reported separately as the bound.
+
+The collar row is the one dated composition here rather than a counterfactual: the options sleeve shipped in August 2026 and is valued on all 750 days regardless, and it accounts for one of the 6 published HS exceptions - a position that existed for roughly none of the window supplying a sixth of the evidence the coverage test runs on.
+
+The fix is a bitemporal position store, which needs a trade feed this project has no source for. So this stays disclosed rather than repaired, and the honest reading of the backtest section is that it tests the model on a fixed book, not the book that was held.
