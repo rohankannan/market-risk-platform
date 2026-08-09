@@ -49,7 +49,7 @@ def slug(key: str) -> str:
     return f"{s}.json"
 
 
-def request_list(desks: list[str]) -> list[tuple[str, dict]]:
+def request_list(desks: list[str], scenario_codes: list[str]) -> list[tuple[str, dict]]:
     """Every request the pages issue at their default and selectable states -
     the offline demo must cover the whole surface, not just the landing view."""
     reqs: list[tuple[str, dict]] = [
@@ -61,6 +61,7 @@ def request_list(desks: list[str]) -> list[tuple[str, dict]]:
         ("/api/v1/factors/latest", {}),
         ("/api/v1/scenarios", {}),
         ("/api/v1/scenarios/results", {}),
+        ("/api/v1/flash", {}),
         ("/api/v1/modeldoc", {}),
     ]
     # the terminal overview reads FIRM history at the plain backtest window
@@ -72,6 +73,10 @@ def request_list(desks: list[str]) -> list[tuple[str, dict]]:
         for model in ("HS", "FHS"):
             reqs.append(("/api/v1/backtest/summary",
                          {"scope": "FIRM", "model": model, "window": w}))
+    # every catalog scenario resolved to its shock vector: the sandbox loads
+    # these as presets, so the offline demo must carry them too
+    for code in scenario_codes:
+        reqs.append((f"/api/v1/scenarios/{code}/shocks", {}))
     for desk in desks:
         reqs += [
             ("/api/v1/risk/history", {"scope": f"desk:{desk}", "window": HISTORY_WINDOW_DESK}),
@@ -106,7 +111,9 @@ def main(argv: list[str] | None = None) -> int:
     # collect everything before writing anything: a mid-run failure must not
     # leave fixtures and snapshot.json recorded from different stack states
     snapshot: dict[str, dict] = {}
-    for path, params in request_list(desks):
+    catalog = client.get("/api/v1/scenarios").raise_for_status().json()
+    scenario_codes = [s["scenario_code"] for s in catalog["scenarios"]]
+    for path, params in request_list(desks, scenario_codes):
         key = canonical(path, params)
         resp = client.get(path, params=params)
         if resp.status_code != 200:

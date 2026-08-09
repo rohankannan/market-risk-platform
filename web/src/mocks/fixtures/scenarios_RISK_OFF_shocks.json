@@ -1,0 +1,91 @@
+{
+  "scenario_code": "RISK_OFF",
+  "scenario_type": "HYPOTHETICAL",
+  "shocks": [
+    {
+      "factor_code": "EQ.AAPL",
+      "shock_type": "RELATIVE",
+      "value": -0.2092
+    },
+    {
+      "factor_code": "EQ.JNJ",
+      "shock_type": "RELATIVE",
+      "value": -0.1273
+    },
+    {
+      "factor_code": "EQ.JPM",
+      "shock_type": "RELATIVE",
+      "value": -0.2379
+    },
+    {
+      "factor_code": "EQ.MSFT",
+      "shock_type": "RELATIVE",
+      "value": -0.1495
+    },
+    {
+      "factor_code": "EQ.NVDA",
+      "shock_type": "RELATIVE",
+      "value": -0.2358
+    },
+    {
+      "factor_code": "EQ.SPY",
+      "shock_type": "RELATIVE",
+      "value": -0.2285
+    },
+    {
+      "factor_code": "EQ.XOM",
+      "shock_type": "RELATIVE",
+      "value": -0.2226
+    },
+    {
+      "factor_code": "FX.EURUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.0331
+    },
+    {
+      "factor_code": "FX.GBPUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.0551
+    },
+    {
+      "factor_code": "FX.JPYUSD",
+      "shock_type": "RELATIVE",
+      "value": 0.0232
+    },
+    {
+      "factor_code": "FX.MXNUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.1557
+    },
+    {
+      "factor_code": "IR.UST.10Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -25.08
+    },
+    {
+      "factor_code": "IR.UST.2Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -46.9
+    },
+    {
+      "factor_code": "IR.UST.30Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -28.94
+    },
+    {
+      "factor_code": "IR.UST.3M",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -56.46
+    },
+    {
+      "factor_code": "IR.UST.5Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -36.0
+    },
+    {
+      "factor_code": "VOL.SPX.IV30",
+      "shock_type": "ABSOLUTE",
+      "value": 28.999
+    }
+  ]
+}

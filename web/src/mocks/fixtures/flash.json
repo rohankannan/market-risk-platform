@@ -1,0 +1,170 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 328,
+  "indicative": true,
+  "quoted_at": "2026-08-09T00:40:24.919659Z",
+  "live_factors": 16,
+  "total_factors": 17,
+  "rejected_factors": [],
+  "cached": false,
+  "desks": [
+    {
+      "desk_code": "FIRM",
+      "is_aggregate": true,
+      "flash_pnl": -49673.66
+    },
+    {
+      "desk_code": "EQUITY",
+      "is_aggregate": false,
+      "flash_pnl": 116602.93
+    },
+    {
+      "desk_code": "FX",
+      "is_aggregate": false,
+      "flash_pnl": 76485.31
+    },
+    {
+      "desk_code": "RATES",
+      "is_aggregate": false,
+      "flash_pnl": -242761.91
+    }
+  ],
+  "factors": [
+    {
+      "factor_code": "EQ.AAPL",
+      "level": 313.329987,
+      "close": 312.410004,
+      "move": 0.00294,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "EQ.JNJ",
+      "level": 259.23999,
+      "close": 256.980011,
+      "move": 0.008756,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "EQ.JPM",
+      "level": 357.519989,
+      "close": 356.299988,
+      "move": 0.003418,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "EQ.MSFT",
+      "level": 499.98999,
+      "close": 499.859985,
+      "move": 0.00026,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "EQ.NVDA",
+      "level": 223.960007,
+      "close": 218.990005,
+      "move": 0.022441,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "EQ.SPY",
+      "level": 773.26001,
+      "close": 768.559998,
+      "move": 0.006097,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "EQ.XOM",
+      "level": 153.039993,
+      "close": 154.839996,
+      "move": -0.011693,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "FX.EURUSD",
+      "level": 1.156203,
+      "close": 1.1519,
+      "move": 0.003729,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "FX.GBPUSD",
+      "level": 1.349236,
+      "close": 1.347,
+      "move": 0.001659,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "FX.JPYUSD",
+      "level": 0.006339,
+      "close": 0.006283,
+      "move": 0.00893,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "FX.MXNUSD",
+      "level": 0.058425,
+      "close": 0.057725,
+      "move": 0.01205,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "IR.UST.10Y",
+      "level": 4.66,
+      "close": 4.63,
+      "move": 2.999985,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "IR.UST.2Y",
+      "level": 4.18,
+      "close": 4.18,
+      "move": 0.0,
+      "carried": true,
+      "note": "no quote"
+    },
+    {
+      "factor_code": "IR.UST.30Y",
+      "level": 5.211,
+      "close": 5.17,
+      "move": 4.099997,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "IR.UST.3M",
+      "level": 3.71,
+      "close": 3.89,
+      "move": -17.999996,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "IR.UST.5Y",
+      "level": 4.362,
+      "close": 4.33,
+      "move": 3.199999,
+      "carried": false,
+      "note": null
+    },
+    {
+      "factor_code": "VOL.SPX.IV30",
+      "level": 14.9,
+      "close": 15.15,
+      "move": -0.25,
+      "carried": false,
+      "note": null
+    }
+  ]
+}

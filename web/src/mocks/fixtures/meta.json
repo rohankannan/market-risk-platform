@@ -2,8 +2,8 @@
   "latest_as_of": "2026-08-06",
   "batch_status": "SUCCESS",
   "batch_type": "EOD",
-  "batch_completed_at": "2026-08-08T18:34:40.625569-04:00",
-  "code_version": "a37f4ab",
+  "batch_completed_at": "2026-08-08T20:40:09.576436-04:00",
+  "code_version": "c3b8689",
   "available_dates": [
     "2025-05-01",
     "2025-05-02",

@@ -1,0 +1,91 @@
+{
+  "scenario_code": "GFC_2008",
+  "scenario_type": "HISTORICAL_REPLAY",
+  "shocks": [
+    {
+      "factor_code": "EQ.AAPL",
+      "shock_type": "RELATIVE",
+      "value": -0.6400147892619086
+    },
+    {
+      "factor_code": "EQ.JNJ",
+      "shock_type": "RELATIVE",
+      "value": -0.2429775188230474
+    },
+    {
+      "factor_code": "EQ.JPM",
+      "shock_type": "RELATIVE",
+      "value": -0.5697345661522721
+    },
+    {
+      "factor_code": "EQ.MSFT",
+      "shock_type": "RELATIVE",
+      "value": -0.43768531505895725
+    },
+    {
+      "factor_code": "EQ.NVDA",
+      "shock_type": "RELATIVE",
+      "value": -0.557191537854699
+    },
+    {
+      "factor_code": "EQ.SPY",
+      "shock_type": "RELATIVE",
+      "value": -0.5031435369395161
+    },
+    {
+      "factor_code": "EQ.XOM",
+      "shock_type": "RELATIVE",
+      "value": -0.09221368586793188
+    },
+    {
+      "factor_code": "FX.EURUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.10696401977682082
+    },
+    {
+      "factor_code": "FX.GBPUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.16814577647785067
+    },
+    {
+      "factor_code": "FX.JPYUSD",
+      "shock_type": "RELATIVE",
+      "value": 0.11597921205154815
+    },
+    {
+      "factor_code": "FX.MXNUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.24079346869881002
+    },
+    {
+      "factor_code": "IR.UST.10Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -53.99999999999999
+    },
+    {
+      "factor_code": "IR.UST.2Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -118.00000000000003
+    },
+    {
+      "factor_code": "IR.UST.30Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -56.00000000000001
+    },
+    {
+      "factor_code": "IR.UST.3M",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -158.0
+    },
+    {
+      "factor_code": "IR.UST.5Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -93.00000000000001
+    },
+    {
+      "factor_code": "VOL.SPX.IV30",
+      "shock_type": "ABSOLUTE",
+      "value": 56.47
+    }
+  ]
+}

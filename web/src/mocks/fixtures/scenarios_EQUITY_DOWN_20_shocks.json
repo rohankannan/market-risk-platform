@@ -1,0 +1,46 @@
+{
+  "scenario_code": "EQUITY_DOWN_20",
+  "scenario_type": "HYPOTHETICAL",
+  "shocks": [
+    {
+      "factor_code": "EQ.AAPL",
+      "shock_type": "RELATIVE",
+      "value": -0.223
+    },
+    {
+      "factor_code": "EQ.JNJ",
+      "shock_type": "RELATIVE",
+      "value": -0.223
+    },
+    {
+      "factor_code": "EQ.JPM",
+      "shock_type": "RELATIVE",
+      "value": -0.223
+    },
+    {
+      "factor_code": "EQ.MSFT",
+      "shock_type": "RELATIVE",
+      "value": -0.223
+    },
+    {
+      "factor_code": "EQ.NVDA",
+      "shock_type": "RELATIVE",
+      "value": -0.223
+    },
+    {
+      "factor_code": "EQ.SPY",
+      "shock_type": "RELATIVE",
+      "value": -0.223
+    },
+    {
+      "factor_code": "EQ.XOM",
+      "shock_type": "RELATIVE",
+      "value": -0.223
+    },
+    {
+      "factor_code": "VOL.SPX.IV30",
+      "shock_type": "ABSOLUTE",
+      "value": 20.0
+    }
+  ]
+}

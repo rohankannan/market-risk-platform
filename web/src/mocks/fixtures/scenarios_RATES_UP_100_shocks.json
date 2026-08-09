@@ -1,0 +1,31 @@
+{
+  "scenario_code": "RATES_UP_100",
+  "scenario_type": "HYPOTHETICAL",
+  "shocks": [
+    {
+      "factor_code": "IR.UST.10Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 100.0
+    },
+    {
+      "factor_code": "IR.UST.2Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 100.0
+    },
+    {
+      "factor_code": "IR.UST.30Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 100.0
+    },
+    {
+      "factor_code": "IR.UST.3M",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 100.0
+    },
+    {
+      "factor_code": "IR.UST.5Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 100.0
+    }
+  ]
+}

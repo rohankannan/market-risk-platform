@@ -1,0 +1,26 @@
+{
+  "scenario_code": "USD_UP_10",
+  "scenario_type": "HYPOTHETICAL",
+  "shocks": [
+    {
+      "factor_code": "FX.EURUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.105
+    },
+    {
+      "factor_code": "FX.GBPUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.105
+    },
+    {
+      "factor_code": "FX.JPYUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.105
+    },
+    {
+      "factor_code": "FX.MXNUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.105
+    }
+  ]
+}

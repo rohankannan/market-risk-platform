@@ -1,0 +1,91 @@
+{
+  "scenario_code": "RATES_2022",
+  "scenario_type": "HISTORICAL_REPLAY",
+  "shocks": [
+    {
+      "factor_code": "EQ.AAPL",
+      "shock_type": "RELATIVE",
+      "value": -0.14257773786258632
+    },
+    {
+      "factor_code": "EQ.JNJ",
+      "shock_type": "RELATIVE",
+      "value": 0.03631082882017367
+    },
+    {
+      "factor_code": "EQ.JPM",
+      "shock_type": "RELATIVE",
+      "value": -0.19840339551407116
+    },
+    {
+      "factor_code": "EQ.MSFT",
+      "shock_type": "RELATIVE",
+      "value": -0.36425298256966077
+    },
+    {
+      "factor_code": "EQ.NVDA",
+      "shock_type": "RELATIVE",
+      "value": -0.7782224733481162
+    },
+    {
+      "factor_code": "EQ.SPY",
+      "shock_type": "RELATIVE",
+      "value": -0.1953377092924029
+    },
+    {
+      "factor_code": "EQ.XOM",
+      "shock_type": "RELATIVE",
+      "value": 0.6247186824496405
+    },
+    {
+      "factor_code": "FX.EURUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.1353759220977517
+    },
+    {
+      "factor_code": "FX.GBPUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.15903915217173534
+    },
+    {
+      "factor_code": "FX.JPYUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.2550506022800292
+    },
+    {
+      "factor_code": "FX.MXNUSD",
+      "shock_type": "RELATIVE",
+      "value": 0.0330042703757214
+    },
+    {
+      "factor_code": "IR.UST.10Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 257.99999999999994
+    },
+    {
+      "factor_code": "IR.UST.2Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 378.0
+    },
+    {
+      "factor_code": "IR.UST.30Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 232.0
+    },
+    {
+      "factor_code": "IR.UST.3M",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 415.99999999999994
+    },
+    {
+      "factor_code": "IR.UST.5Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": 301.0
+    },
+    {
+      "factor_code": "VOL.SPX.IV30",
+      "shock_type": "ABSOLUTE",
+      "value": 8.66
+    }
+  ]
+}

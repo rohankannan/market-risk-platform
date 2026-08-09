@@ -1,0 +1,91 @@
+{
+  "scenario_code": "COVID_2020",
+  "scenario_type": "HISTORICAL_REPLAY",
+  "shocks": [
+    {
+      "factor_code": "EQ.AAPL",
+      "shock_type": "RELATIVE",
+      "value": -0.3518946741604809
+    },
+    {
+      "factor_code": "EQ.JNJ",
+      "shock_type": "RELATIVE",
+      "value": -0.28773855626074507
+    },
+    {
+      "factor_code": "EQ.JPM",
+      "shock_type": "RELATIVE",
+      "value": -0.5401768786196248
+    },
+    {
+      "factor_code": "EQ.MSFT",
+      "shock_type": "RELATIVE",
+      "value": -0.3171021420310307
+    },
+    {
+      "factor_code": "EQ.NVDA",
+      "shock_type": "RELATIVE",
+      "value": -0.33184960736934954
+    },
+    {
+      "factor_code": "EQ.SPY",
+      "shock_type": "RELATIVE",
+      "value": -0.40647079117445273
+    },
+    {
+      "factor_code": "EQ.XOM",
+      "shock_type": "RELATIVE",
+      "value": -0.6439437616182326
+    },
+    {
+      "factor_code": "FX.EURUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.0050985046713835774
+    },
+    {
+      "factor_code": "FX.GBPUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.12460505436728025
+    },
+    {
+      "factor_code": "FX.JPYUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.0141073231108102
+    },
+    {
+      "factor_code": "FX.MXNUSD",
+      "shock_type": "RELATIVE",
+      "value": -0.3013729710062112
+    },
+    {
+      "factor_code": "IR.UST.10Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -79.0
+    },
+    {
+      "factor_code": "IR.UST.2Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -113.0
+    },
+    {
+      "factor_code": "IR.UST.30Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -67.0
+    },
+    {
+      "factor_code": "IR.UST.3M",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -156.0
+    },
+    {
+      "factor_code": "IR.UST.5Y",
+      "shock_type": "ABSOLUTE_BP",
+      "value": -100.99999999999997
+    },
+    {
+      "factor_code": "VOL.SPX.IV30",
+      "shock_type": "ABSOLUTE",
+      "value": 46.760000000000005
+    }
+  ]
+}
