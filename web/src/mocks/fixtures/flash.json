@@ -1,8 +1,8 @@
 {
   "as_of": "2026-08-06",
-  "run_id": 328,
+  "run_id": 331,
   "indicative": true,
-  "quoted_at": "2026-08-09T00:40:24.919659Z",
+  "quoted_at": "2026-08-09T20:07:55.717299Z",
   "live_factors": 16,
   "total_factors": 17,
   "rejected_factors": [],
@@ -11,7 +11,7 @@
     {
       "desk_code": "FIRM",
       "is_aggregate": true,
-      "flash_pnl": -49673.66
+      "flash_pnl": -61655.52
     },
     {
       "desk_code": "EQUITY",
@@ -21,7 +21,7 @@
     {
       "desk_code": "FX",
       "is_aggregate": false,
-      "flash_pnl": 76485.31
+      "flash_pnl": 64503.46
     },
     {
       "desk_code": "RATES",
@@ -96,25 +96,25 @@
     },
     {
       "factor_code": "FX.GBPUSD",
-      "level": 1.349236,
+      "level": 1.349418,
       "close": 1.347,
-      "move": 0.001659,
+      "move": 0.001794,
       "carried": false,
       "note": null
     },
     {
       "factor_code": "FX.JPYUSD",
-      "level": 0.006339,
+      "level": 0.006338,
       "close": 0.006283,
-      "move": 0.00893,
+      "move": 0.008682,
       "carried": false,
       "note": null
     },
     {
       "factor_code": "FX.MXNUSD",
-      "level": 0.058425,
+      "level": 0.05836,
       "close": 0.057725,
-      "move": 0.01205,
+      "move": 0.010941,
       "carried": false,
       "note": null
     },
