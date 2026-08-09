@@ -580,10 +580,10 @@ def test_whatif_endpoint_and_validation(client, monkeypatch):
     monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
     monkeypatch.setattr(queries, "risk_rows", lambda conn, run_id: ROWS)
     computed = {"desks": [{"desk_code": "FIRM", "is_aggregate": True,
-                           "var_hs_1d": 90.0, "es_975_1d": 110.0}],
-                "positions": [], "zeroed": ["NVDA"]}
+                           "var_hs_1d": 90.0, "es_975_1d": 110.0, "shock_pnl": -250.0}],
+                "positions": [], "zeroed": ["NVDA"], "shocked_factors": ["IR.UST.10Y"]}
     monkeypatch.setattr(sandbox, "compute_whatif",
-                        lambda conn, run_id, d, scales: computed)
+                        lambda conn, run_id, d, scales, shocks=None: computed)
 
     r = client.post("/api/v1/whatif",
                     json={"adjustments": [{"ticker": "NVDA", "scale": 0.0}]})
@@ -601,7 +601,7 @@ def test_whatif_endpoint_and_validation(client, monkeypatch):
         {"ticker": "SPY", "scale": 2.0}, {"ticker": "SPY", "scale": 0.5}]})
     assert dup.status_code == 422 and "duplicate" in dup.json()["detail"]
 
-    def _raise(conn, run_id, d, scales):
+    def _raise(conn, run_id, d, scales, shocks=None):
         raise sandbox.WhatIfInputError("tickers not in the book: ['NOPE']")
     monkeypatch.setattr(sandbox, "compute_whatif", _raise)
     bad = client.post("/api/v1/whatif",
@@ -609,7 +609,7 @@ def test_whatif_endpoint_and_validation(client, monkeypatch):
     assert bad.status_code == 422 and "NOPE" in bad.json()["detail"]
 
     # data-integrity failures are the server's fault, never a 422
-    def _integrity(conn, run_id, d, scales):
+    def _integrity(conn, run_id, d, scales, shocks=None):
         raise RuntimeError("no aligned market data")
     monkeypatch.setattr(sandbox, "compute_whatif", _integrity)
     with pytest.raises(RuntimeError):

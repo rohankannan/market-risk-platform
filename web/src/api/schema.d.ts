@@ -279,6 +279,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/scenarios/{code}/shocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Scenario Shocks
+         * @description A catalog scenario resolved to an explicit shock vector - what the
+         *     sandbox loads when you start from a preset. Replays resolve against the
+         *     run's history, so the returned moves are what the market delivered over
+         *     the window, not stored magnitudes.
+         */
+        get: operations["scenario_shocks_api_v1_scenarios__code__shocks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/whatif": {
         parameters: {
             query?: never;
@@ -781,6 +804,15 @@ export interface components {
             /** Shock Value */
             shock_value: number;
         };
+        /** ScenarioShockVector */
+        ScenarioShockVector: {
+            /** Scenario Code */
+            scenario_code: string;
+            /** Scenario Type */
+            scenario_type: string;
+            /** Shocks */
+            shocks: components["schemas"]["WhatIfShock"][];
+        };
         /** ScenarioSpec */
         ScenarioSpec: {
             /** Description */
@@ -855,6 +887,8 @@ export interface components {
             is_aggregate: boolean;
             /** Official Var Hs 1D */
             official_var_hs_1d: number | null;
+            /** Shock Pnl */
+            shock_pnl: number | null;
             /** Var Delta */
             var_delta: number | null;
             /** Var Hs 1D */
@@ -882,7 +916,9 @@ export interface components {
         /** WhatIfRequest */
         WhatIfRequest: {
             /** Adjustments */
-            adjustments: components["schemas"]["WhatIfAdjustment"][];
+            adjustments?: components["schemas"]["WhatIfAdjustment"][];
+            /** Shocks */
+            shocks?: components["schemas"]["WhatIfShock"][];
         };
         /** WhatIfResult */
         WhatIfResult: {
@@ -902,8 +938,22 @@ export interface components {
             positions: components["schemas"]["WhatIfPosition"][];
             /** Run Id */
             run_id: number;
+            /** Shocked Factors */
+            shocked_factors: string[];
             /** Zeroed */
             zeroed: string[];
+        };
+        /** WhatIfShock */
+        WhatIfShock: {
+            /** Factor Code */
+            factor_code: string;
+            /**
+             * Shock Type
+             * @enum {string}
+             */
+            shock_type: "RELATIVE" | "ABSOLUTE_BP" | "ABSOLUTE";
+            /** Value */
+            value: number;
         };
     };
     responses: never;
@@ -1300,6 +1350,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScenarioResults"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_shocks_api_v1_scenarios__code__shocks_get: {
+        parameters: {
+            query?: {
+                /** @description Pin to a run date (default: latest completed batch) */
+                as_of?: string | null;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioShockVector"];
                 };
             };
             /** @description Validation Error */

@@ -274,12 +274,35 @@ def whatif(body: schemas.WhatIfRequest, response: Response,
                                 detail=f"duplicate adjustment for {adj.ticker!r}")
         scales[adj.ticker] = adj.scale
     try:
-        computed = sandbox.compute_whatif(conn, run["run_id"], run["run_date"], scales)
+        computed = sandbox.compute_whatif(
+            conn, run["run_id"], run["run_date"], scales,
+            [s.model_dump() for s in body.shocks])
     except sandbox.WhatIfInputError as exc:
         # only input faults map to 422; a data-integrity failure stays a 500
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return schemas.build_whatif_result(run, computed,
                                        queries.risk_rows(conn, run["run_id"]))
+
+
+@app.get("/api/v1/scenarios/{code}/shocks", response_model=schemas.ScenarioShockVector)
+def scenario_shocks(code: str, response: Response, as_of: dt.date | None = AsOf,
+                    conn: Connection = Depends(get_conn)) -> schemas.ScenarioShockVector:
+    """A catalog scenario resolved to an explicit shock vector - what the
+    sandbox loads when you start from a preset. Replays resolve against the
+    run's history, so the returned moves are what the market delivered over
+    the window, not stored magnitudes."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    try:
+        shocks = sandbox.resolve_scenario_shocks(conn, run["run_id"], run["run_date"], code)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"unknown scenario {code!r}") from exc
+    except sandbox.WhatIfInputError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    stype = conn.execute(text("SELECT scenario_type FROM scenarios WHERE scenario_code = :c"),
+                         {"c": code}).scalar()
+    return schemas.ScenarioShockVector(scenario_code=code, scenario_type=str(stype),
+                                       shocks=[schemas.WhatIfShock(**s) for s in shocks])
 
 
 @app.get("/api/v1/modeldoc", response_model=schemas.ModelDoc)

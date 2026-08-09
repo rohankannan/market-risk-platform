@@ -1325,6 +1325,32 @@
         "title": "ScenarioShock",
         "type": "object"
       },
+      "ScenarioShockVector": {
+        "properties": {
+          "scenario_code": {
+            "title": "Scenario Code",
+            "type": "string"
+          },
+          "scenario_type": {
+            "title": "Scenario Type",
+            "type": "string"
+          },
+          "shocks": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfShock"
+            },
+            "title": "Shocks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "scenario_code",
+          "scenario_type",
+          "shocks"
+        ],
+        "title": "ScenarioShockVector",
+        "type": "object"
+      },
       "ScenarioSpec": {
         "properties": {
           "description": {
@@ -1543,6 +1569,17 @@
             ],
             "title": "Official Var Hs 1D"
           },
+          "shock_pnl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shock Pnl"
+          },
           "var_delta": {
             "anyOf": [
               {
@@ -1564,6 +1601,7 @@
           "is_aggregate",
           "var_hs_1d",
           "es_975_1d",
+          "shock_pnl",
           "official_var_hs_1d",
           "var_delta"
         ],
@@ -1627,11 +1665,16 @@
             "maxItems": 64,
             "title": "Adjustments",
             "type": "array"
+          },
+          "shocks": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfShock"
+            },
+            "maxItems": 64,
+            "title": "Shocks",
+            "type": "array"
           }
         },
-        "required": [
-          "adjustments"
-        ],
         "title": "WhatIfRequest",
         "type": "object"
       },
@@ -1665,6 +1708,13 @@
             "title": "Run Id",
             "type": "integer"
           },
+          "shocked_factors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Shocked Factors",
+            "type": "array"
+          },
           "zeroed": {
             "items": {
               "type": "string"
@@ -1679,9 +1729,38 @@
           "hypothetical",
           "desks",
           "positions",
-          "zeroed"
+          "zeroed",
+          "shocked_factors"
         ],
         "title": "WhatIfResult",
+        "type": "object"
+      },
+      "WhatIfShock": {
+        "properties": {
+          "factor_code": {
+            "title": "Factor Code",
+            "type": "string"
+          },
+          "shock_type": {
+            "enum": [
+              "RELATIVE",
+              "ABSOLUTE_BP",
+              "ABSOLUTE"
+            ],
+            "title": "Shock Type",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "factor_code",
+          "shock_type",
+          "value"
+        ],
+        "title": "WhatIfShock",
         "type": "object"
       }
     }
@@ -2372,6 +2451,65 @@
           }
         },
         "summary": "Scenarios Results"
+      }
+    },
+    "/api/v1/scenarios/{code}/shocks": {
+      "get": {
+        "description": "A catalog scenario resolved to an explicit shock vector - what the\nsandbox loads when you start from a preset. Replays resolve against the\nrun's history, so the returned moves are what the market delivered over\nthe window, not stored magnitudes.",
+        "operationId": "scenario_shocks_api_v1_scenarios__code__shocks_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "title": "Code",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pin to a run date (default: latest completed batch)",
+            "in": "query",
+            "name": "as_of",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pin to a run date (default: latest completed batch)",
+              "title": "As Of"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioShockVector"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Scenario Shocks"
       }
     },
     "/api/v1/whatif": {

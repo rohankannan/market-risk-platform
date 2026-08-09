@@ -581,17 +581,26 @@ class WhatIfAdjustment(BaseModel):
     scale: float                            # multiplier on the booked quantity
 
 
+class WhatIfShock(BaseModel):
+    factor_code: str
+    shock_type: Literal["RELATIVE", "ABSOLUTE_BP", "ABSOLUTE"]
+    value: float                            # in the factor's own convention
+
+
 class WhatIfRequest(BaseModel):
-    # unlisted positions stay at 1.0; the bound is far above any real book
-    # and keeps the unauthenticated compute path from swallowing huge bodies
-    adjustments: list[WhatIfAdjustment] = Field(max_length=64)
+    # unlisted positions stay at 1.0 and unlisted factors are shocked by zero
+    # (the catalog's documented fill rule); the bounds are far above any real
+    # book and keep the unauthenticated compute path from swallowing huge bodies
+    adjustments: list[WhatIfAdjustment] = Field(default_factory=list, max_length=64)
+    shocks: list[WhatIfShock] = Field(default_factory=list, max_length=64)
 
 
 class WhatIfDesk(BaseModel):
     desk_code: str
     is_aggregate: bool
-    var_hs_1d: float
+    var_hs_1d: float                        # risk of the EDITED book at today's levels
     es_975_1d: float
+    shock_pnl: float | None                 # instantaneous P&L of the shock on that book
     official_var_hs_1d: float | None        # the batch's number for the delta
     var_delta: float | None
 
@@ -614,6 +623,13 @@ class WhatIfResult(BaseModel):
     desks: list[WhatIfDesk]
     positions: list[WhatIfPosition]
     zeroed: list[str]
+    shocked_factors: list[str]
+
+
+class ScenarioShockVector(BaseModel):
+    scenario_code: str
+    scenario_type: str
+    shocks: list[WhatIfShock]               # ready to load into the sandbox
 
 
 def build_whatif_result(run: dict, computed: dict,
@@ -630,7 +646,8 @@ def build_whatif_result(run: dict, computed: dict,
     return WhatIfResult(as_of=run["run_date"], run_id=run["run_id"], hypothetical=True,
                         desks=desks,
                         positions=[WhatIfPosition(**p) for p in computed["positions"]],
-                        zeroed=computed["zeroed"])
+                        zeroed=computed["zeroed"],
+                        shocked_factors=computed.get("shocked_factors", []))
 
 
 # ---------------------------------------------------------------- model doc

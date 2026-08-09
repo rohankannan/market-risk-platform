@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { ApiError, postJson } from "../api/client";
-import { useAsOf } from "../api/queries";
-import type { WhatIfResult } from "../api/types";
+import { useAsOf, useScenarioCatalog, useScenarioShocks } from "../api/queries";
+import type { WhatIfResult, WhatIfShock } from "../api/types";
 import { Skeleton } from "../components/Skeleton";
 import { StaleBanner } from "../components/StaleBanner";
 import table from "../components/DataTable.module.css";
@@ -25,15 +25,50 @@ function committedScales(draft: Draft): Record<string, number> {
   return out;
 }
 
-function useWhatIf(scales: Record<string, number>) {
+// shocks are edited as text like scales; a preset's full-precision value is
+// kept until the user actually types over that factor, so an untouched preset
+// reproduces the batch's scenario P&L to the cent
+function committedShocks(loaded: WhatIfShock[], draft: Draft): WhatIfShock[] {
+  return loaded
+    .map((s) => {
+      const raw = draft[s.factor_code];
+      if (raw === undefined) return s; // untouched: keep the preset's precision
+      const typed = Number(raw);
+      if (raw.trim() === "" || !Number.isFinite(typed)) return s;
+      return { ...s, value: toWire(s, typed) };
+    })
+    .filter((s) => s.value !== 0); // a zeroed factor is simply not shocked
+}
+
+function shockDisplay(s: WhatIfShock): string {
+  if (s.shock_type === "ABSOLUTE_BP") return s.value.toFixed(1);
+  if (s.shock_type === "ABSOLUTE") return s.value.toFixed(1);
+  return (Math.expm1(s.value) * 100).toFixed(2); // log return shown as a percent move
+}
+
+const SHOCK_UNIT: Record<string, string> = {
+  ABSOLUTE_BP: "bp",
+  ABSOLUTE: "pt",
+  RELATIVE: "%",
+};
+
+// the editor works in percent for LOG factors; the wire wants log returns
+function toWire(s: WhatIfShock, typed: number): number {
+  return s.shock_type === "RELATIVE" ? Math.log1p(typed / 100) : typed;
+}
+
+function useWhatIf(scales: Record<string, number>, shocks: WhatIfShock[]) {
   const [asOf] = useAsOf();
   return useQuery<WhatIfResult>({
     // identical books dedupe client-side; the server never caches sandbox output
-    queryKey: ["/api/v1/whatif", asOf ?? "latest", scales],
+    queryKey: ["/api/v1/whatif", asOf ?? "latest", scales, shocks],
     queryFn: () =>
       postJson<WhatIfResult>(
         "/api/v1/whatif",
-        { adjustments: Object.entries(scales).map(([ticker, scale]) => ({ ticker, scale })) },
+        {
+          adjustments: Object.entries(scales).map(([ticker, scale]) => ({ ticker, scale })),
+          shocks,
+        },
         asOf ? { as_of: asOf } : undefined,
       ),
     staleTime: Infinity,
@@ -57,14 +92,27 @@ function Delta({ value }: { value: number | null | undefined }) {
 export default function WhatIf() {
   const [draft, setDraft] = useState<Draft>({});
   const [scales, setScales] = useState<Record<string, number>>({});
+  const [preset, setPreset] = useState<string | null>(null);
+  const [shockDraft, setShockDraft] = useState<Draft>({});
+  const [shocks, setShocks] = useState<WhatIfShock[]>([]);
   const timer = useRef<ReturnType<typeof setTimeout>>();
 
-  useEffect(() => {
-    timer.current = setTimeout(() => setScales(committedScales(draft)), DEBOUNCE_MS);
-    return () => clearTimeout(timer.current);
-  }, [draft]);
+  const catalog = useScenarioCatalog();
+  const presetShocks = useScenarioShocks(preset);
+  const loaded = useMemo<WhatIfShock[]>(
+    () => (preset && presetShocks.isSuccess ? presetShocks.data.shocks : []),
+    [preset, presetShocks.isSuccess, presetShocks.data],
+  );
 
-  const result = useWhatIf(scales);
+  useEffect(() => {
+    timer.current = setTimeout(() => {
+      setScales(committedScales(draft));
+      setShocks(committedShocks(loaded, shockDraft));
+    }, DEBOUNCE_MS);
+    return () => clearTimeout(timer.current);
+  }, [draft, shockDraft, loaded]);
+
+  const result = useWhatIf(scales, shocks);
 
   // the last good result carries the page through errors: a 422 must never
   // cost the user their edits, and the untouched first response is the book
@@ -129,11 +177,82 @@ export default function WhatIf() {
           onClick={() => {
             setDraft({});
             setScales({});
+            setShockDraft({});
+            setPreset(null);
+            setShocks([]);
           }}
-          disabled={!edited}
+          disabled={!edited && !preset}
         >
-          RESET BOOK
+          RESET ALL
         </button>
+      </div>
+
+      <div className={styles.panel}>
+        <div className={styles.panelTitle}>
+          SHOCK — FACTOR MOVES
+          {preset && (
+            <span className={styles.presetTag}>
+              {Object.keys(shockDraft).length ? `EDITED FROM ${preset}` : preset}
+            </span>
+          )}
+        </div>
+        <div className={styles.presetRow}>
+          <label className={styles.hint}>
+            PRESET
+            <select
+              className={styles.presetSelect}
+              aria-label="Scenario preset"
+              value={preset ?? ""}
+              onChange={(e) => {
+                setPreset(e.target.value || null);
+                setShockDraft({});
+              }}
+            >
+              <option value="">none — book changes only</option>
+              {(catalog.data?.scenarios ?? []).map((s) => (
+                <option key={s.scenario_code} value={s.scenario_code}>
+                  {s.scenario_name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <span className={styles.hint}>
+            {loaded.length
+              ? `${loaded.length} factors shocked · instantaneous full revaluation`
+              : "pick a scenario to load its moves, then edit any factor"}
+          </span>
+        </div>
+        {loaded.length > 0 && (
+          <table className={table.table}>
+            <thead>
+              <tr>
+                <th>Factor</th>
+                <th className={table.r}>Move</th>
+                <th>Unit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loaded.map((s) => (
+                <tr key={s.factor_code}>
+                  <td className="num" style={{ color: "var(--rd-gold)" }}>
+                    {s.factor_code}
+                  </td>
+                  <td className={table.r}>
+                    <input
+                      className={`${styles.scaleInput} num`}
+                      aria-label={`Shock ${s.factor_code}`}
+                      value={shockDraft[s.factor_code] ?? shockDisplay(s)}
+                      onChange={(e) =>
+                        setShockDraft((d) => ({ ...d, [s.factor_code]: e.target.value }))
+                      }
+                    />
+                  </td>
+                  <td className={table.dim}>{SHOCK_UNIT[s.shock_type]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       <div className={`${styles.tiles} ${refreshing ? styles.stale : ""}`}>
@@ -150,6 +269,14 @@ export default function WhatIf() {
             official {fmtMoney(firm?.official_var_hs_1d ?? firmBase?.official_var_hs_1d)}
             <Delta value={firm?.var_delta} />
           </div>
+          {firm?.shock_pnl != null && (
+            <div className={styles.shockRow} title={fmtMoneyFull(firm.shock_pnl)}>
+              SHOCK P&amp;L{" "}
+              <strong style={{ color: firm.shock_pnl < 0 ? "var(--rd-down)" : "var(--rd-up)" }}>
+                {fmtMoney(firm.shock_pnl)}
+              </strong>
+            </div>
+          )}
         </div>
         {book.desks
           .filter((d) => !d.is_aggregate)
@@ -168,6 +295,16 @@ export default function WhatIf() {
                   official {fmtMoney(base.official_var_hs_1d)}
                   <Delta value={d?.var_delta} />
                 </div>
+                {d?.shock_pnl != null && (
+                  <div className={styles.shockRow} title={fmtMoneyFull(d.shock_pnl)}>
+                    SHOCK P&amp;L{" "}
+                    <strong
+                      style={{ color: d.shock_pnl < 0 ? "var(--rd-down)" : "var(--rd-up)" }}
+                    >
+                      {fmtMoney(d.shock_pnl)}
+                    </strong>
+                  </div>
+                )}
               </div>
             );
           })}

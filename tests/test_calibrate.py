@@ -105,6 +105,31 @@ def test_catalog_rows_declare_their_calibration_class():
         assert len(s.get("description", "")) > 80, f"{s['code']} lacks a stated basis"
 
 
+def test_sandbox_shock_validation_is_loud_about_units():
+    """A basis-point value labeled RELATIVE would apply as a log return - a
+    100x error. The sandbox refuses it before anything is priced."""
+    from api.sandbox import WhatIfInputError, _validate_shocks
+
+    convs = {"IR.UST.10Y": "ABS_BP", "EQ.SPY": "LOG", "VOL.SPX.IV30": "ABS"}
+    ok = _validate_shocks([
+        {"factor_code": "IR.UST.10Y", "shock_type": "ABSOLUTE_BP", "value": 100},
+        {"factor_code": "EQ.SPY", "shock_type": "RELATIVE", "value": -0.223},
+    ], convs)
+    assert ok["IR.UST.10Y"] == 100 and ok["EQ.SPY"] == pytest.approx(-0.223)
+    assert len(_validate_shocks([], convs)) == 0
+
+    for bad, match in [
+        ([{"factor_code": "NOPE", "shock_type": "RELATIVE", "value": 0.1}], "unknown factor"),
+        ([{"factor_code": "IR.UST.10Y", "shock_type": "RELATIVE", "value": 100}],
+         "takes ABSOLUTE_BP"),
+        ([{"factor_code": "EQ.SPY", "shock_type": "RELATIVE", "value": 9.0}], "beyond the"),
+        ([{"factor_code": "EQ.SPY", "shock_type": "RELATIVE", "value": 0.1},
+          {"factor_code": "EQ.SPY", "shock_type": "RELATIVE", "value": 0.2}], "duplicate"),
+    ]:
+        with pytest.raises(WhatIfInputError, match=match):
+            _validate_shocks(bad, convs)
+
+
 def test_replay_catalog_covers_a_rising_rate_regime():
     """Both crises are flight-to-quality episodes where this long-duration
     book gains on the rates leg; a stress catalog without a correlated

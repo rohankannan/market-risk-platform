@@ -22,6 +22,7 @@ import type {
   RiskSummary,
   ScenarioCatalog,
   ScenarioResults,
+  ScenarioShockVector,
 } from "./types";
 
 // the global as-of pin lives in the URL (?as_of=YYYY-MM-DD) so views are linkable
@@ -80,5 +81,8 @@ export const useBacktestSummary = (scope: string, model: string, window: number)
 export const usePla = (scope: string, window: number) =>
   useApi<PlaSummary>("/api/v1/backtest/pla", { scope, window });
 export const useScenarioCatalog = () => useApi<ScenarioCatalog>("/api/v1/scenarios");
+// a catalog scenario resolved to an editable shock vector (presets)
+export const useScenarioShocks = (code: string | null) =>
+  useApi<ScenarioShockVector>(`/api/v1/scenarios/${code}/shocks`, undefined, code != null);
 export const useScenarioResults = () => useApi<ScenarioResults>("/api/v1/scenarios/results");
 export const useModelDoc = () => useApi<ModelDoc>("/api/v1/modeldoc");

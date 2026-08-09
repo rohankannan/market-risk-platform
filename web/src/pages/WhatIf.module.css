@@ -124,3 +124,44 @@
   font-size: 12px;
   color: var(--rd-down);
 }
+
+.presetRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--rd-hairline);
+}
+
+.presetSelect {
+  font: inherit;
+  font-size: 11px;
+  margin-left: 8px;
+  padding: 2px 6px;
+  background: var(--rd-bg);
+  color: var(--rd-text);
+  border: 1px solid var(--rd-divider);
+}
+
+.presetSelect:focus-visible {
+  outline: 2px solid var(--rd-gold-rush);
+  outline-offset: 0;
+}
+
+.presetTag {
+  margin-left: 10px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--rd-bg);
+  background: var(--rd-gold);
+  padding: 1px 6px;
+}
+
+.shockRow {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--rd-muted);
+  margin-top: 4px;
+  border-top: 1px solid var(--rd-hairline);
+  padding-top: 3px;
+}
