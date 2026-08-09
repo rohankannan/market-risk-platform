@@ -59,18 +59,20 @@ def test_figures_build():
 
 # ---------------------------------------------------------------- page smoke
 
+# the shipped book's own figures, so a reader of the tests meets one firm VaR
+# rather than a second one left over from before the options sleeve
 DESK = {"desk_code": "FIRM", "desk_name": "Firm Aggregate", "is_aggregate": True,
-        "var_hs_1d": 1_168_055.33, "var_fhs_1d": 1_299_526.59,
-        "var_hs_10d": 3_693_715.26, "var_fhs_10d": 4_109_463.91,
-        "es_975_1d": 1_181_544.44, "es_975_10d": 3_736_371.58,
-        "es_stressed_1d": 2_737_393.44, "var_dod": 5_333.67,
-        "limit_value": 2_000_000.0, "utilization": 0.584, "limit_status": "OK"}
+        "var_hs_1d": 1_137_118.30, "var_fhs_1d": 1_249_385.97,
+        "var_hs_10d": 3_595_883.78, "var_fhs_10d": 3_950_905.34,
+        "es_975_1d": 1_148_026.47, "es_975_10d": 3_630_378.46,
+        "es_stressed_1d": 2_606_622.35, "var_dod": 8_788.06,
+        "limit_value": 2_000_000.0, "utilization": 0.5686, "limit_status": "OK"}
 LRT = {"name": "kupiec_pof", "statistic": 0.108, "p_value": 0.742, "df": 1,
        "reject_5pct": False, "details": {}}
 PAYLOADS = {
     "/api/v1/risk/summary": {
         "as_of": "2026-08-06", "run_id": 328, "run_type": "EOD", "status": "SUCCESS",
-        "diversification_benefit": 0.403,
+        "diversification_benefit": 0.4039,
         "desks": [DESK,
                   {**DESK, "desk_code": "RATES", "desk_name": "US Rates",
                    "is_aggregate": False, "var_hs_1d": 868_455.07, "utilization": 0.72,
@@ -147,8 +149,8 @@ def _render(page_fn):
 def test_overview_renders(stub_api):
     at = _render(_overview_page)
     assert at.title[0].value == "Overview"
-    assert at.metric[0].value == "$1.17M"                        # firm HS VaR tile
-    assert at.metric[5].value == "40.3%"                         # diversification
+    assert at.metric[0].value == "$1.14M"                        # firm HS VaR tile
+    assert at.metric[5].value == "40.4%"                         # diversification
     krd = at.dataframe[1].value                                  # key-rate table
     assert list(krd.columns) == ["2Y", "10Y", "Total"]           # tenor order
     assert krd.loc["RATES", "10Y"] == "$48k"
