@@ -112,6 +112,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/flash": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Flash Marks
+         * @description Indicative P&L of the EOD book under the latest delayed quotes.
+         *
+         *     Between nightly batches this is where the book is *now* - never the
+         *     official record, which stays whatever the batch last wrote. Quotes are
+         *     partial by construction (no intraday source for every factor) and the
+         *     response reports which marks are live and which carry their close. The
+         *     revaluation is cached; ?refresh=true re-marks on demand.
+         */
+        get: operations["flash_marks_api_v1_flash_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta": {
         parameters: {
             query?: never;
@@ -548,6 +574,59 @@ export interface components {
             run_id: number;
             /** Ticks */
             ticks: components["schemas"]["FactorTick"][];
+        };
+        /** FlashDesk */
+        FlashDesk: {
+            /** Desk Code */
+            desk_code: string;
+            /** Flash Pnl */
+            flash_pnl: number;
+            /** Is Aggregate */
+            is_aggregate: boolean;
+        };
+        /** FlashFactor */
+        FlashFactor: {
+            /** Carried */
+            carried: boolean;
+            /** Close */
+            close: number;
+            /** Factor Code */
+            factor_code: string;
+            /** Level */
+            level: number;
+            /** Move */
+            move: number;
+            /** Note */
+            note: string | null;
+        };
+        /** FlashMarks */
+        FlashMarks: {
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Cached */
+            cached: boolean;
+            /** Desks */
+            desks: components["schemas"]["FlashDesk"][];
+            /** Factors */
+            factors: components["schemas"]["FlashFactor"][];
+            /**
+             * Indicative
+             * @constant
+             */
+            indicative: true;
+            /** Live Factors */
+            live_factors: number;
+            /** Quoted At */
+            quoted_at: string | null;
+            /** Rejected Factors */
+            rejected_factors: string[];
+            /** Run Id */
+            run_id: number;
+            /** Total Factors */
+            total_factors: number;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1124,6 +1203,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FactorsLatest"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    flash_marks_api_v1_flash_get: {
+        parameters: {
+            query?: {
+                /** @description Bust the cache and re-mark now */
+                refresh?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlashMarks"];
                 };
             };
             /** @description Validation Error */

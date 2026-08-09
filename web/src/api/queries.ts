@@ -13,6 +13,7 @@ import type {
   DeskDecomposition,
   DeskPositions,
   FactorsLatest,
+  FlashMarks,
   KeyRateExposures,
   Meta,
   ModelDoc,
@@ -72,6 +73,26 @@ export const useRiskHistory = (scope: string, window: number) =>
 export const useRiskMovers = () => useApi<RiskMovers>("/api/v1/risk/movers");
 export const useRiskExposures = () => useApi<KeyRateExposures>("/api/v1/risk/exposures");
 export const useFactorsLatest = () => useApi<FactorsLatest>("/api/v1/factors/latest");
+
+// Indicative intraday marks. Deliberately NOT pinned to as_of - flash is
+// always "now" over the latest close - and polled, because it is the one
+// number on the platform that moves between batches.
+const FLASH_POLL_MS = 60_000;
+
+export function useFlash(): UseQueryResult<FlashMarks> {
+  return useQuery<FlashMarks>({
+    queryKey: ["/api/v1/flash"],
+    queryFn: () => getJson<FlashMarks>("/api/v1/flash"),
+    staleTime: FLASH_POLL_MS,
+    refetchInterval: FLASH_POLL_MS,
+    retry: false,
+  });
+}
+
+// the refresh button: bust the server's cache and re-mark now
+export async function refreshFlash(): Promise<FlashMarks> {
+  return getJson<FlashMarks>("/api/v1/flash", { refresh: "true" });
+}
 export const useDeskDecomposition = (desk: string) =>
   useApi<DeskDecomposition>(`/api/v1/desks/${desk}/decomposition`);
 export const useDeskPositions = (desk: string) =>

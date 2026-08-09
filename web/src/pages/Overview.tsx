@@ -1,16 +1,19 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 
 import {
   useBacktestSummary,
   useDeskPositions,
   useFactorsLatest,
+  useFlash,
   usePla,
   useRiskExposures,
   useRiskHistory,
   useRiskMovers,
   useRiskSummary,
   useScenarioResults,
+  refreshFlash,
 } from "../api/queries";
 import type { DeskRisk, HistoryPoint } from "../api/types";
 import { Skeleton } from "../components/Skeleton";
@@ -126,7 +129,7 @@ function FirmTiles({ firm, div, lastPnl }: { firm: DeskRisk; div: number | null;
       title: undefined,
     },
     {
-      k: "CLEAN P&L (T−1)",
+      k: "CLEAN P&L (T-1)",
       v: fmtMoney(pnl),
       sub: hadException ? "exception" : "no exception",
       color: pnl == null ? TEXT : pnl >= 0 ? UP : DOWN,
@@ -145,6 +148,71 @@ function FirmTiles({ firm, div, lastPnl }: { firm: DeskRisk; div: number | null;
         </div>
       ))}
     </div>
+  );
+}
+
+// indicative intraday marks over the EOD close - the one number here that
+// moves between batches, and labeled so it is never mistaken for the record
+function FlashStrip() {
+  const flash = useFlash();
+  const client = useQueryClient();
+  const [busy, setBusy] = useState(false);
+
+  const onRefresh = async () => {
+    setBusy(true);
+    try {
+      const fresh = await refreshFlash();
+      client.setQueryData(["/api/v1/flash"], fresh);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const firm = flash.data?.desks.find((d) => d.is_aggregate);
+  const stamp = flash.data?.quoted_at
+    ? new Date(flash.data.quoted_at).toISOString().slice(11, 16) + " UTC"
+    : null;
+
+  return (
+    <>
+      <div className={styles.sectionHeadThin}>
+        <span className={styles.sectionTitle}>FLASH — INDICATIVE</span>
+        <button
+          className={styles.refreshButton}
+          onClick={onRefresh}
+          disabled={busy || flash.isFetching}
+        >
+          {busy || flash.isFetching ? "MARKING…" : "REFRESH"}
+        </button>
+      </div>
+      {flash.isError ? (
+        <div className={styles.quiet}>FLASH MARKS UNAVAILABLE</div>
+      ) : firm ? (
+        <div className={styles.flashRow}>
+          <span>
+            <span className={styles.tileLabel}>FIRM P&amp;L SINCE CLOSE</span>
+            <div
+              className={styles.flashValue}
+              style={{ color: firm.flash_pnl < 0 ? DOWN : UP }}
+              title={fmtMoneyFull(firm.flash_pnl)}
+            >
+              {fmtMoney(firm.flash_pnl)}
+            </div>
+          </span>
+          <span className={styles.flashMeta}>
+            {flash.data!.live_factors}/{flash.data!.total_factors} FACTORS LIVE
+            {stamp ? ` · ${stamp}` : ""}
+            {flash.data!.rejected_factors.length > 0 && (
+              <div style={{ color: GOLD_RUSH }}>
+                {flash.data!.rejected_factors.length} QUOTE(S) REFUSED
+              </div>
+            )}
+          </span>
+        </div>
+      ) : (
+        <div className={styles.quiet}>MARKING…</div>
+      )}
+    </>
   );
 }
 
@@ -528,6 +596,7 @@ export default function Overview() {
               lastPnl={lastPoint}
             />
           )}
+          <FlashStrip />
           <div className={styles.sectionHeadThin}>
             <span className={styles.sectionTitle}>VAR MOVERS — DAY/DAY</span>
           </div>

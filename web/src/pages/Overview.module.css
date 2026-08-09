@@ -36,6 +36,9 @@
 .sectionHeadThin {
   padding: 6px 12px;
   border-bottom: 1px solid var(--rd-divider);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .sectionTitle {
@@ -378,4 +381,47 @@
   padding: 8px 12px;
   font-size: 10px;
   color: var(--rd-muted);
+}
+
+.refreshButton {
+  font: inherit;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: transparent;
+  color: var(--rd-muted);
+  border: 1px solid var(--rd-divider);
+  cursor: pointer;
+}
+
+.refreshButton:hover:enabled {
+  color: var(--rd-text);
+  border-color: var(--rd-gold);
+}
+
+.refreshButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.flashRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6px 12px;
+  border-bottom: 2px solid var(--rd-divider);
+}
+
+.flashValue {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.flashMeta {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--rd-muted);
+  text-align: right;
 }

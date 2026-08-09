@@ -614,6 +614,151 @@
         "title": "FactorsLatest",
         "type": "object"
       },
+      "FlashDesk": {
+        "properties": {
+          "desk_code": {
+            "title": "Desk Code",
+            "type": "string"
+          },
+          "flash_pnl": {
+            "title": "Flash Pnl",
+            "type": "number"
+          },
+          "is_aggregate": {
+            "title": "Is Aggregate",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "desk_code",
+          "is_aggregate",
+          "flash_pnl"
+        ],
+        "title": "FlashDesk",
+        "type": "object"
+      },
+      "FlashFactor": {
+        "properties": {
+          "carried": {
+            "title": "Carried",
+            "type": "boolean"
+          },
+          "close": {
+            "title": "Close",
+            "type": "number"
+          },
+          "factor_code": {
+            "title": "Factor Code",
+            "type": "string"
+          },
+          "level": {
+            "title": "Level",
+            "type": "number"
+          },
+          "move": {
+            "title": "Move",
+            "type": "number"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "required": [
+          "factor_code",
+          "level",
+          "close",
+          "move",
+          "carried",
+          "note"
+        ],
+        "title": "FlashFactor",
+        "type": "object"
+      },
+      "FlashMarks": {
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "cached": {
+            "title": "Cached",
+            "type": "boolean"
+          },
+          "desks": {
+            "items": {
+              "$ref": "#/components/schemas/FlashDesk"
+            },
+            "title": "Desks",
+            "type": "array"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/FlashFactor"
+            },
+            "title": "Factors",
+            "type": "array"
+          },
+          "indicative": {
+            "const": true,
+            "title": "Indicative",
+            "type": "boolean"
+          },
+          "live_factors": {
+            "title": "Live Factors",
+            "type": "integer"
+          },
+          "quoted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quoted At"
+          },
+          "rejected_factors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rejected Factors",
+            "type": "array"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "integer"
+          },
+          "total_factors": {
+            "title": "Total Factors",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "as_of",
+          "run_id",
+          "indicative",
+          "quoted_at",
+          "live_factors",
+          "total_factors",
+          "rejected_factors",
+          "cached",
+          "desks",
+          "factors"
+        ],
+        "title": "FlashMarks",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -2104,6 +2249,49 @@
           }
         },
         "summary": "Factors Latest"
+      }
+    },
+    "/api/v1/flash": {
+      "get": {
+        "description": "Indicative P&L of the EOD book under the latest delayed quotes.\n\nBetween nightly batches this is where the book is *now* - never the\nofficial record, which stays whatever the batch last wrote. Quotes are\npartial by construction (no intraday source for every factor) and the\nresponse reports which marks are live and which carry their close. The\nrevaluation is cached; ?refresh=true re-marks on demand.",
+        "operationId": "flash_marks_api_v1_flash_get",
+        "parameters": [
+          {
+            "description": "Bust the cache and re-mark now",
+            "in": "query",
+            "name": "refresh",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "Bust the cache and re-mark now",
+              "title": "Refresh",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlashMarks"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Flash Marks"
       }
     },
     "/api/v1/meta": {

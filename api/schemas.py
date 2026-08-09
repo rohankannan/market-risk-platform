@@ -626,6 +626,34 @@ class WhatIfResult(BaseModel):
     shocked_factors: list[str]
 
 
+class FlashDesk(BaseModel):
+    desk_code: str
+    is_aggregate: bool
+    flash_pnl: float                        # indicative P&L since the EOD close
+
+
+class FlashFactor(BaseModel):
+    factor_code: str
+    level: float
+    close: float
+    move: float                             # in the factor's own convention
+    carried: bool                           # true when the close was used
+    note: str | None                        # why, when carried
+
+
+class FlashMarks(BaseModel):
+    as_of: dt.date
+    run_id: int
+    indicative: Literal[True]               # never the official record
+    quoted_at: dt.datetime | None
+    live_factors: int
+    total_factors: int
+    rejected_factors: list[str]             # quotes refused as implausible
+    cached: bool
+    desks: list[FlashDesk]
+    factors: list[FlashFactor]
+
+
 class ScenarioShockVector(BaseModel):
     scenario_code: str
     scenario_type: str

@@ -21,7 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
-from api import queries, sandbox, schemas
+from api import flash, queries, sandbox, schemas
 from api.deps import get_conn, get_settings
 from risk.db import make_engine
 
@@ -282,6 +282,28 @@ def whatif(body: schemas.WhatIfRequest, response: Response,
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return schemas.build_whatif_result(run, computed,
                                        queries.risk_rows(conn, run["run_id"]))
+
+
+@app.get("/api/v1/flash", response_model=schemas.FlashMarks)
+def flash_marks(response: Response, refresh: bool = Query(
+                    False, description="Bust the cache and re-mark now"),
+                conn: Connection = Depends(get_conn)) -> schemas.FlashMarks:
+    """Indicative P&L of the EOD book under the latest delayed quotes.
+
+    Between nightly batches this is where the book is *now* - never the
+    official record, which stays whatever the batch last wrote. Quotes are
+    partial by construction (no intraday source for every factor) and the
+    response reports which marks are live and which carry their close. The
+    revaluation is cached; ?refresh=true re-marks on demand."""
+    run = _run_or_404(conn, None)
+    response.headers["Cache-Control"] = "no-store"
+    try:
+        payload = flash.compute_flash(conn, run["run_id"], run["run_date"],
+                                      refresh=refresh)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503,
+                            detail=f"flash marks unavailable: {exc}") from exc
+    return schemas.FlashMarks(**payload)
 
 
 @app.get("/api/v1/scenarios/{code}/shocks", response_model=schemas.ScenarioShockVector)

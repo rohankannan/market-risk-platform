@@ -69,6 +69,8 @@ A single-screen terminal over the API — limit utilization with warn thresholds
 | Ops controls: day-over-day flash check (firm VaR moves arrive pre-explained with desk and vol attribution) and a vendor-revision log with classified before-images and a `--force` restatement path | ✅ (`risk_engine/dq.py`, `data_revisions`) |
 | Options sleeve: SPY collar priced with hand-rolled Black-Scholes (constant-maturity, constant-moneyness proxies), vega exposures in the nightly batch, risk-theoretical P&L — and a **real P&L-attribution test** (Spearman + KS, MAR32-style zones) served at `/backtest/pla` with the HPL-vs-RTPL scatter on the dashboard | ✅ (`risk_engine/{options,pla}.py`) |
 | React terminal dashboard: typed API client generated from the committed OpenAPI spec, single-screen overview w/ factor tape and method-toggled backtest chart, desk drill-downs, linked backtesting panels, scenario compare, model-doc page, offline snapshot fallback | ✅ (`web/`) |
+| What-if sandbox: scale or flip any position AND apply a factor-shock vector in one exact revaluation, catalog scenarios loading as editable presets that reproduce the batch's scenario P&L to the cent | ✅ (`api/sandbox.py`) |
+| Flash marks: delayed intraday quotes re-mark the EOD book between batches (indicative, never the record), with a cached re-mark, an explicit refresh, and vendor quotes refused when they imply a move no session has produced | ✅ (`risk/flash.py`) |
 | Hosted deploy: Neon Postgres, API + dashboard on Render, nightly EOD batch via GitHub Actions cron | ✅ (links above) |
 | ≤90s demo video | 🔜 milestone 3 (by Oct 15) |
 | Parametric VaR w/ implied vol, CCAR-style scenarios, stressed-window auto-search | 🔜 winter |
