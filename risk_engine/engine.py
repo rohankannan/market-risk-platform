@@ -37,11 +37,35 @@ from .var import var_es_from_pnl
 
 _LINEAR_TYPES = {"STOCK", "ETF", "FX_SPOT"}
 VOL_POINTS_PER_UNIT = 100.0          # vol factors store points; sigma is decimal
+FIRM_SCOPE = "FIRM"                  # aggregate() writes the firm total to this column
+
+
+def check_book(positions: pd.DataFrame) -> None:
+    """Enforce the positions-frame contract (see the module docstring).
+
+    Both violations below are SILENT rather than loud if they reach the math,
+    which is why they are caught here. revalue() keys P&L columns by ticker and
+    aggregate() maps ticker -> desk_code, so a ticker appearing twice drops a
+    position out of one desk's risk instead of raising - and the positions
+    table's natural key is (desk_id, instrument_id), so the same instrument on
+    two desks is reachable from data alone with no code change. aggregate()
+    writes the firm total into FIRM_SCOPE, which would overwrite a desk that
+    used the reserved name.
+    """
+    dupes = sorted(positions["ticker"][positions["ticker"].duplicated()].unique())
+    if dupes:
+        raise ValueError(f"duplicate tickers in the positions frame: {dupes} - the "
+                         "contract is one row per position, so an instrument booked "
+                         "on two desks needs a distinct ticker per booking")
+    if FIRM_SCOPE in set(positions["desk_code"]):
+        raise ValueError(f"desk_code {FIRM_SCOPE!r} is reserved for the aggregate "
+                         "scope that aggregate() computes")
 
 
 def revalue(positions: pd.DataFrame, levels: pd.Series, shocks: pd.DataFrame,
             mode: Literal["full", "delta_gamma"] = "full") -> pd.DataFrame:
     """Scenario P&L matrix (n_scenarios x n_positions), columns keyed by ticker."""
+    check_book(positions)
     missing = sorted(set(positions["factor_code"]) - set(shocks.columns))
     if missing:
         raise ValueError(f"shock matrix is missing factors for booked positions: {missing}")
@@ -107,12 +131,13 @@ def revalue(positions: pd.DataFrame, levels: pd.Series, shocks: pd.DataFrame,
 
 def aggregate(pnl_matrix: pd.DataFrame, positions: pd.DataFrame) -> pd.DataFrame:
     """Desk-level scenario P&L plus a FIRM total column."""
+    check_book(positions)
     desk_of = dict(zip(positions["ticker"], positions["desk_code"]))
     unknown = sorted(set(pnl_matrix.columns) - set(desk_of))
     if unknown:
         raise ValueError(f"pnl columns without a booked desk: {unknown}")
     desk_pnl = pnl_matrix.T.groupby(pnl_matrix.columns.map(desk_of).to_numpy()).sum().T
-    desk_pnl["FIRM"] = desk_pnl.sum(axis=1)
+    desk_pnl[FIRM_SCOPE] = desk_pnl.sum(axis=1)
     return desk_pnl
 
 
@@ -144,6 +169,7 @@ def position_components(positions: pd.DataFrame, pnl_matrix: pd.DataFrame,
     and instrument_type ride along so the run's book facts are frozen with
     the run (the live positions table can be reseeded out from under it).
     """
+    check_book(positions)
     rows = []
     for desk_code, grp in positions.groupby("desk_code", sort=True):
         tickers = list(grp["ticker"])

@@ -115,3 +115,38 @@ def test_loud_failures():
     bad.loc[0, "return_conv"] = "ABS_BP"      # equity on a bp factor = miswired book
     with pytest.raises(ValueError, match="non-LOG factor"):
         revalue(bad, LEVELS, SHOCKS)
+
+
+def test_duplicate_ticker_refused_not_silently_dropped():
+    """A ticker booked twice must raise, not lose a position.
+
+    revalue() keys P&L columns by ticker and ASSIGNED rather than accumulated,
+    so an 18-row book returned 17 columns, and aggregate()'s ticker -> desk map
+    then credited the survivor to whichever desk was seen last: one desk's VaR
+    came out understated with no error raised. The positions table's natural key
+    is (desk_id, instrument_id), so the same instrument on two desks needed only
+    a data change to reach. Every public entry point taking a positions frame
+    now checks the contract.
+    """
+    pos = _positions()
+    dup = pd.concat([pos, pos[pos["ticker"] == "SPY"].assign(desk_code="EQUITY_2")],
+                    ignore_index=True)
+    clean_pnl = revalue(pos, LEVELS, SHOCKS)
+
+    with pytest.raises(ValueError, match="duplicate tickers"):
+        revalue(dup, LEVELS, SHOCKS)
+    with pytest.raises(ValueError, match="duplicate tickers"):
+        aggregate(clean_pnl, dup)
+    with pytest.raises(ValueError, match="duplicate tickers"):
+        position_components(dup, clean_pnl)
+
+
+def test_firm_is_a_reserved_desk_code():
+    """aggregate() writes the firm total into the FIRM column, so a desk booked
+    under that name would be silently replaced by a total that includes it."""
+    pos = _positions()
+    pos.loc[0, "desk_code"] = "FIRM"
+    with pytest.raises(ValueError, match="reserved"):
+        revalue(pos, LEVELS, SHOCKS)
+    with pytest.raises(ValueError, match="reserved"):
+        aggregate(revalue(_positions(), LEVELS, SHOCKS), pos)
