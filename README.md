@@ -1,10 +1,14 @@
 # RiskDesk
 
-[![ci](https://github.com/rohankannan/market-risk-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/rohankannan/market-risk-platform/actions/workflows/ci.yml)
+[![ci](https://github.com/rohankannan/riskdesk/actions/workflows/ci.yml/badge.svg)](https://github.com/rohankannan/riskdesk/actions/workflows/ci.yml)
 
 **Live:** [dashboard](https://riskdesk.rohankannan.com) · [API docs](https://riskdesk.onrender.com/docs) · [Streamlit ops view](https://riskdeskdash.onrender.com) — refreshed nightly by a scheduled batch; free-tier hosting, so the first load after idle takes ~30–60 s.
 
 An end-of-day **market-risk platform** for a mock three-desk trading book (cash equities, FX spot, US rates), built the way a bank's risk desk runs its nightly cycle: ingest market data → data-quality gate → revalue the book → VaR / Expected Shortfall → limit checks → stress replay → regulatory backtesting → dashboard.
+
+**On the committed snapshot (2026-08-06):** firm 1-day VaR99 **$1,137,118**, 57% of a $2M limit · ES97.5 $1.15M · stressed ES $2.61M · 40% diversification benefit · 750 days of out-of-sample VaR giving 6 exceptions against 7.5 expected, Basel GREEN. Every one of those reproduces from this repository alone, and CI asserts the first to the cent.
+
+The worst case on record is not 2008. The 2022 rates selloff replays at **−$21.8M**, roughly twice the GFC replay's −$11.0M, because both of the classic replays are flight-to-quality episodes in which a long-duration book *gains* on rates — which is why the stress catalog is calibrated against the book's own history rather than inherited.
 
 > Every night, a bank's market-risk function runs exactly this loop. This is a small but complete version of it — real market data, a real database, tested math, and the validation statistics regulators actually use.
 

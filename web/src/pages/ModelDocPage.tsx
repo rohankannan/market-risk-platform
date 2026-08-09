@@ -8,7 +8,7 @@ import styles from "./ModelDocPage.module.css";
 
 // the doc's relative links (rniv.md, challenger_garch.md) are repo files the
 // SPA never serves: send them to the repo's blob view instead of the router
-const DOC_LINK_BASE = "https://github.com/rohankannan/market-risk-platform/blob/main/docs/";
+const DOC_LINK_BASE = "https://github.com/rohankannan/riskdesk/blob/main/docs/";
 
 // stable anchor ids from heading text, shared by the TOC and the headings
 const slug = (text: string): string =>
