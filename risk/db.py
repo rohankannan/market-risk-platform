@@ -31,9 +31,12 @@ def make_engine(url: str | None = None) -> Engine:
                          pool_pre_ping=True, pool_recycle=POOL_RECYCLE_S)
 
 
+SHA_CHARS = 12
+
+
 def code_version() -> str:
     if sha := os.getenv("GIT_SHA"):
-        return sha[:12]
+        return sha[:SHA_CHARS]
     try:
         # --dirty matters for provenance: a run or report generated from an
         # uncommitted tree must say so, or its SHA claims code it doesn't have
@@ -42,6 +45,46 @@ def code_version() -> str:
         return out.stdout.strip() or "unknown"
     except Exception:
         return "unknown"
+
+
+def build_version() -> str:
+    """The commit THIS process is running - not the one that wrote the data.
+
+    code_version() above stamps risk_runs, so it names whatever executed the
+    batch. On the hosted stack that is a scheduled runner, not the API
+    container, and the two drift apart the moment a deploy stops landing: the
+    nightly keeps advancing the stamped SHA while the running service sits
+    behind it, so a service reporting only the batch's version looks current
+    while serving stale code. Reporting both is what makes the gap visible.
+
+    RENDER_GIT_COMMIT is injected by the host at run time, which is the only
+    source that survives there - the image drops .git (.dockerignore) and
+    nothing passes GIT_SHA outside compose and CI, so git describe inside the
+    container answers "unknown".
+    """
+    if sha := os.getenv("RENDER_GIT_COMMIT"):
+        return sha[:SHA_CHARS]
+    return code_version()
+
+
+def same_commit(a: str | None, b: str | None) -> bool:
+    """Whether two build stamps name the same commit.
+
+    Stamps arrive at different lengths - a host-injected SHA truncated to
+    SHA_CHARS against git describe's own seven - so this is a common-prefix
+    test, not string equality. Two rules earn their place: a '-dirty' suffix on
+    one side only is a mismatch (an uncommitted tree is not the commit it
+    names), and a missing stamp means "cannot tell", which is not a mismatch -
+    an offline snapshot has no running build to compare against and must not
+    raise a false alarm.
+    """
+    if not a or not b:
+        return True
+    if ("-dirty" in a) != ("-dirty" in b):
+        return False
+    a, b = a.removesuffix("-dirty"), b.removesuffix("-dirty")
+    n = min(len(a), len(b))
+    return n > 0 and a[:n] == b[:n]
 
 
 def config_hash() -> str:

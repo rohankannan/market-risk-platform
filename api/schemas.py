@@ -47,7 +47,10 @@ class Meta(BaseModel):
     batch_status: str                       # not_yet_run / SUCCESS / PARTIAL
     batch_type: str | None                  # EOD / BACKFILL
     batch_completed_at: dt.datetime | None
-    code_version: str | None
+    code_version: str | None                # the batch's commit, off risk_runs
+    # the commit this API process runs; absent only from responses recorded
+    # before the field existed, i.e. the offline snapshot, which has no build
+    build_version: str | None = None
     available_dates: list[dt.date]
     desks: list[Desk]
 

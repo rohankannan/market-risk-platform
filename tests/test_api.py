@@ -446,6 +446,20 @@ def test_meta_reports_latest_run(client, monkeypatch):
     assert body["desks"][0]["desk_code"] == "FIRM"
 
 
+def test_meta_separates_the_running_build_from_the_batch_stamp(client, monkeypatch):
+    # the batch's commit comes off the run row; the build is this process's own.
+    # Serving only the former is how a stalled deploy reads as current - the
+    # nightly keeps advancing code_version while the service sits behind it.
+    monkeypatch.setenv("RENDER_GIT_COMMIT", "0123456789abcdef0123456789abcdef01234567")
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(queries, "available_dates", lambda conn: [AS_OF])
+    monkeypatch.setattr(queries, "desks", lambda conn: [])
+    body = client.get("/api/v1/meta").json()
+    assert body["code_version"] == RUN["code_version"]
+    assert body["build_version"] == "0123456789ab"
+    assert body["build_version"] != body["code_version"]
+
+
 def test_summary_endpoint_and_cache_pinning(client, monkeypatch):
     monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
     monkeypatch.setattr(queries, "risk_rows",

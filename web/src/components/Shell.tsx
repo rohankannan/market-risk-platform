@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom"
 import { useDemoMode } from "../api/client";
 import { useAsOf, useFactorsLatest, useMeta } from "../api/queries";
 import type { FactorTick } from "../api/types";
+import { sameCommit } from "../lib/build";
 import styles from "./Shell.module.css";
 
 const FACTOR_COUNT = 17; // the committed snapshot's factor universe
@@ -109,6 +110,10 @@ export function Shell() {
   const resolvedAsOf = asOf
     ? (dates.find((d) => d <= asOf) ?? "—")
     : (meta.data?.latest_as_of ?? "—");
+  // the footer stamps the RUNNING build, falling back to the batch's commit for
+  // snapshot responses recorded before build_version existed
+  const buildStamp = meta.data?.build_version ?? meta.data?.code_version ?? "—";
+  const buildMatchesBatch = sameCommit(meta.data?.build_version, meta.data?.code_version);
   const onDesks = location.pathname.startsWith("/desks");
   const firstDesk = (meta.data?.desks ?? []).find((d) => !d.is_aggregate)?.desk_code;
 
@@ -174,8 +179,15 @@ export function Shell() {
 
       <footer className={styles.footer}>
         <span>
-          RISKDESK {meta.data?.code_version ?? "—"} · SNAPSHOT {resolvedAsOf} · {FACTOR_COUNT}{" "}
-          FACTORS · {TABLE_COUNT} TABLES
+          RISKDESK {buildStamp} ·{" "}
+          {/* the batch's commit shows only when it differs from the running
+              build - stated, not flagged. The two legitimately diverge between
+              a deploy and the next nightly, so styling this as a fault would
+              light it up on every ordinary weekday. Deciding which side is
+              BEHIND needs git history, which the scheduled parity check has
+              and the browser does not. */}
+          {!buildMatchesBatch && <>BATCH {meta.data?.code_version} · </>}
+          SNAPSHOT {resolvedAsOf} · {FACTOR_COUNT} FACTORS · {TABLE_COUNT} TABLES
         </span>
         <span>NEXT EOD BATCH 18:30 ET</span>
       </footer>

@@ -148,6 +148,10 @@ export interface paths {
         /**
          * Meta
          * @description Bootstrap payload: latest completed batch, run-date catalog, desks.
+         *
+         *     Carries two commits on purpose. code_version is the batch's, read off the
+         *     run row; build_version is this service's. They agree when the deploy is
+         *     current and separate the moment it stops landing.
          */
         get: operations["meta_api_v1_meta_get"];
         put?: never;
@@ -720,6 +724,8 @@ export interface components {
             batch_status: string;
             /** Batch Type */
             batch_type: string | null;
+            /** Build Version */
+            build_version?: string | null;
             /** Code Version */
             code_version: string | null;
             /** Desks */

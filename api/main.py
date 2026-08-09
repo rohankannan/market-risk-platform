@@ -23,7 +23,7 @@ from sqlalchemy.engine import Connection
 
 from api import flash, queries, sandbox, schemas
 from api.deps import get_conn, get_settings
-from risk.db import make_engine
+from risk.db import build_version, make_engine
 
 
 @asynccontextmanager
@@ -88,7 +88,12 @@ def healthz(request: Request) -> schemas.Healthz:
 
 @app.get("/api/v1/meta", response_model=schemas.Meta)
 def meta(response: Response, conn: Connection = Depends(get_conn)) -> schemas.Meta:
-    """Bootstrap payload: latest completed batch, run-date catalog, desks."""
+    """Bootstrap payload: latest completed batch, run-date catalog, desks.
+
+    Carries two commits on purpose. code_version is the batch's, read off the
+    run row; build_version is this service's. They agree when the deploy is
+    current and separate the moment it stops landing.
+    """
     _cache(response, pinned=False)
     run = queries.resolve_run(conn)
     return schemas.Meta(
@@ -97,6 +102,7 @@ def meta(response: Response, conn: Connection = Depends(get_conn)) -> schemas.Me
         batch_type=run["run_type"] if run else None,
         batch_completed_at=run["finished_at"] if run else None,
         code_version=run["code_version"] if run else None,
+        build_version=build_version(),
         available_dates=queries.available_dates(conn),
         desks=[schemas.Desk(**d) for d in queries.desks(conn)],
     )

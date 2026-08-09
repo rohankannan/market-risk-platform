@@ -1008,6 +1008,17 @@
             ],
             "title": "Batch Type"
           },
+          "build_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Version"
+          },
           "code_version": {
             "anyOf": [
               {
@@ -2296,7 +2307,7 @@
     },
     "/api/v1/meta": {
       "get": {
-        "description": "Bootstrap payload: latest completed batch, run-date catalog, desks.",
+        "description": "Bootstrap payload: latest completed batch, run-date catalog, desks.\n\nCarries two commits on purpose. code_version is the batch's, read off the\nrun row; build_version is this service's. They agree when the deploy is\ncurrent and separate the moment it stops landing.",
         "operationId": "meta_api_v1_meta_get",
         "responses": {
           "200": {

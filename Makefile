@@ -8,7 +8,11 @@ DEMO_BF_START ?= 2025-05-01
 DEMO_BF_END   ?= 2026-08-05
 DEMO_DATE     ?= 2026-08-06
 
-.PHONY: venv test lint db-up db-down migrate seed backfill eod api dashboard demo openapi fixtures
+# the deployed surfaces, for the parity check
+PROD_API_URL  ?= https://riskdesk.onrender.com
+PROD_SITE_URL ?= https://riskdesk.rohankannan.com
+
+.PHONY: venv test lint db-up db-down migrate seed backfill eod api dashboard demo openapi fixtures prod-check
 
 venv:
 	python3.11 -m venv .venv
@@ -49,6 +53,10 @@ openapi:
 # MSW fixtures + the offline snapshot fallback, from a running seeded stack
 fixtures:
 	$(PY) web/scripts/record_fixtures.py
+
+# does the deployed stack run this commit? read-only; scheduled in CI, never on push
+prod-check:
+	$(PY) scripts/prod_parity.py --api-url $(PROD_API_URL) --site-url $(PROD_SITE_URL)
 
 dashboard:
 	.venv/bin/streamlit run dashboard/app.py
