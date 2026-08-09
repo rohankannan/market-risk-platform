@@ -10,6 +10,9 @@ from dataclasses import dataclass
 class RiskConfig:
     # Scenario window: Basel minimum is 250 days; 500 stabilizes the 99% quantile
     # (at n=500 the estimator interpolates between the 5th and 6th worst losses).
+    # It also buys the ability to put an interval on the number at all: a
+    # distribution-free interval for a 99% quantile tops out at ~91.9% coverage
+    # at n=250 and reaches 95% only from n=299 (unit-tested in test_inference).
     lookback_days: int = 500
 
     # RiskMetrics decay factor; half-life = ln(0.5)/ln(0.94) ~ 11 days.
@@ -39,6 +42,15 @@ class RiskConfig:
 
     # Single seed for anything stochastic (simulated critical values, synthetic tests).
     seed: int = 42
+
+    # Sampling uncertainty (risk_engine/inference.py). n_bootstrap is the
+    # replicate count; bootstrap_block_days is the moving-block length, which
+    # keeps runs of adjacent days together because daily P&L is not iid - vol
+    # clusters, and an iid resample therefore understates the spread. Tied to the
+    # reporting horizon on purpose: the dependence that matters is the dependence
+    # over the horizon the number is quoted for.
+    n_bootstrap: int = 2000
+    bootstrap_block_days: int = 10
 
 
 DEFAULT_CONFIG = RiskConfig()
