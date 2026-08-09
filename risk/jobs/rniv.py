@@ -16,6 +16,8 @@ from pathlib import Path
 import pandas as pd
 
 from risk.jobs.backfill import load_inputs
+from risk_engine.backfill import run_backfill
+from risk_engine.backtest import basel_traffic_light
 from risk_engine.config import DEFAULT_CONFIG as CFG
 from risk_engine.curve import (
     NODE_TENORS,
@@ -23,10 +25,11 @@ from risk_engine.curve import (
     key_rate_dv01s,
     price_bond_on_curve,
 )
-from risk_engine.engine import aggregate, component_es, revalue
+from risk_engine.engine import FIRM_SCOPE, aggregate, component_es, revalue
 from risk_engine.es import stressed_window
 from risk_engine.factors import build_scenarios_fhs, build_scenarios_hs
 from risk_engine.rniv import (
+    desk_scales_for_mix,
     fill_mask,
     kday_overlapping_shocks,
     lead_lag_correlations,
@@ -41,6 +44,18 @@ MATERIAL_PCT = 0.05              # >= 5% of the base measure
 MONITOR_PCT = 0.01               # 1-5%: monitor; below: immaterial
 YIELD_FLOOR_PCT = 0.01           # pricing floor, in percent (1bp)
 TOP_CORR_PAIRS = 3
+
+# R8 static-book sensitivity. BACKTEST_DAYS matches the published backtest so
+# the comparison is against the number the README and model doc actually quote;
+# TL_WINDOW is the window the traffic light is defined on. The two mixes are the
+# ones data/seed/portfolio.yaml already names: the peer average it cites from the
+# FY2025 10-K trading-VaR tables, and the mix the book was sized to target.
+BACKTEST_DAYS = 750
+TL_WINDOW = 250
+MIX_ANCHOR_DESK = "EQUITY"       # pinned at 1.0 so a remix is not also a resize
+TL_ZONE_EDGE = 5                 # first amber exception count at TL_WINDOW=250
+PEER_MIX = {"RATES": 0.52, "EQUITY": 0.28, "FX": 0.20}
+TARGET_MIX = {"RATES": 0.45, "EQUITY": 0.30, "FX": 0.25}
 
 # candidate stress-calibration windows for the sensitivity check (R4); the
 # programmatic argmax search over full history is the roadmap replacement
@@ -208,13 +223,97 @@ def measure(snapshot: str, portfolio: str) -> dict:
                  "krd_aged": pd.DataFrame(aged_rows).T,
                  "var_proxy": var_proxy, "var_curve": var_curve,
                  "pct": var_curve.var / var_proxy.var - 1.0}
+
+    # R8 - the backtest values today's book on every historical date
+    out["r8"] = _static_book_sensitivity(book, levels, returns, base)
     return out
+
+
+def _standalone_desk_var(book, lvl_t, shocks) -> dict[str, float]:
+    per_desk = aggregate(revalue(book, lvl_t, shocks), book)
+    return {d: var_es_from_pnl(per_desk[d], CFG.alpha_var, CFG.alpha_es).var
+            for d in per_desk.columns if d != FIRM_SCOPE}
+
+
+def _remix(book, lvl_t, shocks, target: dict[str, float]):
+    scales = desk_scales_for_mix(_standalone_desk_var(book, lvl_t, shocks),
+                                 target, anchor=MIX_ANCHOR_DESK)
+    out = book.copy()
+    out["quantity"] = [q * scales[d] for q, d in zip(out["quantity"], out["desk_code"])]
+    return out
+
+
+def _scale_desk(book, desk: str, factor: float):
+    out = book.copy()
+    out["quantity"] = [q * (factor if d == desk else 1.0)
+                       for q, d in zip(out["quantity"], out["desk_code"])]
+    return out
+
+
+def _static_book_sensitivity(book, levels, returns, base) -> dict:
+    """How much of the published backtest verdict is the book rather than the model.
+
+    read_book takes no date, so run_backfill values one composition on all 750
+    dates. The counterfactual - the book actually held in 2023 - never existed,
+    so the honest measurement is not a bias against truth but a sensitivity: how
+    far does the verdict move across compositions that are defensible for this
+    book? The consequential output is the traffic-light zone, because that is
+    what carries a capital multiplier.
+    """
+    lvl_t = levels.loc[returns.index[-1]]
+    hs = build_scenarios_hs(returns, returns.index[-1], CFG.lookback_days)
+    variants = [
+        ("published", book),
+        ("no collar (pre-sleeve book)",
+         book[book["instrument_type"] != "OPTION"].reset_index(drop=True)),
+        ("peer mix 52/28/20", _remix(book, lvl_t, hs, PEER_MIX)),
+        ("config target 45/30/25", _remix(book, lvl_t, hs, TARGET_MIX)),
+    ]
+    for desk in sorted(d for d in book["desk_code"].unique()):
+        for factor in (0.5, 1.5):
+            variants.append((f"{desk.lower()} x{factor:g}", _scale_desk(book, desk, factor)))
+
+    rows = []
+    for label, variant in variants:
+        frame = run_backfill(variant, levels, returns, n_days=BACKTEST_DAYS, cfg=CFG)
+        firm = frame[frame["scope"] == FIRM_SCOPE]
+        for method in ("HS", "FHS"):
+            series = firm[firm["method"] == method]["is_exception"]
+            zone = basel_traffic_light(int(series.tail(TL_WINDOW).sum()), TL_WINDOW)
+            rows.append({"variant": label, "method": method,
+                         "exceptions": int(series.sum()), "n_obs": len(series),
+                         "exceptions_tl": int(series.tail(TL_WINDOW).sum()),
+                         "zone": zone.zone, "multiplier": zone.multiplier})
+    # how much of each desk's standalone VaR survives into the firm number - the
+    # mechanism behind a desk cut moving the firm tail the "wrong" way
+    standalone = _standalone_desk_var(book, lvl_t, hs)
+    firm_var = base[FIRM_SCOPE].var
+    survives = {}
+    for desk in standalone:
+        without = book[book["desk_code"] != desk]
+        firm_ex = var_es_from_pnl(aggregate(revalue(without, lvl_t, hs), without)[FIRM_SCOPE],
+                                  CFG.alpha_var, CFG.alpha_es).var
+        survives[desk] = {"standalone": standalone[desk],
+                          "marginal": firm_var - firm_ex}
+
+    table = pd.DataFrame(rows)
+    published = table[table["variant"] == "published"]
+    left_green = sorted(set(table.loc[table["zone"] != "GREEN", "variant"]))
+    worst = table["multiplier"].max()
+    base_mult = float(published["multiplier"].max())
+    return {"table": table, "n_variants": len(variants),
+            "published": {r.method: r for r in published.itertuples(index=False)},
+            "left_green": left_green, "survives": survives,
+            "multiplier": base_mult, "multiplier_worst": float(worst),
+            "pct": worst / base_mult - 1.0,
+            "base_var": firm_var}
 
 
 def render(m: dict) -> str:
     base_var = m["base"]["FIRM"].var
     r1, r2, r3, r4, r5, r6 = m["r1"], m["r2"], m["r3"], m["r4"], m["r5"], m["r6"]
-    r7 = m["r7"]
+    r7, r8 = m["r7"], m["r8"]
+    hs_exc = r8["table"].loc[r8["table"]["method"] == "HS", "exceptions"]
     rows = [
         ("R1", "1", "sqrt(10) horizon scaling vs overlapping 10-day revaluation",
          f"{_fmt_usd(r1['measured'].var - r1['scaled'].var)} on the 10-day VaR "
@@ -251,6 +350,14 @@ def render(m: dict) -> str:
          "at the anchor by construction, spillover grows as coupons drift off par",
          _classify(r7["pct"]),
          "Curve view reported (key-rate DV01s in the nightly batch); VaR keeps the proxy"),
+        ("R8", "13", "Backtest values today's book on every historical date",
+         (f"FHS sits {TL_ZONE_EDGE - r8['published']['FHS'].exceptions_tl} exception from "
+          f"amber ({r8['published']['FHS'].exceptions_tl}/{TL_WINDOW}); "
+          f"{len(r8['left_green'])} of {r8['n_variants']} defensible compositions cross it, "
+          f"taking the Basel multiplier {r8['multiplier']:.2f} -> "
+          f"{r8['multiplier_worst']:.2f} ({r8['pct']:+.1%})"),
+         _classify(r8["pct"]),
+         "Disclosed, not fixed: a dated position store needs trade flow this project has no source for"),
     ]
 
     lines = [
@@ -379,6 +486,58 @@ def render(m: dict) -> str:
         "after the anchor the off-diagonals are real and grow with the drift - "
         "and the API and dashboard surface it.",
         "",
+        "## R8 — Static book in the backtest",
+        "",
+        f"`read_book` takes no date argument, so the {BACKTEST_DAYS}-day backfill "
+        "values one composition - today's - on every historical date. The book "
+        "actually held in 2023 never existed, so there is no truth to measure a "
+        "bias against; what can be measured is how much of the published verdict "
+        "is the model and how much is the book. Each composition below is "
+        "re-backfilled end to end and re-tested:",
+        "",
+        _r8_table(r8["table"]),
+        "",
+        f"Coverage is robust and the zone is not. HS exceptions stay inside "
+        f"{hs_exc.min()}-{hs_exc.max()} against "
+        f"{r8['published']['HS'].exceptions} published, and no variant makes Kupiec "
+        "reject. But the published FHS run sits at "
+        f"{r8['published']['FHS'].exceptions_tl} exceptions in the "
+        f"{TL_WINDOW}-day traffic-light window - one short of amber at "
+        f"{TL_ZONE_EDGE} - and "
+        f"{', '.join(r8['left_green'])} cross it. At a bank that is not a "
+        f"presentational difference: the capital multiplier moves "
+        f"{r8['multiplier']:.2f} to {r8['multiplier_worst']:.2f}.",
+        "",
+        "Two of the crossing variants deserve naming. The peer mix is not a "
+        "hypothetical - `data/seed/portfolio.yaml` cites it as the FY2025 average "
+        "across the GS/MS/JPM/Citi/BofA trading-VaR tables and sizes the book "
+        "against it, so the composition this project holds up as its realism "
+        "reference is one that would put the challenger model in amber. Halving "
+        "FX crossing is the counter-intuitive one, and the mechanism is "
+        "measurable: FX carries "
+        f"{_fmt_usd(r8['survives']['FX']['standalone'])} of standalone VaR but "
+        f"only {_fmt_usd(r8['survives']['FX']['marginal'])} of it survives into "
+        "the firm number, against "
+        f"{_fmt_usd(r8['survives']['RATES']['marginal'])} of "
+        f"{_fmt_usd(r8['survives']['RATES']['standalone'])} for rates. FX is "
+        "close to pure offset here, so cutting it removes hedge and exposure at "
+        "nearly the same rate and the firm tail does not shrink with it. Note the "
+        "mixes are reweighted with the equity desk pinned, so these are mix "
+        "effects rather than size effects; scaling a single desk is reported "
+        "separately as the bound.",
+        "",
+        "The collar row is the one dated composition here rather than a "
+        "counterfactual: the options sleeve shipped in August 2026 and is valued "
+        f"on all {BACKTEST_DAYS} days regardless, and it accounts for one of the "
+        f"{r8['published']['HS'].exceptions} published HS exceptions - a position "
+        "that existed for roughly none of the window supplying a sixth of the "
+        "evidence the coverage test runs on.",
+        "",
+        "The fix is a bitemporal position store, which needs a trade feed this "
+        "project has no source for. So this stays disclosed rather than repaired, "
+        "and the honest reading of the backtest section is that it tests the "
+        "model on a fixed book, not the book that was held.",
+        "",
     ]
     return "\n".join(lines)
 
@@ -389,6 +548,22 @@ def _krd_table(krd: pd.DataFrame) -> str:
     sep = "|---" * (len(cols) + 2) + "|"
     body = [f"| {t} | " + " | ".join(_fmt_usd(v) for v in row) + f" | {_fmt_usd(row.sum())} |"
             for t, row in krd.iterrows()]
+    return "\n".join([head, sep, *body])
+
+
+def _r8_table(table: pd.DataFrame) -> str:
+    head = (f"| Composition | HS exc / {BACKTEST_DAYS}d | HS zone | "
+            f"FHS exc / {BACKTEST_DAYS}d | FHS exc / {TL_WINDOW}d | FHS zone | Multiplier |")
+    sep = "|---" * 7 + "|"
+    body = []
+    for variant in table["variant"].drop_duplicates():
+        rows = table[table["variant"] == variant].set_index("method")
+        hs, fhs = rows.loc["HS"], rows.loc["FHS"]
+        flag = "" if fhs["zone"] == "GREEN" else " **"
+        body.append(
+            f"| {variant}{flag} | {hs['exceptions']} | {hs['zone']} | "
+            f"{fhs['exceptions']} | {fhs['exceptions_tl']} | {fhs['zone']} | "
+            f"{fhs['multiplier']:.2f} |")
     return "\n".join([head, sep, *body])
 
 

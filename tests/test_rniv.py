@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from risk_engine.rniv import (
+    desk_scales_for_mix,
     fill_mask,
     kday_overlapping_shocks,
     lead_lag_correlations,
@@ -24,6 +25,34 @@ def test_kday_shocks_are_rolling_sums():
     assert list(shocks["X"]) == [5.0, 7.0, 9.0, 11.0]           # 4 = lookback - k + 1
     with pytest.raises(ValueError):
         kday_overlapping_shocks(r, r.index[-1], k=1, lookback=5)
+
+
+def test_desk_scales_hit_the_target_mix_exactly():
+    """The point of the closed form: applying the multipliers reproduces the
+    target shares identically, because HS VaR is homogeneous of degree one in a
+    desk's quantities. If that ever needs a solver, the premise has broken."""
+    standalone = {"RATES": 1_263_466.0, "EQUITY": 787_900.0, "FX": 723_400.0}
+    target = {"RATES": 0.52, "EQUITY": 0.28, "FX": 0.20}
+    scales = desk_scales_for_mix(standalone, target, anchor="EQUITY")
+
+    scaled = {d: standalone[d] * scales[d] for d in standalone}
+    total = sum(scaled.values())
+    for desk, want in target.items():
+        assert scaled[desk] / total == pytest.approx(want, abs=1e-12)
+    assert scales["EQUITY"] == 1.0          # anchor pinned: a mix change, not a size change
+
+
+def test_desk_scales_are_identity_when_already_on_target():
+    standalone = {"A": 50.0, "B": 30.0, "C": 20.0}
+    scales = desk_scales_for_mix(standalone, {"A": 0.5, "B": 0.3, "C": 0.2}, anchor="A")
+    assert all(v == pytest.approx(1.0, abs=1e-12) for v in scales.values())
+
+
+def test_desk_scales_reject_an_unreweightable_desk():
+    with pytest.raises(ValueError, match="no standalone VaR"):
+        desk_scales_for_mix({"A": 1.0}, {"A": 0.5, "B": 0.5}, anchor="A")
+    with pytest.raises(ValueError, match="carries no standalone VaR"):
+        desk_scales_for_mix({"A": 1.0, "B": 0.0}, {"A": 0.5, "B": 0.5}, anchor="A")
 
 
 def test_fill_mask_respects_per_factor_cap():

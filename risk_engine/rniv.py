@@ -37,6 +37,39 @@ def kday_overlapping_shocks(returns: pd.DataFrame, as_of, k: int,
     return window.rolling(k).sum().dropna()
 
 
+def desk_scales_for_mix(standalone_var: Mapping[str, float],
+                        target_shares: Mapping[str, float],
+                        anchor: str) -> dict[str, float]:
+    """Desk multipliers that move standalone-VaR shares onto target_shares.
+
+    Historical-simulation VaR is positively homogeneous of degree one in a
+    desk's quantities: scaling a desk multiplies its whole P&L column, so its
+    order statistics scale by the same factor exactly. The multipliers are
+    therefore closed form rather than a search - c_i proportional to
+    target_i / share_i - and the achieved mix equals the target identically.
+
+    Overall book scale is free (shares are normalized), so `anchor`'s multiplier
+    is pinned to 1.0 and the others move around it. That keeps a mix change from
+    silently doubling the book, which would confound a mix effect with a size
+    effect.
+    """
+    missing = sorted(set(target_shares) - set(standalone_var))
+    if missing:
+        raise ValueError(f"no standalone VaR for target desks: {missing}")
+    if anchor not in target_shares:
+        raise ValueError(f"anchor {anchor!r} is not among the target desks")
+    total = float(sum(standalone_var[d] for d in target_shares))
+    if total <= 0.0:
+        raise ValueError("standalone VaR sums to zero - nothing to reweight")
+    raw = {}
+    for desk, target in target_shares.items():
+        share = float(standalone_var[desk]) / total
+        if share <= 0.0:
+            raise ValueError(f"{desk} carries no standalone VaR - cannot reweight it")
+        raw[desk] = float(target) / share
+    return {desk: value / raw[anchor] for desk, value in raw.items()}
+
+
 def fill_mask(levels: pd.DataFrame, ffill_limits: Mapping[str, int]) -> pd.DataFrame:
     """True where align_levels would synthesize the cell (raw NaN, filled within
     the factor's cap). Mirrors align_levels so the two never drift."""
