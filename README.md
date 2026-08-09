@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/rohankannan/market-risk-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/rohankannan/market-risk-platform/actions/workflows/ci.yml)
 
-**Live:** [dashboard](https://riskdeskdash.onrender.com) · [API docs](https://riskdesk.onrender.com/docs) — refreshed nightly by a scheduled batch; free-tier hosting, so the first load after idle takes ~30–60 s.
+**Live:** [dashboard](https://riskdesk.rohankannan.com) · [API docs](https://riskdesk.onrender.com/docs) · [Streamlit ops view](https://riskdeskdash.onrender.com) — refreshed nightly by a scheduled batch; free-tier hosting, so the first load after idle takes ~30–60 s.
 
 An end-of-day **market-risk platform** for a mock three-desk trading book (cash equities, FX spot, US rates), built the way a bank's risk desk runs its nightly cycle: ingest market data → data-quality gate → revalue the book → VaR / Expected Shortfall → limit checks → stress replay → regulatory backtesting → dashboard.
 
