@@ -1,6 +1,15 @@
 # RiskDesk — Model Documentation
 
-*Structured after SR 11-7 (model development, use, validation, and limitations).
+*Structured along the April 2026 interagency Supervisory Guidance on Model Risk
+Management — Fed SR 26-2, OCC Bulletin 2026-13, FDIC FIL-15-2026, all issued
+17 April 2026, superseding SR 11-7 — so: model development and use, validation
+and monitoring, governance and controls, and a standing limitations inventory.
+That guidance is explicit that it "does not set forth enforceable standards or
+prescriptive requirements." For a trading book the text that binds is the market
+risk capital rule at 12 CFR 217 subpart F, which requires a validation process
+independent of model development covering conceptual soundness, ongoing
+monitoring, and outcomes analysis including backtesting. §4 is organized on
+those three. Where the two differ this document follows the rule and says so.
 Every methodology section ends with "questions an interviewer would ask" — this
 document doubles as the walkthrough script for anyone probing the model. The
 figures quoted below are reproducible from the committed market snapshot:
@@ -37,8 +46,12 @@ the book gamma and vega and makes the attribution test real. On the
 with a ~40% diversification benefit, net rates DV01 of ~$83k/bp, and net
 vega of about -$2.7k per vol point.
 
-**Out of scope, deliberately:** trade pricing, intraday risk, counterparty and
-credit risk, and regulatory capital. The stressed-ES piece follows FRTB's
+**Out of scope, deliberately:** trade pricing, official intraday risk
+measurement, counterparty and credit risk, and regulatory capital. The
+end-of-day batch is the record. A flash tier does re-mark the book against
+delayed quotes between closes, and §3.6 states what it is and is not: indicative
+only, never written to the official tables, and refused outright when a quote
+implies an implausible move. The stressed-ES piece follows FRTB's
 *idea* (ES 97.5, stressed-period calibration) and the attribution test follows
 the PLA *metrics*; neither is an FRTB implementation — no liquidity-horizon
 cascade, no NMRF, no IMA capital arithmetic (§5).
@@ -132,7 +145,7 @@ return? What does a forward-filled day do to EWMA vol, and where would you see
 that effect? Why is the FX bound relative to a median but the yield bound
 absolute?
 
-## 3. Methodology
+## 3. Model development and methodology
 
 ### 3.1 Historical-simulation VaR
 
@@ -167,8 +180,8 @@ Per-factor conditional variance follows the RiskMetrics recursion
 
 seeded with the population variance of the first 30 returns; the half-life is
 ln 0.5 / ln 0.94 ≈ 11 days. lambda = 0.94 is a convention, not an estimate —
-defended as such, with a GARCH(1,1) comparison on the roadmap rather than
-implied.
+defended as such, and tested against a fitted GARCH(1,1) rather than left
+implied — see the champion/challenger run below.
 
 Scenario construction devolatilizes and revolatilizes:
 
@@ -233,8 +246,9 @@ Firm ES can be allocated to desks by Euler allocation — each desk's mean P&L
 over the firm's tail scenarios. Components sum exactly to firm ES and go
 *negative* for hedging desks, which is the feature: it answers "which desk to
 cut". The allocation is exercised per position in the RNIV concentration
-measurement (R5, [docs/rniv.md](rniv.md)); a per-desk API surface arrives
-with the desk-decomposition endpoint on the roadmap.
+measurement (R5, [docs/rniv.md](rniv.md)) and served per desk at
+`/api/v1/desks/{desk}/decomposition`, whose waterfall reconciles the standalone
+bucket VaRs and the diversification term to the desk total.
 
 *Questions an interviewer would ask:* Prove ES is subadditive and give the
 two-position example where VaR is not. Why did Basel pick 97.5% ES to replace
@@ -365,7 +379,85 @@ the constant-maturity proxy ignore that a real bond position has (roll-down,
 carry, financing)? Where would linearization bite hardest in this book — which
 desk, which scenario?
 
-## 4. Backtesting and ongoing monitoring
+### 3.6 Model use
+
+A number's meaning depends on which path produced it, so the system runs three
+tiers and never lets them blur.
+
+**The official record** is the end-of-day batch. It alone writes `risk_results`,
+`pnl`, `scenario_results`, `risk_exposures` and `backtest_exceptions`; the API is
+read-only over what the batch wrote. Everything in §4 is measured on this tier,
+and it is the only tier a limit is checked against.
+
+**The flash tier** re-marks the same book against delayed intraday quotes
+between closes. It is labelled indicative, it writes nothing to the official
+tables, its quote and revaluation caches expire in minutes, and it *refuses*
+rather than guesses: a quote implying a move past 150bp, 25% or 25 vol points is
+rejected, the prior close is carried, and the refusal is surfaced instead of
+being silently absorbed. That bound exists because a vendor changed the scale of
+its yield indices and the unguarded path fabricated a 416bp rally — the control
+is there because the failure happened, not in anticipation of it.
+
+**The sandbox** (`POST /api/v1/whatif`) is a documented exception to
+API-reads-only: it scales positions and applies factor shocks in one
+revaluation, at full float precision, so a catalog preset posted back unedited
+reproduces the batch's scenario P&L to the cent. It persists nothing. It also
+declines to report one thing it could easily print — the VaR of the shocked
+book — because re-marking levels while reusing the unshocked return vectors
+makes equity VaR *fall* as the mark falls. Reporting it would be worse than
+omitting it, and the omission is named in the response rather than left for the
+reader to notice.
+
+The guidance's point about using a model beyond its intended purpose is the live
+risk here: the flash and sandbox tiers are exactly where a reader could mistake
+an indicative number for the record. Both are labelled at the point of use, in
+the API payload and on the page, not only in this document.
+
+*Questions an interviewer would ask:* Which tier would you show a desk head at
+11am, and what would you refuse to tell them from it? Why is the VaR of a
+shocked book not reported — what goes wrong? If the flash tier and the batch
+disagree at 4pm, which is wrong, and how would you tell?
+
+## 4. Validation and monitoring
+
+### 4.1 Conceptual soundness
+
+Validation of conceptual soundness is design evidence rather than performance
+evidence: whether the modelling choices, assumptions and construction are
+defensible before any outcome is scored. Four kinds of evidence carry it here,
+and all four are executable rather than asserted.
+
+*Known answers from the literature.* Black-Scholes reproduces Hull's textbook
+example, put-call parity holds to 1e-12, the par-bond identity holds exactly
+(coupon = yield ⇒ price = face), DV01 matches the published $817.5 per $1M on a
+10Y 4% par bond, and Kupiec reproduces the worked n=250, x=5 case at p ≈ 0.16.
+A hand-rolled implementation that agrees with an independent published number is
+the cheapest real evidence of construction available to a one-person project.
+
+*Analytic limits that pin the estimator.* Gaussian VaR99 = 2.326σ against
+ES97.5 = 2.338σ (§3.3) tells you the two measures are numerically almost
+identical under normality, so any material gap between them on this book is
+tail shape rather than arithmetic — a sanity anchor on the ES path that no
+amount of backtesting would supply.
+
+*Boundary equivalence between the champion and the challenger.* EWMA is exactly
+the IGARCH boundary case, ω=0, α=1−λ, β=λ, and that identity is asserted
+bit-for-bit in a test rather than argued in prose. It makes the champion and
+challenger provably the same family, which is what licenses comparing them on
+outcomes alone.
+
+*Design properties verified as invariants.* The key-rate DV01 matrix comes out
+exactly diagonal for the node par bonds at the anchor — not a coincidence but a
+consequence of those bonds being the bootstrap's own calibration instruments —
+and the test asserts the diagonality so the property cannot silently break. The
+off-node and off-par cases are tested to split across neighbouring nodes, which
+is the evidence that the diagonal case is structural rather than a bug.
+
+The guidance notes that benchmarking to other models may be more practical than
+evaluating theoretical construction. §3.2's champion/challenger run is that
+benchmark, and §6 records that it currently returns HOLD.
+
+### 4.2 Outcomes analysis
 
 **Clean P&L.** Each day's hypothetical P&L freezes the prior day's book and
 levels and applies the realized factor returns — no fees, no intraday, no new
@@ -435,12 +527,21 @@ eligibility at a real bank; here it would fail the promotion gate the same
 way the GARCH challenger did. Served at `/backtest/pla` with the HPL-vs-RTPL
 scatter on the dashboard.
 
-**Ongoing monitoring** is the nightly cycle itself: every batch writes
-exceptions against the prior run's VaR, the dashboard recomputes rolling
-zones, DQ issues persist with severities, and CI reruns the known-answer suite
-(engine math, Kupiec/Christoffersen worked examples, bond-pricing identities)
-on every commit. Scheduled next: the Acerbi–Székely ES backtest with
-simulated critical values.
+### 4.3 Ongoing monitoring
+
+Ongoing monitoring is the nightly cycle itself: every batch writes exceptions
+against the prior run's VaR, the dashboard recomputes rolling zones, DQ issues
+persist with severities, and CI reruns the known-answer suite (engine math,
+Kupiec/Christoffersen worked examples, bond-pricing identities) on every commit.
+The day-over-day flash check raises a WARN when either VaR measure moves more
+than 25% against the prior run, which is monitoring for model *deterioration*
+rather than for coverage — the failure the outcomes tests are least able to see
+quickly, because a coverage test needs hundreds of days to say anything.
+
+Scheduled next: the Acerbi–Székely ES backtest with simulated critical values.
+Note what its absence means precisely — every statistic in §4.2 tests the VaR
+path, and nothing yet tests ES97.5 or the stressed ES, which are the measures
+§3 actually leads with.
 
 *Questions an interviewer would ask:* Write the Kupiec statistic from memory
 and evaluate the n=250, x=5 case. Why does PLA need BOTH Spearman and KS —
@@ -549,7 +650,7 @@ The point of the exercise is the discipline, not the add-ons: every §5 claim
 that could be a number *is* a number, with the measurement code in the
 repository and the classification rule stated up front.
 
-## 6. Model governance
+## 6. Governance and controls
 
 Every tunable lives in one frozen dataclass (`RiskConfig`) — lookback 500,
 lambda 0.94, confidence pair (0.99, 0.975), forward-fill caps, the stressed
@@ -571,8 +672,40 @@ promotion criteria — fit health first, then outcomes, then adoption stability
 SHA (§3.2's GARCH challenger is the live example, currently HOLD on the
 fit-health gate).
 
-In SR 11-7 terms: this document is the development evidence; the known-answer
-tests and the 750-day out-of-sample backtest are validation; the nightly
-exception writes, traffic-light zones, DQ gate, flash check, and revision log
-are ongoing monitoring; §5 is the limitations inventory, maintained with the
-same seriousness as the code.
+**Effective challenge, and the one place this project cannot supply it.** The
+2026 guidance keeps "effective challenge" and defines it as critical analysis by
+objective experts with the expertise to challenge, "sufficient independence to
+maintain objectivity," and the standing to force a change. Two of those three
+are demonstrable here and one is not. The expertise and the standing are
+evidenced by the harness overruling its author: the challenger gate returned
+HOLD on a candidate the author wanted to promote, the sandbox refuses to report
+a VaR it could trivially have printed, and the flash tier refuses a quote rather
+than trusting it. The independence is not: development and validation are the
+same person, and no amount of tooling changes that. It is worth being precise
+about what the guidance now says on this, because it is the one clause that
+moves in this project's favour — "the quality of validation process depends on
+the rigor and effectiveness of the review rather than on organizational
+structure of the banking organization's risk management function." Rigor is
+demonstrable by a single author; the organizational half is not, and is recorded
+in §5 as a limitation rather than papered over.
+
+**Model materiality.** The guidance ties the depth of oversight to materiality,
+which it derives from model exposure and purpose. `docs/rniv.md` already applies
+that logic to limitations rather than to models, with a coded rule stated up
+front: Material at ≥5% of the base measure, Monitor at ≥1%, otherwise
+Immaterial. Every entry carries a measured number and a class, so the register
+sorts by consequence instead of by how easy the item was to notice.
+
+**Mapped to the 2026 guidance:** §§1–3 are model development and use (§1 the
+purpose and perimeter, §2 the inputs and data risk, §3 the development and
+methodology); §4.1 is the conceptual-soundness evidence, §4.2 the outcomes
+analysis — the 750-day out-of-sample backtest, the coverage and independence
+tests, the traffic light, and the attribution test — and §4.3 the ongoing
+monitoring, which the nightly exception writes, DQ gate, flash check and
+revision log implement; this section is governance and controls; §5 is the
+limitations inventory, maintained with the same seriousness as the code. The
+guidance's vendor and third-party section has no analogue here and does not need
+one: every model in this repository is hand-rolled, with only optimizers and
+statistical distributions imported, so there is no third-party model whose
+conceptual soundness would have to be taken on trust. That is a scope fact, not
+a control.
