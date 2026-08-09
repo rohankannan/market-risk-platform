@@ -28,16 +28,26 @@ function committedScales(draft: Draft): Record<string, number> {
 // shocks are edited as text like scales; a preset's full-precision value is
 // kept until the user actually types over that factor, so an untouched preset
 // reproduces the batch's scenario P&L to the cent
+// A factor is shocked unless the user says otherwise. Clearing the field or
+// typing 0 means "do not shock this factor" - and the row says so, because a
+// blank box that silently keeps applying the preset's move would be a lie.
 function committedShocks(loaded: WhatIfShock[], draft: Draft): WhatIfShock[] {
   return loaded
     .map((s) => {
       const raw = draft[s.factor_code];
       if (raw === undefined) return s; // untouched: keep the preset's precision
       const typed = Number(raw);
-      if (raw.trim() === "" || !Number.isFinite(typed)) return s;
+      if (raw.trim() === "" || !Number.isFinite(typed)) return { ...s, value: 0 };
       return { ...s, value: toWire(s, typed) };
     })
-    .filter((s) => s.value !== 0); // a zeroed factor is simply not shocked
+    .filter((s) => s.value !== 0);
+}
+
+function isDropped(s: WhatIfShock, draft: Draft): boolean {
+  const raw = draft[s.factor_code];
+  if (raw === undefined) return false;
+  const typed = Number(raw);
+  return raw.trim() === "" || !Number.isFinite(typed) || typed === 0;
 }
 
 function shockDisplay(s: WhatIfShock): string {
@@ -146,6 +156,11 @@ export default function WhatIf() {
     result.isError && result.error instanceof ApiError && result.error.status === 422
       ? result.error.detail
       : null;
+  // a rejected shock belongs beside the shock grid, not under the book
+  const shockError = inputError && /shock|factor|convention/i.test(inputError)
+    ? inputError
+    : null;
+  const bookError = inputError && !shockError ? inputError : null;
 
   const setScale = (ticker: string, value: string) =>
     setDraft((d) => ({ ...d, [ticker]: value }));
@@ -222,6 +237,13 @@ export default function WhatIf() {
               : "pick a scenario to load its moves, then edit any factor"}
           </span>
         </div>
+        {preset && presetShocks.isError && (
+          <p className={styles.error}>
+            Could not load {preset} — {presetShocks.error.message}
+          </p>
+        )}
+        {preset && presetShocks.isPending && <Skeleton height={120} />}
+        {shockError && <p className={styles.error}>NOT REVALUED — {shockError}</p>}
         {loaded.length > 0 && (
           <table className={table.table}>
             <thead>
@@ -229,27 +251,51 @@ export default function WhatIf() {
                 <th>Factor</th>
                 <th className={table.r}>Move</th>
                 <th>Unit</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {loaded.map((s) => (
-                <tr key={s.factor_code}>
-                  <td className="num" style={{ color: "var(--rd-gold)" }}>
-                    {s.factor_code}
-                  </td>
-                  <td className={table.r}>
-                    <input
-                      className={`${styles.scaleInput} num`}
-                      aria-label={`Shock ${s.factor_code}`}
-                      value={shockDraft[s.factor_code] ?? shockDisplay(s)}
-                      onChange={(e) =>
-                        setShockDraft((d) => ({ ...d, [s.factor_code]: e.target.value }))
-                      }
-                    />
-                  </td>
-                  <td className={table.dim}>{SHOCK_UNIT[s.shock_type]}</td>
-                </tr>
-              ))}
+              {loaded.map((s) => {
+                const dropped = isDropped(s, shockDraft);
+                const edited = shockDraft[s.factor_code] !== undefined;
+                return (
+                  <tr key={s.factor_code} className={dropped ? styles.stale : undefined}>
+                    <td className="num" style={{ color: "var(--rd-gold)" }}>
+                      {s.factor_code}
+                    </td>
+                    <td className={table.r}>
+                      <input
+                        className={`${styles.scaleInput} num`}
+                        aria-label={`Shock ${s.factor_code}`}
+                        value={shockDraft[s.factor_code] ?? shockDisplay(s)}
+                        onChange={(e) =>
+                          setShockDraft((d) => ({ ...d, [s.factor_code]: e.target.value }))
+                        }
+                      />
+                    </td>
+                    <td className={table.dim}>
+                      {dropped ? "not shocked" : SHOCK_UNIT[s.shock_type]}
+                    </td>
+                    <td>
+                      {edited && (
+                        <button
+                          className={styles.quick}
+                          aria-label={`Restore ${s.factor_code}`}
+                          onClick={() =>
+                            setShockDraft((d) => {
+                              const next = { ...d };
+                              delete next[s.factor_code];
+                              return next;
+                            })
+                          }
+                        >
+                          restore
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -312,7 +358,7 @@ export default function WhatIf() {
 
       <div className={styles.panel}>
         <div className={styles.panelTitle}>BOOK — SCALE POSITIONS</div>
-        {inputError && <p className={styles.error}>NOT REVALUED — {inputError}</p>}
+        {bookError && <p className={styles.error}>NOT REVALUED — {bookError}</p>}
         {result.isError && !inputError && (
           <p className={styles.error}>What-if unavailable — {result.error.message}</p>
         )}

@@ -206,3 +206,54 @@ test("a rejected scale surfaces the detail without destroying the book or edits"
   });
   await waitFor(() => expect(screen.queryByText(/NOT REVALUED/)).toBeNull());
 });
+
+test("clearing a shock field drops that factor instead of silently re-applying it", async () => {
+  const bodies: Adjustment[][] = [];
+  const shockBodies: Shock[][] = [];
+  server.use(whatifHandler(bodies, shockBodies), ...presetHandlers());
+  renderAt("/whatif");
+  fireEvent.change(await screen.findByLabelText("Scenario preset"), {
+    target: { value: "RATES_2022" },
+  });
+  const spy = await screen.findByLabelText("Shock EQ.SPY");
+  fireEvent.change(spy, { target: { value: "" } });
+
+  // the equity leg is gone from the posted vector, and the row says so
+  await waitFor(() => expect(shockBodies.at(-1)).toEqual([PRESET_SHOCKS[0]]), {
+    timeout: 3000,
+  });
+  expect(screen.getByText("not shocked")).toBeInTheDocument();
+
+  // restore puts the preset's full-precision value back
+  fireEvent.click(screen.getByRole("button", { name: "Restore EQ.SPY" }));
+  await waitFor(() => expect(shockBodies.at(-1)).toEqual(PRESET_SHOCKS), { timeout: 3000 });
+});
+
+test("a preset that fails to load says so instead of showing an empty grid", async () => {
+  server.use(
+    whatifHandler([]),
+    http.get(`${API_URL}/api/v1/scenarios`, () =>
+      HttpResponse.json({
+        scenarios: [
+          {
+            scenario_code: "RATES_2022",
+            scenario_name: "Rates 2022",
+            scenario_type: "HISTORICAL_REPLAY",
+            window_start: null,
+            window_end: null,
+            description: null,
+            shocks: [],
+          },
+        ],
+      }),
+    ),
+    http.get(`${API_URL}/api/v1/scenarios/:code/shocks`, () =>
+      HttpResponse.json({ detail: "no completed runs yet" }, { status: 404 }),
+    ),
+  );
+  renderAt("/whatif");
+  fireEvent.change(await screen.findByLabelText("Scenario preset"), {
+    target: { value: "RATES_2022" },
+  });
+  expect(await screen.findByText(/Could not load RATES_2022/)).toBeInTheDocument();
+});
