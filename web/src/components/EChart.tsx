@@ -9,6 +9,18 @@ import type { EChartsOption } from "echarts";
 echarts.registerTheme("riskdesk", {
   textStyle: { color: "#8a857a", fontFamily: "IBM Plex Mono, ui-monospace, monospace" },
   legend: { textStyle: { color: "#8a857a" } },
+  // value labels on bars: the default treatment strokes each glyph with a halo
+  // for contrast against the bar, which at 11px thickens them until neighbours
+  // touch - the U+2212 minus merged into the "$" on every money label. Explicit
+  // color against the terminal ground, no stroke.
+  bar: {
+    label: {
+      color: "#e8e4da",
+      textBorderWidth: 0,
+      fontFamily: "IBM Plex Mono, ui-monospace, monospace",
+      fontSize: 11,
+    },
+  },
   tooltip: {
     backgroundColor: "#0f0e0c",
     borderColor: "#2a2822",

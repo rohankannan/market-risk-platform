@@ -150,13 +150,14 @@ export function scenarioWaterfallOption(result: ScenarioResult): EChartsOption {
       {
         type: "bar",
         stack: "wf",
-        data: step.map((v, i) => ({
-          value: v,
-          itemStyle: { color: colors[i] },
-          label: { position: v < 0 ? ("bottom" as const) : ("top" as const) },
-        })),
+        data: step.map((v, i) => ({ value: v, itemStyle: { color: colors[i] } })),
+        // always above the rectangle, as the desk waterfall does. Positioning a
+        // negative step's label at "bottom" put it on the axis floor, where it
+        // overprinted the category label - and the label is the step's VALUE,
+        // not a level, so its placement carries no meaning to preserve.
         label: {
           show: true,
+          position: "top",
           formatter: (p: { dataIndex: number }) => fmtMoney(rows[p.dataIndex][1]),
         },
         barMaxWidth: 56,
