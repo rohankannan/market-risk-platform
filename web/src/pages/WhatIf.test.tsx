@@ -257,3 +257,36 @@ test("a preset that fails to load says so instead of showing an empty grid", asy
   });
   expect(await screen.findByText(/Could not load RATES_2022/)).toBeInTheDocument();
 });
+
+test("a -100% move is refused in the editor and never reaches the wire", async () => {
+  const bodies: Adjustment[][] = [];
+  const shockBodies: Shock[][] = [];
+  server.use(whatifHandler(bodies, shockBodies), ...presetHandlers());
+  renderAt("/whatif");
+  fireEvent.change(await screen.findByLabelText("Scenario preset"), {
+    target: { value: "RATES_2022" },
+  });
+  await screen.findByLabelText("Shock EQ.SPY");
+  const posted = shockBodies.length;
+
+  // log1p(-1) is -Infinity, which JSON.stringify would put on the wire as null
+  fireEvent.change(screen.getByLabelText("Shock EQ.SPY"), { target: { value: "-100" } });
+  expect(await screen.findByText(/NOT REVALUED — EQ\.SPY move -100%/)).toBeInTheDocument();
+  expect(screen.queryByRole("alert")).toBeNull(); // never the error boundary
+  expect(screen.getByLabelText("Shock EQ.SPY")).toHaveValue("-100"); // edit survives
+  expect(shockBodies.length).toBe(posted); // nothing was posted
+  for (const body of shockBodies) {
+    for (const s of body) expect(Number.isFinite(s.value)).toBe(true);
+  }
+
+  // correcting it recovers
+  fireEvent.change(screen.getByLabelText("Shock EQ.SPY"), { target: { value: "-95" } });
+  await waitFor(
+    () =>
+      expect(shockBodies.at(-1)).toEqual([
+        PRESET_SHOCKS[0],
+        { factor_code: "EQ.SPY", shock_type: "RELATIVE", value: Math.log1p(-0.95) },
+      ]),
+    { timeout: 3000 },
+  );
+});

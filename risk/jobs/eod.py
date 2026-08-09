@@ -373,12 +373,33 @@ def step_risk(ctx: dict) -> None:
         print("[eod] risk: first day in history - no P&L/exception check")
 
 
+def validate_shock_types(hypos: list[dict], convs: dict[str, str]) -> None:
+    """The catalog's declared shock type must match the factor's own return
+    convention - bp read as a log return is a 100x error applied silently.
+
+    Checked BEFORE the catalog upsert: scenario rows are not run-scoped, so a
+    row written by a run that then fails outlives the failure and is served by
+    /scenarios and /scenarios/{code}/shocks.
+    """
+    expected = {"LOG": "RELATIVE", "ABS_BP": "ABSOLUTE_BP", "ABS": "ABSOLUTE"}
+    for h in hypos:
+        for fcode, s in h["shocks"].items():
+            if fcode not in convs:
+                raise RuntimeError(f"{h['code']}: unknown factor {fcode}")
+            want = expected[convs[fcode]]
+            if s["type"] != want:
+                raise RuntimeError(
+                    f"{h['code']}: {fcode} declares {s['type']} but the factor's "
+                    f"convention {convs[fcode]} requires {want}")
+
+
 def step_scenarios(ctx: dict) -> None:
     conn, run_date, meta = ctx["conn"], ctx["run_date"], ctx["factor_meta"]
     fids = dict(zip(meta["factor_code"], meta["factor_id"]))
     convs = dict(zip(meta["factor_code"], meta["return_conv"]))
     limits = dict(zip(meta["factor_code"], meta["ffill_limit_days"]))
     hypos = yaml.safe_load(open(SCENARIOS_YAML))
+    validate_shock_types(hypos, convs)
     sid = db.ensure_scenario_catalog(conn, REPLAY_WINDOWS, hypos, fids)
 
     book = db.read_book(conn)
@@ -393,17 +414,7 @@ def step_scenarios(ctx: dict) -> None:
         pnl = apply_scenario(book, lvl_t, shock)
         rows += [{"scenario_id": sid[code], "desk_id": desks[s],
                   "pnl_impact": round(float(pnl[s]), 2)} for s in pnl.index]
-    # the catalog's declared shock type must match the factor's own return
-    # convention - a mislabeled shock would otherwise apply silently in the
-    # wrong units (bp read as a log return is a 100x error)
-    expected = {"LOG": "RELATIVE", "ABS_BP": "ABSOLUTE_BP", "ABS": "ABSOLUTE"}
     for h in hypos:
-        for fcode, s in h["shocks"].items():
-            want = expected[convs[fcode]]
-            if s["type"] != want:
-                raise RuntimeError(
-                    f"{h['code']}: {fcode} declares {s['type']} but the factor's "
-                    f"convention {convs[fcode]} requires {want}")
         shock = pd.Series({f: s["value"] for f, s in h["shocks"].items()})
         pnl = apply_scenario(book, lvl_t, shock)
         rows += [{"scenario_id": sid[h["code"]], "desk_id": desks[s],

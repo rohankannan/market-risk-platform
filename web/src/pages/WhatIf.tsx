@@ -43,6 +43,22 @@ function committedShocks(loaded: WhatIfShock[], draft: Draft): WhatIfShock[] {
     .filter((s) => s.value !== 0);
 }
 
+// -100% wipes the factor out: log1p(-1) is -Infinity and anything past it is
+// NaN, and JSON.stringify puts either on the wire as null. Catch it in the
+// editor's own units - the server could only answer with a validation error.
+function shockUnitError(loaded: WhatIfShock[], draft: Draft): string | null {
+  for (const s of loaded) {
+    const raw = draft[s.factor_code];
+    if (raw === undefined || raw.trim() === "") continue;
+    const typed = Number(raw);
+    if (Number.isFinite(typed) && !Number.isFinite(toWire(s, typed))) {
+      return `${s.factor_code} move ${raw}% - a percent move must be above -100%, ` +
+        "a level cannot fall past zero";
+    }
+  }
+  return null;
+}
+
 function isDropped(s: WhatIfShock, draft: Draft): boolean {
   const raw = draft[s.factor_code];
   if (raw === undefined) return false;
@@ -114,13 +130,16 @@ export default function WhatIf() {
     [preset, presetShocks.isSuccess, presetShocks.data],
   );
 
+  const unitError = useMemo(() => shockUnitError(loaded, shockDraft), [loaded, shockDraft]);
+
   useEffect(() => {
     timer.current = setTimeout(() => {
       setScales(committedScales(draft));
-      setShocks(committedShocks(loaded, shockDraft));
+      // hold the last good vector while the input is unrepresentable
+      if (!unitError) setShocks(committedShocks(loaded, shockDraft));
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer.current);
-  }, [draft, shockDraft, loaded]);
+  }, [draft, shockDraft, loaded, unitError]);
 
   const result = useWhatIf(scales, shocks);
 
@@ -243,7 +262,9 @@ export default function WhatIf() {
           </p>
         )}
         {preset && presetShocks.isPending && <Skeleton height={120} />}
-        {shockError && <p className={styles.error}>NOT REVALUED — {shockError}</p>}
+        {(unitError ?? shockError) && (
+          <p className={styles.error}>NOT REVALUED — {unitError ?? shockError}</p>
+        )}
         {loaded.length > 0 && (
           <table className={table.table}>
             <thead>

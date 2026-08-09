@@ -137,3 +137,22 @@ def test_replay_catalog_covers_a_rising_rate_regime():
     assert set(REPLAY_WINDOWS) == {"GFC_2008", "COVID_2020", "RATES_2022"}
     start, end = REPLAY_WINDOWS["RATES_2022"]
     assert start.year == 2022 and end.year == 2022
+
+
+def test_shock_type_validation_runs_before_anything_is_written():
+    """A mislabeled catalog must be refused before the upsert: scenario rows
+    are not run-scoped, so one written by a run that then fails outlives the
+    failure and is served to every reader."""
+    from risk.jobs.eod import validate_shock_types
+
+    convs = {"IR.UST.10Y": "ABS_BP", "EQ.SPY": "LOG"}
+    good = [{"code": "OK", "shocks": {"IR.UST.10Y": {"type": "ABSOLUTE_BP", "value": 100}}}]
+    validate_shock_types(good, convs)          # no raise
+
+    bad = [{"code": "BAD", "shocks": {"IR.UST.10Y": {"type": "RELATIVE", "value": 100}}}]
+    with pytest.raises(RuntimeError, match="requires ABSOLUTE_BP"):
+        validate_shock_types(bad, convs)
+
+    unknown = [{"code": "X", "shocks": {"EQ.NOPE": {"type": "RELATIVE", "value": 0.1}}}]
+    with pytest.raises(RuntimeError, match="unknown factor"):
+        validate_shock_types(unknown, convs)

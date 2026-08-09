@@ -305,6 +305,13 @@ def ensure_scenario_catalog(conn: Connection, replays: dict, hypotheticals: list
                 ON CONFLICT (scenario_id, factor_id) DO UPDATE
                 SET shock_type = EXCLUDED.shock_type, shock_value = EXCLUDED.shock_value"""),
                 {"sid": sid, "fid": factor_ids[fcode], "st": shock_type, "sv": s["value"]})
+        # a factor dropped from the YAML must leave the stored scenario too -
+        # the catalog is the source of truth, and a retired shock left behind
+        # would keep pricing and would ship inside the sandbox's preset
+        conn.execute(text("""
+            DELETE FROM scenario_shocks
+            WHERE scenario_id = :sid AND factor_id <> ALL(:keep)"""),
+            {"sid": sid, "keep": [factor_ids[f] for f in h["shocks"]]})
     return dict(conn.execute(text("SELECT scenario_code, scenario_id FROM scenarios")).all())
 
 

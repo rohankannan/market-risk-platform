@@ -18,6 +18,24 @@ export class ApiError extends Error {
   }
 }
 
+// FastAPI ships two detail shapes: a string from our own HTTPException and a
+// list of pydantic errors from request validation. Flatten the list here so no
+// caller can ever be handed an object to render.
+function readDetail(body: unknown, fallback: string): string {
+  const d = (body as { detail?: unknown } | null)?.detail;
+  if (typeof d === "string") return d;
+  if (Array.isArray(d) && d.length) {
+    return d
+      .map((e) => {
+        const { loc, msg } = (e ?? {}) as { loc?: unknown[]; msg?: string };
+        const where = Array.isArray(loc) ? loc.slice(1).join(".") : "";
+        return where ? `${where}: ${msg ?? "invalid"}` : (msg ?? "invalid");
+      })
+      .join("; ");
+  }
+  return fallback;
+}
+
 // snapshot lookup key: path + sorted query string - must match
 // web/scripts/record_fixtures.py::canonical
 export function canonical(path: string, params?: Params): string {
@@ -75,7 +93,7 @@ export async function postJson<T>(path: string, body: unknown, params?: Params):
   if (!res.ok) {
     let detail = res.statusText;
     try {
-      detail = ((await res.json()) as { detail?: string }).detail ?? detail;
+      detail = readDetail(await res.json(), detail);
     } catch {
       // non-JSON error body: keep the status text
     }
@@ -114,7 +132,7 @@ export async function getJson<T>(path: string, params?: Params): Promise<T> {
   if (!res.ok) {
     let detail = res.statusText;
     try {
-      detail = ((await res.json()) as { detail?: string }).detail ?? detail;
+      detail = readDetail(await res.json(), detail);
     } catch {
       // non-JSON error body: keep the status text
     }
