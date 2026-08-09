@@ -17,6 +17,10 @@ Two things this has to get right, both learned the hard way:
   - The footer stamps code_version(), which is `git describe --always --dirty`.
     Capturing from a dirty tree bakes "-dirty" into the image, so this refuses
     to run unless the tree is clean (ALLOW_DIRTY_SHOTS=1 to override locally).
+    Shots are written to a temp directory and moved into place only at the end,
+    because writing the first image into a tracked directory dirties the tree
+    and every page captured after it would stamp "-dirty" - the guard runs once
+    at the start and cannot see damage the run does to itself.
 
 Usage (with the API on :8000 and the frontend on :5173):
     python scripts/capture_screenshots.py
@@ -27,8 +31,10 @@ from __future__ import annotations
 
 import argparse
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 OUT_DIR = Path("docs/img")
@@ -84,21 +90,25 @@ def main() -> int:
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch()
-        for route, name in PAGES:
-            url = f"{args.base_url}{route}"
-            height = measure_height(browser, url)
-            page = browser.new_page(viewport={"width": WIDTH, "height": height},
-                                    color_scheme="dark",
-                                    device_scale_factor=1)
-            page.goto(url, wait_until="networkidle")
-            page.wait_for_timeout(SETTLE_MS)
-            target = out_dir / name
-            page.screenshot(path=str(target))
-            print(f"{target}  {WIDTH}x{height}")
-            page.close()
-        browser.close()
+    with tempfile.TemporaryDirectory() as staging_name:
+        staging = Path(staging_name)
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch()
+            for route, name in PAGES:
+                url = f"{args.base_url}{route}"
+                height = measure_height(browser, url)
+                page = browser.new_page(viewport={"width": WIDTH, "height": height},
+                                        color_scheme="dark",
+                                        device_scale_factor=1)
+                page.goto(url, wait_until="networkidle")
+                page.wait_for_timeout(SETTLE_MS)
+                page.screenshot(path=str(staging / name))
+                print(f"{out_dir / name}  {WIDTH}x{height}")
+                page.close()
+            browser.close()
+        # only now touch the tracked directory
+        for _, name in PAGES:
+            shutil.move(str(staging / name), str(out_dir / name))
     return 0
 
 

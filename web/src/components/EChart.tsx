@@ -6,21 +6,25 @@ import type { EChartsOption } from "echarts";
 
 // axis/legend/tooltip chrome for the dark terminal ground - series colors
 // stay explicit per chart
+const SERIES_LABEL = {
+  color: "#e8e4da",
+  textBorderWidth: 0,
+  fontFamily: "IBM Plex Mono, ui-monospace, monospace",
+};
+
 echarts.registerTheme("riskdesk", {
   textStyle: { color: "#8a857a", fontFamily: "IBM Plex Mono, ui-monospace, monospace" },
   legend: { textStyle: { color: "#8a857a" } },
-  // value labels on bars: the default treatment strokes each glyph with a halo
-  // for contrast against the bar, which at 11px thickens them until neighbours
-  // touch - the U+2212 minus merged into the "$" on every money label. Explicit
-  // color against the terminal ground, no stroke.
-  bar: {
-    label: {
-      color: "#e8e4da",
-      textBorderWidth: 0,
-      fontFamily: "IBM Plex Mono, ui-monospace, monospace",
-      fontSize: 11,
-    },
-  },
+  // Series labels: the default treatment strokes each glyph with a halo for
+  // contrast against the mark, which on IBM Plex Mono at 9-11px thickens them
+  // until neighbours touch - the U+2212 minus merged into the "$" on money
+  // labels, and the exception date stamps smeared into illegibility. Explicit
+  // color against the terminal ground, no stroke. Every labelled series in the
+  // app positions its labels OUTSIDE the mark, so one color is right for all.
+  // Per series type because ECharts themes have no universal series.label.
+  bar: { label: SERIES_LABEL },
+  scatter: { label: SERIES_LABEL },
+  line: { label: SERIES_LABEL },
   tooltip: {
     backgroundColor: "#0f0e0c",
     borderColor: "#2a2822",
