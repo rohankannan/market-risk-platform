@@ -111,3 +111,15 @@
   color: var(--text-dim);
   border-top: 1px solid var(--border);
 }
+
+/* the test-resolution caption under the stat cards: same register as the
+   Overview note strips - what the displayed tests can actually detect */
+.resolution {
+  border: 1px solid var(--rd-divider);
+  border-radius: 0;
+  padding: 6px 12px;
+  margin-bottom: 12px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}

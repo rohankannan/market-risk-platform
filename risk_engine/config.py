@@ -52,5 +52,10 @@ class RiskConfig:
     n_bootstrap: int = 2000
     bootstrap_block_days: int = 10
 
+    # The confidence level intervals are quoted at, and the simulation count for
+    # the Christoffersen size/power numbers the API serves at read time.
+    interval_confidence: float = 0.95
+    power_n_sim: int = 1500
+
 
 DEFAULT_CONFIG = RiskConfig()

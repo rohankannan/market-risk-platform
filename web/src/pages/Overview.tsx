@@ -12,6 +12,7 @@ import {
   useRiskHistory,
   useRiskMovers,
   useRiskSummary,
+  useRiskUncertainty,
   useScenarioResults,
   refreshFlash,
 } from "../api/queries";
@@ -97,6 +98,29 @@ function LimitRows({ desks }: { desks: DeskRisk[] }) {
         );
       })}
     </>
+  );
+}
+
+// the sampling-error caption under the firm tiles: the exact order-statistic
+// interval on the headline VaR, quoted in the units the tile above it uses.
+// Renders nothing when the endpoint is absent (an older offline snapshot), so
+// the panel degrades to exactly what it showed before the interval existed.
+function UncertaintyStrip() {
+  const uncertainty = useRiskUncertainty();
+  if (!uncertainty.isSuccess) return null;
+  const firm = uncertainty.data.desks.find((d) => d.is_aggregate);
+  if (!firm) return null;
+  const pct = Math.round(uncertainty.data.confidence * 100);
+  return (
+    <div
+      role="note"
+      className={styles.noteStrip}
+      aria-label="Firm VaR sampling uncertainty"
+      title={`Exact distribution-free interval: the true 99% quantile lies between worst-loss ranks ${firm.rank_low} and ${firm.rank_high} of ${uncertainty.data.n_scenarios} scenarios, coverage ${(firm.coverage * 100).toFixed(1)}%`}
+    >
+      VAR SAMPLING {pct}% CI {fmtMoney(firm.ci_low)}–{fmtMoney(firm.ci_high)} · WORST-LOSS
+      RANKS {firm.rank_low}–{firm.rank_high} OF {uncertainty.data.n_scenarios}
+    </div>
   );
 }
 
@@ -596,6 +620,7 @@ export default function Overview() {
               lastPnl={lastPoint}
             />
           )}
+          <UncertaintyStrip />
           <FlashStrip />
           <div className={styles.sectionHeadThin}>
             <span className={styles.sectionTitle}>VAR MOVERS — DAY/DAY</span>

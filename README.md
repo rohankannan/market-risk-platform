@@ -6,7 +6,7 @@
 
 An end-of-day **market-risk platform** for a mock three-desk trading book (cash equities, FX spot, US rates), built the way a bank's risk desk runs its nightly cycle: ingest market data → data-quality gate → revalue the book → VaR / Expected Shortfall → limit checks → stress replay → regulatory backtesting → dashboard.
 
-**On the committed snapshot (2026-08-06):** firm 1-day VaR99 **$1,137,118**, 57% of a $2M limit · ES97.5 $1.15M · stressed ES $2.61M · 40% diversification benefit · 750 days of out-of-sample VaR giving 6 exceptions against 7.5 expected, Basel GREEN. Every one of those reproduces from this repository alone, and CI asserts the first to the cent.
+**On the committed snapshot (2026-08-06):** firm 1-day VaR99 **$1,137,118** — with its own error bar: the exact 95% interval is the 1st-to-10th worst loss, **$1.07M–$1.40M**, or 53–70% of the $2M limit · ES97.5 $1.15M · stressed ES $2.61M · 40% diversification benefit · 750 days of out-of-sample VaR giving 6 exceptions against 7.5 expected, Basel GREEN — a verdict whose resolution is also measured: the test accepts anywhere from 3 to 13 exceptions at that window. Every one of those reproduces from this repository alone, and CI asserts the VaR *and its interval* to the cent.
 
 The worst case on record is not 2008. The 2022 rates selloff replays at **−$21.8M**, roughly twice the GFC replay's −$11.0M, because both of the classic replays are flight-to-quality episodes in which a long-duration book *gains* on rates — which is why the stress catalog is calibrated against the book's own history rather than inherited.
 

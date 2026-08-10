@@ -64,14 +64,19 @@ def request_list(desks: list[str], scenario_codes: list[str]) -> list[tuple[str,
         ("/api/v1/flash", {}),
         ("/api/v1/modeldoc", {}),
     ]
-    # the terminal overview reads FIRM history at the plain backtest window
+    # the terminal overview reads FIRM history at the plain backtest window,
+    # and the sampling-uncertainty panel beside the firm measures
     reqs.append(("/api/v1/risk/history", {"scope": "FIRM", "window": BACKTEST_WINDOW}))
+    reqs.append(("/api/v1/risk/uncertainty", {}))
     for w in BACKTEST_WINDOWS:
         reqs.append(("/api/v1/risk/history",
                      {"scope": "FIRM", "window": min(w + ROLLING_WINDOW, HISTORY_CAP)}))
         reqs.append(("/api/v1/backtest/pla", {"scope": "FIRM", "window": w}))
         for model in ("HS", "FHS"):
             reqs.append(("/api/v1/backtest/summary",
+                         {"scope": "FIRM", "model": model, "window": w}))
+            # what the test at that window can detect, same params as the summary
+            reqs.append(("/api/v1/backtest/power",
                          {"scope": "FIRM", "model": model, "window": w}))
     # every catalog scenario resolved to its shock vector: the sandbox loads
     # these as presets, so the offline demo must carry them too
@@ -89,6 +94,11 @@ def request_list(desks: list[str], scenario_codes: list[str]) -> list[tuple[str,
         for model in ("HS", "FHS"):
             reqs.append(("/api/v1/backtest/summary",
                          {"scope": desk, "model": model, "window": BACKTEST_WINDOW}))
+            # keep power's offline coverage identical to summary's: a desk
+            # scope whose cards render but whose resolution strip silently
+            # vanishes would read as a bug, not as a recording gap
+            reqs.append(("/api/v1/backtest/power",
+                         {"scope": desk, "model": model, "window": BACKTEST_WINDOW}))
     return reqs
 
 
@@ -101,12 +111,19 @@ def main(argv: list[str] | None = None) -> int:
     desks = [d["desk_code"] for d in meta["desks"] if not d["is_aggregate"]]
     if not desks:
         raise RuntimeError("meta reports no standalone desks - is the stack seeded?")
-    version = meta.get("code_version") or ""
-    if version.endswith("-dirty") and not os.getenv("ALLOW_DIRTY_FIXTURES"):
-        raise RuntimeError(
-            f"latest run stamps code_version {version!r} - committed fixtures must "
-            "come from a clean tree (commit, re-run the EOD, re-record; "
-            "ALLOW_DIRTY_FIXTURES=1 overrides for local iteration)")
+    # BOTH stamps: code_version is the batch's commit off the run row, and
+    # build_version is the serving process's own `git describe --dirty`. The
+    # gate once checked only the first, which a dirty tree slips whenever the
+    # batch row predates the local edits - exactly the state a mid-iteration
+    # recording happens in - and the CI provenance grep then fails on the
+    # recorded build stamp instead of this refusal firing first.
+    for field in ("code_version", "build_version"):
+        version = meta.get(field) or ""
+        if version.endswith("-dirty") and not os.getenv("ALLOW_DIRTY_FIXTURES"):
+            raise RuntimeError(
+                f"latest run stamps {field} {version!r} - committed fixtures must "
+                "come from a clean tree (commit, re-run the EOD, re-record; "
+                "ALLOW_DIRTY_FIXTURES=1 overrides for local iteration)")
 
     # collect everything before writing anything: a mid-run failure must not
     # leave fixtures and snapshot.json recorded from different stack states

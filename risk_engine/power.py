@@ -42,6 +42,13 @@ from .backtest import christoffersen_independence, kupiec_pof
 ALPHA = 0.05                     # test level everything below is quoted at
 MAX_OBS_SEARCH = 100_000         # cap on the smallest-n search
 
+# The documented alternative for power statements: an exception rate 20% above
+# the 1% target. In RATE terms, deliberately - under normality this is a VaR
+# understated by only ~3% in dollars (the translation is a pinned test), so it
+# is the ordinary-sized error a backtest most needs to see and mostly cannot.
+DEFAULT_ALTERNATIVE_RATE = 0.012
+CLUSTER_ALTERNATIVE_P11 = 0.25   # the clustering alternative for the independence test
+
 
 @dataclass(frozen=True)
 class PowerCurvePoint:
@@ -186,6 +193,27 @@ def simulate_markov_exceptions(n_obs: int, p_uncond: float, p11: float,
     return out
 
 
+def _markov_paths(n_obs: int, p_uncond: float, p11: float, n_sim: int,
+                  rng: np.random.Generator) -> np.ndarray:
+    """(n_sim, n_obs) exception paths - the vectorized twin of
+    simulate_markov_exceptions, looping over time only, so a read-time caller can
+    afford thousands of paths. A test pins the two implementations to the same
+    stationary and conditional rates."""
+    if not 0.0 <= p11 < 1.0:
+        # the guard the per-path reference has; p11=1.0 slips the p01 check
+        # (p01=0) and yields absorbing chains that fabricate a power of zero
+        raise ValueError(f"p11={p11} must lie in [0, 1)")
+    p01 = p_uncond * (1.0 - p11) / (1.0 - p_uncond)
+    if not 0.0 <= p01 <= 1.0:
+        raise ValueError(f"p11={p11} and p_uncond={p_uncond} imply p01={p01:.4f}")
+    draws = rng.random((n_sim, n_obs))
+    out = np.zeros((n_sim, n_obs), dtype=bool)
+    out[:, 0] = draws[:, 0] < p_uncond
+    for t in range(1, n_obs):
+        out[:, t] = draws[:, t] < np.where(out[:, t - 1], p11, p01)
+    return out
+
+
 def christoffersen_power(n_obs: int, p_uncond: float, p11: float, n_sim: int,
                          seed: int, alpha: float = ALPHA) -> float:
     """Simulated rejection rate of the independence test under clustering p11.
@@ -194,12 +222,10 @@ def christoffersen_power(n_obs: int, p_uncond: float, p11: float, n_sim: int,
     """
     if n_sim < 1:
         raise ValueError(f"n_sim={n_sim} must be positive")
-    rng = np.random.default_rng(seed)
-    rejects = 0
-    for _ in range(n_sim):
-        path = simulate_markov_exceptions(n_obs, p_uncond, p11, rng)
-        if christoffersen_independence(path).p_value < alpha:
-            rejects += 1
+    if not 0.0 < p_uncond < 1.0:
+        raise ValueError(f"p_uncond={p_uncond} must lie in (0, 1)")
+    paths = _markov_paths(n_obs, p_uncond, p11, n_sim, np.random.default_rng(seed))
+    rejects = sum(christoffersen_independence(path).p_value < alpha for path in paths)
     return rejects / n_sim
 
 
@@ -220,15 +246,12 @@ def conditioning_observations(n_obs: int, p_uncond: float, n_sim: int,
     close to rejection. The statistic is exactly zero only when no day follows an
     exception at all, which is a much smaller share, so both are returned.
     """
-    rng = np.random.default_rng(seed)
-    following = np.empty(n_sim)
-    no_repeat = 0
-    for i in range(n_sim):
-        path = simulate_markov_exceptions(n_obs, p_uncond, p_uncond, rng)
-        prev, cur = path[:-1], path[1:]
-        following[i] = int(prev.sum())          # n10 + n11: days after an exception
-        no_repeat += not np.any(prev & cur)     # n11 == 0
+    paths = _markov_paths(n_obs, p_uncond, p_uncond, n_sim,
+                          np.random.default_rng(seed))
+    prev, cur = paths[:, :-1], paths[:, 1:]
+    following = prev.sum(axis=1).astype(float)  # n10 + n11: days after an exception
+    no_repeat = ~np.any(prev & cur, axis=1)     # n11 == 0
     return {"mean_following": float(following.mean()),
             "median_following": float(np.median(following)),
             "share_none_following": float((following == 0).mean()),
-            "share_no_repeat": no_repeat / n_sim}
+            "share_no_repeat": float(no_repeat.mean())}

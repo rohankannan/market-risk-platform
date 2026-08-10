@@ -174,6 +174,21 @@ def test_clustering_raises_the_conditional_rate():
     assert float(after_exception.mean()) == pytest.approx(0.30, abs=0.01)
 
 
+def test_vectorized_paths_match_the_reference_simulator():
+    """christoffersen_power runs on a time-vectorized simulator so a read-time
+    caller can afford thousands of paths; the per-path reference stays as the
+    spec. Same stationary rate, same conditional rate, to simulation tolerance."""
+    from risk_engine.power import _markov_paths
+
+    rng = np.random.default_rng(5)
+    matrix = _markov_paths(4000, 0.05, 0.30, 60, rng)
+    assert matrix.shape == (60, 4000)
+    assert float(matrix.mean()) == pytest.approx(0.05, abs=0.005)
+    prev, cur = matrix[:, :-1], matrix[:, 1:]
+    after = cur[prev]
+    assert float(after.mean()) == pytest.approx(0.30, abs=0.01)
+
+
 def test_independence_test_is_badly_under_sized_at_a_one_percent_rate():
     """Realized size far below nominal, with a measured mechanism: everything the
     test knows about P(exception | exception) comes from the days following an
@@ -225,3 +240,10 @@ def test_markov_simulation_validates_inputs():
         simulate_markov_exceptions(100, 0.05, 1.0, rng)
     with pytest.raises(ValueError, match="n_sim"):
         christoffersen_power(100, P0, P0, n_sim=0, seed=1)
+    # the vectorized path must refuse the same domain the reference refuses:
+    # p11=1.0 slips the derived-p01 check and would fabricate power 0.0 from
+    # absorbing chains, p11<0 would silently behave as p11=0
+    with pytest.raises(ValueError, match="p11"):
+        christoffersen_power(100, P0, 1.0, n_sim=10, seed=1)
+    with pytest.raises(ValueError, match="p11"):
+        christoffersen_power(100, P0, -0.5, n_sim=10, seed=1)

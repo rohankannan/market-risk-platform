@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 
 import { ApiError } from "../api/client";
-import { useBacktestSummary, useMeta, usePla, useRiskHistory } from "../api/queries";
+import { useBacktestPower, useBacktestSummary, useMeta, usePla, useRiskHistory } from "../api/queries";
 import type { LRTest } from "../api/types";
 import { EChart } from "../components/EChart";
 import { HistoryDataTable } from "../components/HistoryDataTable";
@@ -73,6 +73,7 @@ export default function Backtesting() {
     );
 
   const summary = useBacktestSummary(scope, model, windowDays);
+  const power = useBacktestPower(scope, model, windowDays);
   // over-fetch by the rolling lookback so every displayed count covers a full
   // trailing window (the API caps history at 1000 = 750 + 250 exactly)
   const fetchWindow = Math.min(windowDays + ROLLING_WINDOW, 1000);
@@ -159,6 +160,25 @@ export default function Backtesting() {
           ))}
         </div>
       )}
+
+      {power.isLoading ? (
+        <Skeleton height={32} />
+      ) : power.isSuccess ? (
+        <div
+          role="note"
+          className={styles.resolution}
+          aria-label="Backtest resolution"
+          title={`What the tests at this realized window (${power.data.n_obs} days) can detect. The Kupiec acceptance band is the range of exception counts that survives; the 1.2% alternative is an exception rate 20% above target - under normality only a ~${Math.round(power.data.var_understatement_equiv * 100)}% VaR understatement.`}
+        >
+          TEST RESOLUTION ({power.data.n_obs}D) — ACCEPTS {power.data.accept_low}–
+          {power.data.accept_high} EXC ({(power.data.implied_rate_low * 100).toFixed(2)}%–
+          {(power.data.implied_rate_high * 100).toFixed(2)}%) · REALIZED SIZE{" "}
+          {(power.data.realized_size * 100).toFixed(1)}% · POWER VS{" "}
+          {(power.data.p_alternative * 100).toFixed(1)}% RATE{" "}
+          {(power.data.power * 100).toFixed(1)}% · 80% POWER ≈{" "}
+          {Math.round(power.data.years_for_80pct_power)}Y OF DAILY DATA
+        </div>
+      ) : null}
 
       <div className={styles.panel}>
         <div className={styles.panelTitle}>

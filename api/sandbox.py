@@ -59,7 +59,12 @@ _SCEN_CACHE_MAX = 4
 _SCEN_LOCK = threading.Lock()
 
 
-def _scenario_set(conn: Connection, run_id: int, run_date: dt.date) -> RunMarket:
+def run_market(conn: Connection, run_id: int, run_date: dt.date) -> RunMarket:
+    """One resolved run's market data, rebuilt from the stored levels through the
+    same alignment the batch used and cached per run_id. Public because three
+    read paths share it: the what-if sandbox, the flash re-mark, and the
+    uncertainty computation - all of which need the run's scenario set without
+    persisting anything."""
     with _SCEN_LOCK:
         if run_id in _SCEN_CACHE:
             return _SCEN_CACHE[run_id]
@@ -93,7 +98,7 @@ def resolve_scenario_shocks(conn: Connection, run_id: int, run_date: dt.date,
         {"c": code}).mappings().first()
     if row is None:
         raise KeyError(code)
-    market = _scenario_set(conn, run_id, run_date)
+    market = run_market(conn, run_id, run_date)
     if row["scenario_type"] == "HISTORICAL_REPLAY":
         if code not in REPLAY_WINDOWS:
             raise WhatIfInputError(f"{code} has no replay window in the engine")
@@ -169,7 +174,7 @@ def compute_whatif(conn: Connection, run_id: int, run_date: dt.date,
     if live.empty:
         raise WhatIfInputError("every position scaled to zero - nothing to revalue")
 
-    market = _scenario_set(conn, run_id, run_date)
+    market = run_market(conn, run_id, run_date)
     shock_vector = _validate_shocks(shocks or [], market.convs)
     pos_pnl = revalue(live, market.levels, market.scenarios)
     desk_pnl = aggregate(pos_pnl, live)

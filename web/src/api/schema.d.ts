@@ -27,6 +27,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/backtest/power": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Backtest Power
+         * @description What the backtest at the realized window can detect: Kupiec's acceptance
+         *     band and exact power (its statistic depends only on the exception count, so
+         *     no simulation), and the Christoffersen size/power legs simulated under the
+         *     config seed. Same scope/model/window contract as /backtest/summary, so the
+         *     two describe the same test.
+         */
+        get: operations["backtest_power_api_v1_backtest_power_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/backtest/summary": {
         parameters: {
             query?: never;
@@ -267,6 +291,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/risk/uncertainty": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Risk Uncertainty
+         * @description Sampling uncertainty on the run's headline numbers, computed at read time
+         *     from the run's own scenario set: the exact order-statistic interval on each
+         *     VaR (a property of (n, p, level), so persisting it per run would store the
+         *     same fact daily), plus seeded bootstrap spreads for ES and the
+         *     diversification benefit. Deterministic per run, so pinned dates cache as
+         *     immutable like every other read.
+         */
+        get: operations["risk_uncertainty_api_v1_risk_uncertainty_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/scenarios": {
         parameters: {
             query?: never;
@@ -391,6 +440,58 @@ export interface components {
             pnl_value: number;
             /** Var Value */
             var_value: number;
+        };
+        /**
+         * BacktestPower
+         * @description What the backtest at this window can and cannot detect - properties of
+         *     the tests themselves, computed from the realized window length. accept_low..
+         *     accept_high is Kupiec's acceptance band: the exception counts that survive,
+         *     i.e. the resolution of a GREEN result stated in the units it is reported in.
+         */
+        BacktestPower: {
+            /** Accept High */
+            accept_high: number;
+            /** Accept Low */
+            accept_low: number;
+            /** Alpha */
+            alpha: number;
+            /** Christoffersen Power */
+            christoffersen_power: number;
+            /** Christoffersen Realized Size */
+            christoffersen_realized_size: number;
+            /** Implied Rate High */
+            implied_rate_high: number;
+            /** Implied Rate Low */
+            implied_rate_low: number;
+            /** Mean Obs After Exception */
+            mean_obs_after_exception: number;
+            /**
+             * Model
+             * @enum {string}
+             */
+            model: "HS" | "FHS";
+            /** N Obs */
+            n_obs: number;
+            /** N Obs For 80Pct Power */
+            n_obs_for_80pct_power: number;
+            /** P */
+            p: number;
+            /** P11 Alternative */
+            p11_alternative: number;
+            /** P Alternative */
+            p_alternative: number;
+            /** Power */
+            power: number;
+            /** Realized Size */
+            realized_size: number;
+            /** Scope */
+            scope: string;
+            /** Var Understatement Equiv */
+            var_understatement_equiv: number;
+            /** Window */
+            window: number;
+            /** Years For 80Pct Power */
+            years_for_80pct_power: number;
         };
         /** BacktestSummary */
         BacktestSummary: {
@@ -550,6 +651,17 @@ export interface components {
             var_hs_10d?: number | null;
             /** Var Hs 1D */
             var_hs_1d?: number | null;
+        };
+        /** DiversificationUncertainty */
+        DiversificationUncertainty: {
+            /** Estimate */
+            estimate: number;
+            /** High */
+            high: number;
+            /** Low */
+            low: number;
+            /** Se */
+            se: number;
         };
         /** FactorTick */
         FactorTick: {
@@ -840,6 +952,41 @@ export interface components {
             /** Status */
             status: string;
         };
+        /**
+         * RiskUncertainty
+         * @description Sampling uncertainty on the headline numbers. The exact order-statistic
+         *     interval is the citable one; the bootstrap figures are spreads, not
+         *     intervals, because the percentile bootstrap under-covers a tail quantile.
+         */
+        RiskUncertainty: {
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Block Days */
+            block_days: number;
+            /** Confidence */
+            confidence: number;
+            /** Desks */
+            desks: components["schemas"]["ScopeUncertainty"][];
+            diversification: components["schemas"]["DiversificationUncertainty"];
+            /** Horizon Days */
+            horizon_days: number;
+            /**
+             * Method
+             * @constant
+             */
+            method: "HS";
+            /** N Boot */
+            n_boot: number;
+            /** N Scenarios */
+            n_scenarios: number;
+            /** Run Id */
+            run_id: number;
+            /** Seed */
+            seed: number;
+        };
         /** ScenarioCatalog */
         ScenarioCatalog: {
             /** Scenarios */
@@ -914,6 +1061,33 @@ export interface components {
             window_end: string | null;
             /** Window Start */
             window_start: string | null;
+        };
+        /** ScopeUncertainty */
+        ScopeUncertainty: {
+            /** Ci High */
+            ci_high: number;
+            /** Ci Low */
+            ci_low: number;
+            /** Coverage */
+            coverage: number;
+            /** Desk Code */
+            desk_code: string;
+            /** Es 975 1D */
+            es_975_1d: number;
+            /** Es Se Bootstrap */
+            es_se_bootstrap: number;
+            /** Is Aggregate */
+            is_aggregate: boolean;
+            /** Rank High */
+            rank_high: number;
+            /** Rank Low */
+            rank_low: number;
+            /** Se Asymptotic */
+            se_asymptotic: number;
+            /** Se Bootstrap */
+            se_bootstrap: number;
+            /** Var Hs 1D */
+            var_hs_1d: number;
         };
         /** TrafficLight */
         TrafficLight: {
@@ -1072,6 +1246,43 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlaSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    backtest_power_api_v1_backtest_power_get: {
+        parameters: {
+            query?: {
+                /** @description 'FIRM', a desk code, or 'desk:CODE' */
+                scope?: string;
+                model?: "HS" | "FHS";
+                /** @description Trailing P&L days */
+                window?: number;
+                /** @description Pin to a run date (default: latest completed batch) */
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BacktestPower"];
                 };
             };
             /** @description Validation Error */
@@ -1415,6 +1626,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RiskSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    risk_uncertainty_api_v1_risk_uncertainty_get: {
+        parameters: {
+            query?: {
+                /** @description Pin to a run date (default: latest completed batch) */
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskUncertainty"];
                 };
             };
             /** @description Validation Error */

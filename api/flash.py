@@ -15,7 +15,7 @@ import threading
 import pandas as pd
 from sqlalchemy.engine import Connection
 
-from api.sandbox import _scenario_set
+from api.sandbox import run_market
 from risk import db, flash
 from risk_engine.engine import aggregate, revalue
 from risk_engine.factors import to_returns
@@ -58,7 +58,7 @@ def compute_flash(conn: Connection, run_id: int, run_date: dt.date, *,
         if cached is not None:
             return {**cached, "cached": True}
 
-    market = _scenario_set(conn, run_id, run_date)
+    market = run_market(conn, run_id, run_date)
     book = db.read_book(conn)
     closes = {code: float(market.levels[code]) for code in market.levels.index}
 

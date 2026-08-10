@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import datetime as dt
 import math
+from functools import lru_cache
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
+from scipy.stats import norm
 
 from risk_engine.backtest import (
     LikelihoodRatioTest,
@@ -23,6 +25,16 @@ from risk_engine.backtest import (
 from risk_engine.config import DEFAULT_CONFIG as CFG
 from risk_engine.curve import NODE_TENORS
 from risk_engine.pla import pla_test
+from risk_engine.power import (
+    ALPHA,
+    CLUSTER_ALTERNATIVE_P11,
+    DEFAULT_ALTERNATIVE_RATE,
+    christoffersen_power,
+    conditioning_observations,
+    kupiec_acceptance_band,
+    kupiec_power,
+    min_obs_for_power,
+)
 
 # Basel traffic-light zone boundaries are calibrated to a 250-day window;
 # other realized window lengths are reported but flagged non-regulatory.
@@ -505,6 +517,127 @@ def build_backtest_summary(scope: str, model: str, series: list[dict],
         exceptions=[BacktestException(date=r["pnl_date"], var_value=r["var_value"],
                                       pnl_value=r["pnl_value"])
                     for r in series if r["var_value"] is not None])
+
+
+# ---------------------------------------------------------------- uncertainty
+
+class ScopeUncertainty(BaseModel):
+    desk_code: str
+    is_aggregate: bool
+    var_hs_1d: float                # recomputed through the batch's own path
+    ci_low: float                   # exact distribution-free interval, loss dollars
+    ci_high: float
+    rank_low: int                   # 1-based order statistics of the loss series:
+    rank_high: int                  # "between the rank_low-th and rank_high-th worst"
+    coverage: float                 # achieved level (discrete, so != requested)
+    se_asymptotic: float            # sqrt(p(1-p)/n) / f(q_p), kernel density
+    se_bootstrap: float             # moving-block bootstrap, seeded
+    es_975_1d: float
+    es_se_bootstrap: float
+
+
+class DiversificationUncertainty(BaseModel):
+    estimate: float
+    low: float
+    high: float
+    se: float
+
+
+class RiskUncertainty(BaseModel):
+    """Sampling uncertainty on the headline numbers. The exact order-statistic
+    interval is the citable one; the bootstrap figures are spreads, not
+    intervals, because the percentile bootstrap under-covers a tail quantile."""
+
+    as_of: dt.date
+    run_id: int
+    method: Literal["HS"]
+    horizon_days: int
+    confidence: float
+    n_scenarios: int
+    n_boot: int
+    block_days: int
+    seed: int
+    diversification: DiversificationUncertainty
+    desks: list[ScopeUncertainty]
+
+
+def build_risk_uncertainty(run: dict, computed: dict) -> RiskUncertainty:
+    return RiskUncertainty(
+        as_of=run["run_date"], run_id=run["run_id"], method="HS",
+        horizon_days=CFG.base_horizon_days,
+        confidence=computed["confidence"], n_scenarios=computed["n_scenarios"],
+        n_boot=computed["n_boot"], block_days=computed["block_days"],
+        seed=computed["seed"],
+        diversification=DiversificationUncertainty(**computed["diversification"]),
+        desks=[ScopeUncertainty(**d) for d in computed["desks"]])
+
+
+# ---------------------------------------------------------------- backtest power
+
+class BacktestPower(BaseModel):
+    """What the backtest at this window can and cannot detect - properties of
+    the tests themselves, computed from the realized window length. accept_low..
+    accept_high is Kupiec's acceptance band: the exception counts that survive,
+    i.e. the resolution of a GREEN result stated in the units it is reported in."""
+
+    scope: str
+    model: Literal["HS", "FHS"]
+    window: int                     # requested
+    n_obs: int                      # realized - everything below is computed at this
+    p: float
+    alpha: float
+    accept_low: int
+    accept_high: int
+    implied_rate_low: float
+    implied_rate_high: float
+    realized_size: float            # rejection rate under the null (not alpha: discrete)
+    p_alternative: float            # exception rate 20% above nominal...
+    var_understatement_equiv: float  # ...which under normality is only this dollar error
+    power: float
+    n_obs_for_80pct_power: int
+    years_for_80pct_power: float
+    christoffersen_realized_size: float
+    christoffersen_power: float
+    p11_alternative: float
+    mean_obs_after_exception: float  # what the independence test conditions on
+
+
+TRADING_DAYS_PER_YEAR = 252
+
+
+@lru_cache(maxsize=64)
+def _power_facts(n_obs: int, p: float, n_sim: int, seed: int) -> dict:
+    """Cached because the Christoffersen legs are simulated and the
+    smallest-window search scans. Everything the result depends on is IN the
+    key - a config the function read at call time but did not key on would
+    serve stale numbers to whoever changed it. Callers copy before unpacking;
+    the cached dict itself must never escape."""
+    low, high = kupiec_acceptance_band(n_obs, p)
+    n80 = min_obs_for_power(p, DEFAULT_ALTERNATIVE_RATE, 0.80)
+    return {
+        "accept_low": low, "accept_high": high,
+        "implied_rate_low": low / n_obs, "implied_rate_high": high / n_obs,
+        "realized_size": kupiec_power(n_obs, p, p),
+        "p_alternative": DEFAULT_ALTERNATIVE_RATE,
+        "var_understatement_equiv":
+            1.0 - float(norm.ppf(1.0 - DEFAULT_ALTERNATIVE_RATE) / norm.ppf(1.0 - p)),
+        "power": kupiec_power(n_obs, p, DEFAULT_ALTERNATIVE_RATE),
+        "n_obs_for_80pct_power": int(n80) if n80 else 0,
+        "years_for_80pct_power": (n80 or 0) / TRADING_DAYS_PER_YEAR,
+        "christoffersen_realized_size": christoffersen_power(n_obs, p, p, n_sim, seed),
+        "christoffersen_power":
+            christoffersen_power(n_obs, p, CLUSTER_ALTERNATIVE_P11, n_sim, seed),
+        "p11_alternative": CLUSTER_ALTERNATIVE_P11,
+        "mean_obs_after_exception":
+            conditioning_observations(n_obs, p, n_sim, seed)["mean_following"],
+    }
+
+
+def build_backtest_power(scope: str, model: str, window: int, n_obs: int) -> BacktestPower:
+    p = round(1.0 - CFG.alpha_var, 10)
+    facts = dict(_power_facts(n_obs, p, CFG.power_n_sim, CFG.seed))
+    return BacktestPower(scope=scope, model=model, window=window, n_obs=n_obs,
+                         p=p, alpha=ALPHA, **facts)
 
 
 # ---------------------------------------------------------------- pla

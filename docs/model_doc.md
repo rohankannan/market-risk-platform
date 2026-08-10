@@ -161,6 +161,24 @@ minimum 250 is a variance-versus-staleness trade: at 250 the same quantile
 sits between the 3rd and 4th worst losses — an estimator that jumps when a
 single scenario ages out of the window.
 
+**And the number carries an interval, not just a point.** The count of
+observations at or below the true 99% quantile is Binomial(n, 0.01), so a pair
+of order statistics brackets it with exactly computable, distribution-free
+coverage: at n=500 the 95% interval is the **1st to the 10th worst loss** —
+firm VaR $1,137,118 with an interval of $1,067,437 to $1,402,543, or 53% to
+70% of the $2M limit (served at `/api/v1/risk/uncertainty`, shown under the
+firm tiles, CI-pinned to the cent). The precision the number is printed with
+is not the precision it is known to. This is also the sharper argument for the
+500-day window: at n=250 the widest possible pair of order statistics reaches
+only ~91.9% coverage, so a 95% interval for the 99% quantile *does not exist*
+at Basel's minimum window — it becomes attainable at n=299 (unit-tested). A
+seeded moving-block bootstrap rides along for ES and the diversification
+benefit, reported as spreads rather than intervals because the percentile
+bootstrap under-covers a tail quantile — its endpoints are themselves observed
+order statistics and cannot reach past the sample extremes (measured 89%
+realized against 95% nominal at n=500 during the build; the property is
+unit-tested with a realized-coverage bound at n=250).
+
 The known weakness of equal weights is regime lag, and it is quantified rather
 than asserted: over the 750-day out-of-sample backfill, the HS VaR line lags
 the April-2025 vol spike on the way in — every desk takes exceptions in the
@@ -497,6 +515,30 @@ than the Type-I error rate.
 | HS | 6 | 7.5 | 0.57 | 0.81 | GREEN |
 | FHS | 10 | 7.5 | 0.38 | 0.60 | GREEN |
 
+**What "pass" resolves to, measured on the tests as implemented** (the numbers
+below are computed at the 750-day backfill window this section reports;
+`/api/v1/backtest/power` serves the same facts at whatever window the stored
+history realizes — 327 days on the demo database — and the dashboard shows
+them under the stat cards): at 750 days Kupiec's
+acceptance band is **3 to 13 exceptions** against 7.5 expected — a realized
+exception rate anywhere from 0.40% to 1.73% survives — its realized size is
+4.1% (and 9.5% at n=250, nearly double the nominal 5%: the region is a set of
+integer counts, so its mass lands where it lands), and its power against an
+exception rate 20% above target is **7.9%**, on the order of the size itself.
+Units matter here: that alternative is a *rate* error, and under normality it
+corresponds to a VaR understated by only ~3% in dollars — a genuine 20% dollar
+understatement produces a 3.1% rate, which the test catches with power near
+one. So the backtest sees gross miscalibration and is nearly blind to
+ordinary-sized error; resolving 1.2% from 1.0% at 80% power needs ~20,800
+daily observations, about 83 years. That asymmetry — not hypothesis-testing
+etiquette — is why Basel penalizes on the raw exception count from five
+exceptions even though Kupiec cannot reject there. The Christoffersen
+independence test at a 1% rate is badly under-sized (realized ~1.5% at n=250
+against nominal 5% under the shipped simulation config), and the mechanism is measured: everything it knows about
+P(exception | exception) comes from the ~2.5 days that follow an exception.
+Against genuine clustering at p11 = 0.25 it still rejects ~69% of the time at
+750 days, which is the failure mode it exists for.
+
 Both models pass everything — the difference is *where* the risk shows. Going
 into the April-2025 vol spike the lagging HS window under-covers at desk
 level: every desk takes exceptions in the first days of April, and only the
@@ -646,6 +688,19 @@ summarizes it.*
     project has no source for; it is disclosed rather than repaired, and the
     honest reading of §4.2 is that it tests the model on a fixed book rather
     than the book that was held.
+
+14. **Every number here is an estimate from ~500 scenarios, and its sampling
+    error bounds every other entry.** The firm VaR's exact 95% interval spans
+    the 1st to 10th worst loss — $1,067,437 to $1,402,543, a 29% wide band on a
+    number printed to the cent — and some RNIV impacts are *smaller than the
+    sampling error of the base they adjust*: R2's ~1pp of hidden
+    diversification sits inside the benefit's own measured ±4.6pp bootstrap
+    spread. The register keeps such entries because they are directional and
+    mechanistic, not because each is individually resolvable.
+    §3.1 carries the interval construction, §4.2 the power analysis, and the
+    limitation this entry cannot remove is the one it names: with 500 scenarios
+    the tail is known to tens of percent, and no amount of methodology changes
+    that without more data.
 
 ### 5.1 Quantified impacts (risks-not-in-VaR inventory)
 

@@ -21,7 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
-from api import flash, queries, sandbox, schemas
+from api import flash, queries, sandbox, schemas, uncertainty
 from api.deps import get_conn, get_settings
 from risk.db import build_version, make_engine
 
@@ -213,6 +213,42 @@ def risk_exposures(response: Response, as_of: dt.date | None = AsOf,
     run = _run_or_404(conn, as_of)
     _cache(response, pinned=as_of is not None)
     return schemas.build_key_rate_exposures(run, queries.exposure_rows(conn, run["run_id"]))
+
+
+@app.get("/api/v1/risk/uncertainty", response_model=schemas.RiskUncertainty)
+def risk_uncertainty(response: Response, as_of: dt.date | None = AsOf,
+                     conn: Connection = Depends(get_conn)) -> schemas.RiskUncertainty:
+    """Sampling uncertainty on the run's headline numbers, computed at read time
+    from the run's own scenario set: the exact order-statistic interval on each
+    VaR (a property of (n, p, level), so persisting it per run would store the
+    same fact daily), plus seeded bootstrap spreads for ES and the
+    diversification benefit. Deterministic per run, so pinned dates cache as
+    immutable like every other read."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    return schemas.build_risk_uncertainty(
+        run, uncertainty.compute_uncertainty(conn, run["run_id"], run["run_date"]))
+
+
+@app.get("/api/v1/backtest/power", response_model=schemas.BacktestPower)
+def backtest_power(response: Response, scope: str = Scope,
+                   model: Literal["HS", "FHS"] = Query("HS"),
+                   window: int = Query(250, ge=2, le=1000, description="Trailing P&L days"),
+                   as_of: dt.date | None = AsOf,
+                   conn: Connection = Depends(get_conn)) -> schemas.BacktestPower:
+    """What the backtest at the realized window can detect: Kupiec's acceptance
+    band and exact power (its statistic depends only on the exception count, so
+    no simulation), and the Christoffersen size/power legs simulated under the
+    config seed. Same scope/model/window contract as /backtest/summary, so the
+    two describe the same test."""
+    run = _run_or_404(conn, as_of)
+    _cache(response, pinned=as_of is not None)
+    code = _scope_or_404(conn, scope)
+    series = queries.backtest_series(conn, code, f"VAR_{model}", run["run_date"], window)
+    if len(series) < 2:
+        raise HTTPException(status_code=404,
+                            detail=f"insufficient P&L history for {code} (need >= 2 days)")
+    return schemas.build_backtest_power(code, model, window, len(series))
 
 
 @app.get("/api/v1/backtest/summary", response_model=schemas.BacktestSummary)

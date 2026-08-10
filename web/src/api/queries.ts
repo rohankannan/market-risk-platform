@@ -9,6 +9,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { getJson, type Params } from "./client";
 import type {
+  BacktestPower,
   BacktestSummary,
   DeskDecomposition,
   DeskPositions,
@@ -21,6 +22,7 @@ import type {
   RiskHistory,
   RiskMovers,
   RiskSummary,
+  RiskUncertainty,
   ScenarioCatalog,
   ScenarioResults,
   ScenarioShockVector,
@@ -99,6 +101,9 @@ export const useDeskPositions = (desk: string) =>
   useApi<DeskPositions>(`/api/v1/desks/${desk}/positions`);
 export const useBacktestSummary = (scope: string, model: string, window: number) =>
   useApi<BacktestSummary>("/api/v1/backtest/summary", { scope, model, window });
+// what the test at that window can detect - same params, so the two describe one test
+export const useBacktestPower = (scope: string, model: string, window: number) =>
+  useApi<BacktestPower>("/api/v1/backtest/power", { scope, model, window });
 export const usePla = (scope: string, window: number) =>
   useApi<PlaSummary>("/api/v1/backtest/pla", { scope, window });
 export const useScenarioCatalog = () => useApi<ScenarioCatalog>("/api/v1/scenarios");
@@ -107,3 +112,5 @@ export const useScenarioShocks = (code: string | null) =>
   useApi<ScenarioShockVector>(`/api/v1/scenarios/${code}/shocks`, undefined, code != null);
 export const useScenarioResults = () => useApi<ScenarioResults>("/api/v1/scenarios/results");
 export const useModelDoc = () => useApi<ModelDoc>("/api/v1/modeldoc");
+// sampling uncertainty on the run's headline numbers (exact interval + bootstrap spreads)
+export const useRiskUncertainty = () => useApi<RiskUncertainty>("/api/v1/risk/uncertainty");

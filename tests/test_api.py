@@ -638,3 +638,117 @@ def test_desk_positions_endpoint(client, monkeypatch):
     body = client.get("/api/v1/desks/EQUITY/positions").json()
     assert [p["ticker"] for p in body["positions"]] == ["SPY", "NVDA", "SPY_PUT_95"]
     assert body["positions"][2]["option_type"] == "PUT"
+
+
+# ---------------------------------------------------------------- uncertainty
+
+def _synthetic_desk_pnl(n=500, seed=9):
+    import numpy as np
+    import pandas as pd
+
+    rng = np.random.default_rng(seed)
+    desks = pd.DataFrame({
+        "EQUITY": rng.normal(0.0, 100.0, n),
+        "FX": rng.normal(0.0, 80.0, n),
+        "RATES": rng.normal(0.0, 120.0, n),
+    })
+    desks["FIRM"] = desks.sum(axis=1)
+    return desks
+
+
+def test_uncertainty_report_known_answers():
+    """Pure computation: FIRM leads, the shipped configuration's ranks are 1-10
+    with the closed-form coverage, the estimate matches the engine's own VaR
+    convention, and the diversification interval brackets its estimate."""
+    from api.uncertainty import uncertainty_report
+    from risk_engine.var import var_es_from_pnl
+
+    desk_pnl = _synthetic_desk_pnl()
+    report = uncertainty_report(desk_pnl)
+
+    assert [d["desk_code"] for d in report["desks"]] == ["FIRM", "EQUITY", "FX", "RATES"]
+    firm = report["desks"][0]
+    assert firm["is_aggregate"] and (firm["rank_low"], firm["rank_high"]) == (1, 10)
+    assert firm["coverage"] == pytest.approx(0.9623, abs=5e-5)
+    assert firm["var_hs_1d"] == pytest.approx(var_es_from_pnl(desk_pnl["FIRM"]).var, rel=1e-12)
+    assert firm["ci_low"] < firm["var_hs_1d"] < firm["ci_high"]
+    assert firm["se_asymptotic"] > 0 and firm["se_bootstrap"] > 0
+
+    div = report["diversification"]
+    assert div["low"] < div["estimate"] < div["high"]
+    assert 0.0 < div["estimate"] < 1.0
+    assert report["n_scenarios"] == 500 and report["seed"] == 42
+
+
+def test_uncertainty_report_is_deterministic():
+    from api.uncertainty import uncertainty_report
+
+    desk_pnl = _synthetic_desk_pnl()
+    a, b = uncertainty_report(desk_pnl), uncertainty_report(desk_pnl)
+    assert a == b                       # seeded bootstrap: same bytes every read
+
+
+def test_uncertainty_endpoint(client, monkeypatch):
+    from api import uncertainty
+
+    computed = {"n_scenarios": 500, "confidence": 0.95, "n_boot": 2000,
+                "block_days": 10, "seed": 42,
+                "diversification": {"estimate": 0.4, "low": 0.32, "high": 0.5, "se": 0.046},
+                "desks": [{"desk_code": "FIRM", "is_aggregate": True,
+                           "var_hs_1d": 100.0, "ci_low": 94.0, "ci_high": 123.0,
+                           "rank_low": 1, "rank_high": 10, "coverage": 0.9623,
+                           "se_asymptotic": 6.4, "se_bootstrap": 7.6,
+                           "es_975_1d": 101.0, "es_se_bootstrap": 6.8}]}
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(uncertainty, "compute_uncertainty",
+                        lambda conn, run_id, run_date: computed)
+
+    r = client.get("/api/v1/risk/uncertainty")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["method"] == "HS" and body["desks"][0]["rank_high"] == 10
+    assert r.headers["cache-control"] == "no-cache"
+
+    pinned = client.get(f"/api/v1/risk/uncertainty?as_of={AS_OF.isoformat()}")
+    assert "immutable" in pinned.headers["cache-control"]
+
+
+# ---------------------------------------------------------------- backtest power
+
+def test_backtest_power_builder_known_answers():
+    """The exact Kupiec facts at the Basel window: band 1-6, realized size 9.5%
+    (nearly double nominal), power 8.1% against the 1.2% rate - and the pinned
+    rate-to-dollar translation, ~3% under normality."""
+    s = schemas.build_backtest_power("FIRM", "HS", 250, 250)
+    assert (s.accept_low, s.accept_high) == (1, 6)
+    assert s.realized_size == pytest.approx(0.0948, abs=5e-4)
+    assert s.power == pytest.approx(0.0815, abs=5e-4)
+    assert s.p_alternative == 0.012
+    assert s.var_understatement_equiv == pytest.approx(0.0298, abs=5e-4)
+    assert s.n_obs_for_80pct_power == 20814
+    assert s.years_for_80pct_power == pytest.approx(82.6, abs=0.1)
+    # simulated legs: seeded, so stable; asserted as behavior not as pins
+    assert s.christoffersen_realized_size < 0.04            # nominal is 0.05
+    assert s.christoffersen_power > 5 * s.christoffersen_realized_size
+    assert s.mean_obs_after_exception == pytest.approx(2.5, abs=0.4)
+
+
+def test_backtest_power_uses_realized_window_not_requested():
+    s = schemas.build_backtest_power("FIRM", "HS", 750, 327)
+    assert s.window == 750 and s.n_obs == 327
+    assert (s.accept_low, s.accept_high) == (1, 7)          # the band at n=327
+
+
+def test_backtest_power_endpoint(client, monkeypatch):
+    monkeypatch.setattr(queries, "resolve_run", _fake_resolve())
+    monkeypatch.setattr(queries, "desk_exists", lambda conn, code: True)
+    monkeypatch.setattr(queries, "backtest_series",
+                        lambda conn, code, measure, end, window: _series(300, (10,)))
+
+    body = client.get("/api/v1/backtest/power?scope=FIRM&model=HS&window=750").json()
+    assert body["n_obs"] == 300 and body["window"] == 750
+    assert body["accept_low"] >= 1 and body["accept_high"] > body["accept_low"]
+
+    monkeypatch.setattr(queries, "backtest_series",
+                        lambda conn, code, measure, end, window: [])
+    assert client.get("/api/v1/backtest/power").status_code == 404

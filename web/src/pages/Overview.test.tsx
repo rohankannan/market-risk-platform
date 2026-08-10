@@ -13,6 +13,7 @@ import backtestHS from "../mocks/fixtures/backtest_summary__model_HS__scope_FIRM
 import movers from "../mocks/fixtures/risk_movers.json";
 import results from "../mocks/fixtures/scenarios_results.json";
 import summary from "../mocks/fixtures/risk_summary.json";
+import uncertainty from "../mocks/fixtures/risk_uncertainty.json";
 
 const firm = summary.desks.find((d) => d.is_aggregate)!;
 
@@ -124,4 +125,23 @@ test("an empty movers day renders a quiet row", async () => {
   );
   render(<App />);
   expect(await screen.findByText("NO DAY-OVER-DAY MOVERS")).toBeInTheDocument();
+});
+
+test("the sampling strip quotes the recorded interval", async () => {
+  // absence is the component's null branch (a snapshot recorded before the
+  // endpoint existed): the client falls back to the snapshot only on network
+  // failure - HTTP errors stay loud by design - so the strip's presence here
+  // rides the recorded fixture like every other assertion in this file
+  render(<App />);
+  const strip = await screen.findByLabelText("Firm VaR sampling uncertainty");
+  const firmU = uncertainty.desks.find((d) => d.is_aggregate)!;
+  expect(strip.textContent).toContain(fmtMoney(firmU.ci_low));
+  expect(strip.textContent).toContain(fmtMoney(firmU.ci_high));
+  expect(strip.textContent).toContain(
+    `RANKS ${firmU.rank_low}–${firmU.rank_high} OF ${uncertainty.n_scenarios}`,
+  );
+  // the tooltip carries the exact-interval story: ranks and achieved coverage
+  expect(strip.getAttribute("title")).toContain(
+    `coverage ${(firmU.coverage * 100).toFixed(1)}%`,
+  );
 });

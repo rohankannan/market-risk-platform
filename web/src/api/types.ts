@@ -34,3 +34,6 @@ export type WhatIfResult = components["schemas"]["WhatIfResult"];
 export type WhatIfDesk = components["schemas"]["WhatIfDesk"];
 export type WhatIfShock = components["schemas"]["WhatIfShock"];
 export type ScenarioShockVector = components["schemas"]["ScenarioShockVector"];
+export type RiskUncertainty = components["schemas"]["RiskUncertainty"];
+export type ScopeUncertainty = components["schemas"]["ScopeUncertainty"];
+export type BacktestPower = components["schemas"]["BacktestPower"];

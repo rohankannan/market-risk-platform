@@ -5,6 +5,7 @@ import App from "../App";
 import { API_URL } from "../api/client";
 import { server } from "../mocks/server";
 import backtestHS from "../mocks/fixtures/backtest_summary__model_HS__scope_FIRM__window_250.json";
+import powerHS from "../mocks/fixtures/backtest_power__model_HS__scope_FIRM__window_250.json";
 
 function renderAt(path: string) {
   window.history.pushState({}, "", path);
@@ -71,4 +72,19 @@ test("a non-green PLA zone flips the verdict - no pass language beside a RED bad
   renderAt("/backtesting");
   expect(await screen.findByText(/RTPL diverges from HPL/)).toBeInTheDocument();
   expect(screen.queryByText(/RTPL tracks HPL/)).toBeNull();
+});
+
+test("the resolution strip states what the displayed test can detect", async () => {
+  renderAt("/backtesting");
+  const strip = await screen.findByLabelText("Backtest resolution");
+  expect(strip.textContent).toContain(
+    `ACCEPTS ${powerHS.accept_low}–${powerHS.accept_high} EXC`,
+  );
+  expect(strip.textContent).toContain(
+    `REALIZED SIZE ${(powerHS.realized_size * 100).toFixed(1)}%`,
+  );
+  expect(strip.textContent).toContain(`(${powerHS.n_obs}D)`);
+  expect(strip.textContent).toContain(
+    `80% POWER ≈ ${Math.round(powerHS.years_for_80pct_power)}Y`,
+  );
 });
