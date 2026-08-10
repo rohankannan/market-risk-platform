@@ -3,9 +3,9 @@
     "latest_as_of": "2026-08-06",
     "batch_status": "SUCCESS",
     "batch_type": "EOD",
-    "batch_completed_at": "2026-08-09T16:07:43.791317-04:00",
-    "code_version": "2cf164b",
-    "build_version": "2cf164b",
+    "batch_completed_at": "2026-08-09T20:25:05.142328-04:00",
+    "code_version": "bc6666b",
+    "build_version": "bc6666b",
     "available_dates": [
       "2025-05-01",
       "2025-05-02",
@@ -361,7 +361,7 @@
   },
   "/api/v1/risk/summary": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "run_type": "EOD",
     "status": "SUCCESS",
     "diversification_benefit": 0.4039,
@@ -1251,7 +1251,7 @@
   },
   "/api/v1/risk/movers": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "prev_date": "2026-08-04",
     "rows": [
       {
@@ -1288,7 +1288,7 @@
   },
   "/api/v1/risk/exposures": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "unit": "USD per 1bp",
     "rows": [
       {
@@ -1367,7 +1367,7 @@
   },
   "/api/v1/factors/latest": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "ticks": [
       {
         "factor_code": "EQ.AAPL",
@@ -1733,7 +1733,7 @@
   },
   "/api/v1/scenarios/results": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "results": [
       {
         "scenario_code": "RATES_2022",
@@ -1851,9 +1851,9 @@
   },
   "/api/v1/flash": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "indicative": true,
-    "quoted_at": "2026-08-09T20:07:55.717299Z",
+    "quoted_at": "2026-08-10T00:25:27.286337Z",
     "live_factors": 16,
     "total_factors": 17,
     "rejected_factors": [],
@@ -1862,7 +1862,7 @@
       {
         "desk_code": "FIRM",
         "is_aggregate": true,
-        "flash_pnl": -61655.52
+        "flash_pnl": -59585.08
       },
       {
         "desk_code": "EQUITY",
@@ -1872,7 +1872,7 @@
       {
         "desk_code": "FX",
         "is_aggregate": false,
-        "flash_pnl": 64503.46
+        "flash_pnl": 66573.9
       },
       {
         "desk_code": "RATES",
@@ -1939,33 +1939,33 @@
       },
       {
         "factor_code": "FX.EURUSD",
-        "level": 1.156203,
+        "level": 1.155802,
         "close": 1.1519,
-        "move": 0.003729,
+        "move": 0.003382,
         "carried": false,
         "note": null
       },
       {
         "factor_code": "FX.GBPUSD",
-        "level": 1.349418,
+        "level": 1.348981,
         "close": 1.347,
-        "move": 0.001794,
+        "move": 0.00147,
         "carried": false,
         "note": null
       },
       {
         "factor_code": "FX.JPYUSD",
-        "level": 0.006338,
+        "level": 0.006333,
         "close": 0.006283,
-        "move": 0.008682,
+        "move": 0.007909,
         "carried": false,
         "note": null
       },
       {
         "factor_code": "FX.MXNUSD",
-        "level": 0.05836,
+        "level": 0.058335,
         "close": 0.057725,
-        "move": 0.010941,
+        "move": 0.010515,
         "carried": false,
         "note": null
       },
@@ -2020,7 +2020,7 @@
     ]
   },
   "/api/v1/modeldoc": {
-    "markdown": "# RiskDesk \u2014 Model Documentation\n\n*Structured along the April 2026 interagency Supervisory Guidance on Model Risk\nManagement \u2014 Fed SR 26-2, OCC Bulletin 2026-13, FDIC FIL-15-2026, all issued\n17 April 2026, superseding SR 11-7 \u2014 so: model development and use, validation\nand monitoring, governance and controls, and a standing limitations inventory.\nThat guidance is explicit that it \"does not set forth enforceable standards or\nprescriptive requirements.\" For a trading book the text that binds is the market\nrisk capital rule at 12 CFR 217 subpart F, which requires a validation process\nindependent of model development covering conceptual soundness, ongoing\nmonitoring, and outcomes analysis including backtesting. \u00a74 is organized on\nthose three. Where the two differ this document follows the rule and says so.\nEvery methodology section ends with \"questions an interviewer would ask\" \u2014 this\ndocument doubles as the walkthrough script for anyone probing the model. The\nfigures quoted below are reproducible from the committed market snapshot:\n`docker compose up` rebuilds the database and reprints the headline risk\nnumbers (CI asserts the firm VaR to the cent on every push); the 750-day\nbacktest table regenerates with `python -m risk.jobs.backfill`.*\n\n## 1. Model purpose and scope\n\nRiskDesk measures the daily market risk of a mock three-desk trading book \u2014\ncash equities, FX spot, and US Treasuries \u2014 the way a bank's risk function runs\nits nightly cycle. Per desk and firm-wide, the nightly batch produces:\n\n- **1-day 99% VaR** under two methods: equal-weight historical simulation (HS)\n  and EWMA-filtered historical simulation (FHS), plus 10-day figures by\n  sqrt-of-time scaling;\n- **97.5% Expected Shortfall**, and a **stressed ES** calibrated on a fixed\n  2008\u201309 window (FRTB-style; see the scope note below);\n- **scenario P&L** for three historical replays (GFC 2008, COVID 2020, the 2022\n  rate selloff) and four hypothetical shocks whose magnitudes are measured\n  against the book's own history (\u00a73.4);\n- **backtest inputs** against clean P&L \u2014 daily hypothetical AND\n  risk-theoretical P&L plus exceptions versus the prior run's VaR \u2014 from which\n  the API computes Kupiec, Christoffersen, the Basel traffic light, and the\n  P&L-attribution test (Spearman + KS with MAR32-style zones) on demand.\n\nThe book is sized so the standalone-VaR mix across desks is roughly\nrates 45 / equity 30 / fx 25 \u2014 the risk-class mix large dealers disclose in\ntheir FY2025 trading-VaR tables (measured on the snapshot: 46/28/26). The\nequity desk carries a 1-month SPY collar (long 95% put, short 103% call, 78\ncontracts against the ~7,800-share holding) \u2014 the options sleeve that gives\nthe book gamma and vega and makes the attribution test real. On the\n2026-08-06 snapshot the firm 1-day VaR99 is ~$1.14M, 57% of its $2M limit,\nwith a ~40% diversification benefit, net rates DV01 of ~$83k/bp, and net\nvega of about -$2.7k per vol point.\n\n**Out of scope, deliberately:** trade pricing, official intraday risk\nmeasurement, counterparty and credit risk, and regulatory capital. The\nend-of-day batch is the record. A flash tier does re-mark the book against\ndelayed quotes between closes, and \u00a73.6 states what it is and is not: indicative\nonly, never written to the official tables, and refused outright when a quote\nimplies an implausible move. The stressed-ES piece follows FRTB's\n*idea* (ES 97.5, stressed-period calibration) and the attribution test follows\nthe PLA *metrics*; neither is an FRTB implementation \u2014 no liquidity-horizon\ncascade, no NMRF, no IMA capital arithmetic (\u00a75).\n\n## 2. Model inputs and data\n\n### 2.1 Risk factors and sources\n\nSeventeen factors drive the book: seven equity adjusted closes\n(yfinance, Stooq fallback), four USD FX rates (FRED H.10, normalized at ingest\nto USD per unit of foreign currency; the weekly publication lag is absorbed by\na 7-day forward-fill cap), five constant-\nmaturity Treasury par yields in percent (FRED: 3M, 2Y, 5Y, 10Y, 30Y), and\nVIX, which prices the options sleeve as its (flat) implied vol. History runs from\n2007 \u2014 deep enough to contain every stress window used in \u00a73.4.\n\nA frozen snapshot of all 17 series (~84k observations) is committed to the\nrepository. Tests, CI, and the demo never make a network call: every number in\nthis document is reproducible bit-for-bit from the snapshot. Live fetches\nhappen only in the nightly batch, with per-factor source fallbacks.\n\n### 2.2 Return conventions\n\nThe return convention is a property of the factor, stored on the\n`risk_factors` table \u2014 never an `if` statement in engine code:\n\n| Convention | Applied to | Definition | Why |\n|---|---|---|---|\n| `LOG` | equities, FX | log price relative | multiplicative, additive over time |\n| `ABS_BP` | yields | day-over-day change in basis points | log returns on yields explode as yields approach zero (2020: 3M bills under 10bp) |\n| `ABS` | vol indices | plain difference in points | vol points are already the natural unit |\n\nScenario P&L is exact under each convention: `qty * S0 * (exp(r) - 1)` for LOG\nfactors, full bond revaluation for bp shocks (\u00a73.5). Linearization exists only\nin the delta-gamma path reserved for risk-theoretical P&L.\n\n### 2.3 Alignment and forward-fill policy\n\nFactors publish on different calendars (FRED H.10 FX has a weekly publication\nlag; FRED yields miss bond-market holidays that equities trade through). Each\nfactor forward-fills up to its own cap \u2014 3 business days by default, 7 for\nH.10 FX. A filled day produces a zero return downstream: a mild, *measured*\nvol damping, recorded per factor per run rather than hidden. Gaps beyond the\ncap are never filled silently \u2014 they block (\u00a72.4).\n\nEquity levels are the **adjusted** close, so equity positions are total-return\npositions; share counts were struck from the unadjusted close on the anchor\ndate (where adjusted equals unadjusted by construction).\n\n### 2.4 Data-quality gate\n\nChecks run nightly before the risk step; findings persist to `dq_issues` with\na severity that decides the run's fate. The policy is **flag, never delete**:\nauto-scrubbing genuine crash days would destroy the very tail VaR feeds on.\n\n| Check | Trigger | Severity |\n|---|---|---|\n| `OUTLIER_RETURN` | LOG: \\|r\\| > 6\u00d7 trailing EWMA vol **and** \\|r\\| > 3%; yields: \\|\u0394y\\| > 75bp/day | WARN \u2014 investigate, keep |\n| `STALE` | a PRICE/FX factor repeats the identical value 5 sessions | WARN \u2014 dead source suspected |\n| `UNIT_BOUND` | yield outside [\u22122%, 25%]; price/vol \u2264 0; FX > 50% from its 1-year median | BLOCK \u2014 structurally impossible, unit error |\n| `GAP` / `FFILL_LIMIT` | missing beyond the factor's forward-fill cap | BLOCK / INFO within cap |\n\nAny BLOCK downgrades the run to `PARTIAL` \u2014 results write, but the run is\nvisibly impaired; there is no silent green.\n\nFills are **provisional**: ingest windows anchor at each factor's last *real*\nprint, not its last row, so a filled date stays in the request until the\nvendor publishes it, and staleness ages are measured against real prints \u2014 a\ndead source runs into its cap and blocks rather than forward-filling forever\nbehind self-resetting fills.\n\nTwo controls extend the gate beyond the inputs. A **flash check** compares\neach firm VaR measure (HS and FHS) to the prior run before the number is read\nas final: a move beyond \u00b125% writes a `FLASH_DOD` warning carrying its own\nexplanation \u2014 per-desk VaR deltas, plus the largest vol-forecast movers where\nthe vol filter is the actual driver (FHS; an HS move comes from scenario\nturnover and level changes). A large move is not an error; an *unexplained*\nlarge move is. And a **revision log** (`data_revisions`) records every\ningested value that differs from what is stored \u2014 compared at the database's\nown precision \u2014 classified: a synthetic fill replaced by the vendor's late\nprint is routine (`FFILL_REPLACED`, the H.10 publication cycle produces\nthese); a changed real print is a vendor restatement (`VENDOR_REVISION`) and\nthe reason yesterday's VaR may no longer be reproducible from today's\ndatabase. The log preserves the before-image, and\n`run --date <d> --force` is the restatement path \u2014 an EOD restatement\noutranks a backfill run for the same date in every read.\n\n*Questions an interviewer would ask:* Why absolute bp shocks for rates \u2014 what\nbreaks with log returns on 2020 yields? Why flag rather than delete an outlier\nreturn? What does a forward-filled day do to EWMA vol, and where would you see\nthat effect? Why is the FX bound relative to a median but the yield bound\nabsolute?\n\n## 3. Model development and methodology\n\n### 3.1 Historical-simulation VaR\n\nThe scenario set is the trailing **500** daily joint return vectors. The full\nbook is revalued under each vector (\u00a73.5), scenario P&Ls are aggregated per\ndesk, and\n\n    VaR_a = -Quantile_{1-a}(P&L),   linear interpolation between order statistics.\n\nAt n=500 and a=0.99 the estimator interpolates between the 5th and 6th worst\nlosses, with almost all weight on the 6th. 500 days rather than the Basel\nminimum 250 is a variance-versus-staleness trade: at 250 the same quantile\nsits between the 3rd and 4th worst losses \u2014 an estimator that jumps when a\nsingle scenario ages out of the window.\n\nThe known weakness of equal weights is regime lag, and it is quantified rather\nthan asserted: over the 750-day out-of-sample backfill, the HS VaR line lags\nthe April-2025 vol spike on the way in \u2014 every desk takes exceptions in the\nfirst days of April \u2014 and then, once the spike's scenarios enter the window,\nstays conservatively wide through the calm regime that follows (\u00a74).\n\n*Questions an interviewer would ask:* Why 500 days and not 250? Which order\nstatistics does the 99% estimate sit between at each window length? What\nhappens to HS VaR in the weeks after a vol-regime shift, and in the months\nafter the spike leaves the window (\"ghosting\")?\n\n### 3.2 Filtered historical simulation (EWMA)\n\nPer-factor conditional variance follows the RiskMetrics recursion\n\n    sigma^2_t = lambda * sigma^2_{t-1} + (1 - lambda) * r^2_{t-1},   lambda = 0.94,\n\nseeded with the population variance of the first 30 returns; the half-life is\nln 0.5 / ln 0.94 \u2248 11 days. lambda = 0.94 is a convention, not an estimate \u2014\ndefended as such, and tested against a fitted GARCH(1,1) rather than left\nimplied \u2014 see the champion/challenger run below.\n\nScenario construction devolatilizes and revolatilizes:\n\n    z_s = r_s / sigma_s          (standardized joint historical vector, per factor)\n    r~_s = z_s * sigma_{T+1}     (rescaled by the next-day vol forecast)\n\nCross-factor correlation survives because the scenarios remain *joint*\nhistorical z-vectors \u2014 only the per-factor vol scale updates. The same 500\nscenarios then price the same book through the same revaluation path as HS;\nthe only difference between the methods is the scenario matrix.\n\nFailure modes, named: standardized residuals are assumed stationary (a\ncorrelation-regime break violates this); a one-day vol overshoot inflates the\nnext day's entire scenario set (revol overshoot); forward-filled zero returns\ndamp sigma. The DQ gate bounds the third; the backfill chart shows the net\neffect of the first two is still a large improvement in regime tracking.\n\n**Champion/challenger.** The GARCH(1,1) question is answered with a parallel\nrun, not an opinion: a hand-rolled Gaussian-QMLE GARCH filter runs beside the\nEWMA champion over the trailing 250 days on the same historical windows, book,\nand clean P&L \u2014 the scenario sets differ only by each model's vol rescaling,\nwhich is the treatment under test \u2014 judged\nagainst promotion criteria pre-registered before any result is computed\n([docs/challenger_garch.md](challenger_garch.md), regenerated by\n`python -m risk.jobs.challenger`). Current verdict: **HOLD** \u2014 outcomes are\nindistinguishable (the same four exceptions, +6.4% mean VaR delta), and four\nfactors (the short-rate complex and EURUSD) fit at the stationarity boundary,\nwhere the unconditional level is meaningless \u2014 IGARCH by accident. EWMA *is*\nthe IGARCH boundary case (omega 0, alpha 1\u2212lambda, beta lambda; unit-tested\nequivalence), so the champion deliberately imposes the infinite persistence\nthose degenerate fits stumble into \u2014 a defensible convention until a\nchallenger clears the health gate.\n\n*Questions an interviewer would ask:* Derive the recursion from exponential\nweights. Why does FHS preserve cross-correlations when scaling per-factor?\nWhat breaks if sigma_s is near zero for some historical date? Derive the\nGARCH(1,1) likelihood; why does persistence at the boundary make the\nunconditional variance meaningless, and why must promotion criteria be\nregistered before results exist?\n\n### 3.3 Expected Shortfall 97.5% and stressed calibration\n\n    ES_a = -mean( P&L | P&L <= Quantile_{1-a}(P&L) )\n\n\u2014 the empirical mean of the tail at or beyond the 2.5% quantile; at n=500 that\naverages roughly the 13 worst scenario losses. ES is reported at 97.5% beside\nVaR 99% because that is Basel's calibration-neutral pair: under normality\nVaR99 = 2.326 sigma and ES97.5 = 2.338 sigma \u2014 numerically almost identical,\nbut ES is coherent (subadditive) and sees tail *shape*, not just one quantile.\nBoth reference constants are encoded as unit tests.\n\n**Stressed ES** revalues *today's* book on the daily shocks of a fixed\n2008-09-12 \u2192 2009-09-11 window and takes the same ES functional. On the\nsnapshot date it is ~2.3\u00d7 the current-window ES ($2.61M vs $1.15M firm) \u2014 the\ngap being exactly the point: current-regime ES understates what this book does\nin a crisis regime. The window is fixed in the MVP; the programmatic\nworst-window search over the full 2007+ history (FRTB's \"period of significant\nstress *for this portfolio*\") is scheduled, with an integration test asserting\nit lands in 2008\u201309 or 2020.\n\nFirm ES can be allocated to desks by Euler allocation \u2014 each desk's mean P&L\nover the firm's tail scenarios. Components sum exactly to firm ES and go\n*negative* for hedging desks, which is the feature: it answers \"which desk to\ncut\". The allocation is exercised per position in the RNIV concentration\nmeasurement (R5, [docs/rniv.md](rniv.md)) and served per desk at\n`/api/v1/desks/{desk}/decomposition`, whose waterfall reconciles the standalone\nbucket VaRs and the diversification term to the desk total.\n\n*Questions an interviewer would ask:* Prove ES is subadditive and give the\ntwo-position example where VaR is not. Why did Basel pick 97.5% ES to replace\n99% VaR? What makes a stressed window \"right\" for this portfolio, and why can\na fixed window rot? Show the Euler allocation sums to firm ES.\n\n### 3.4 Stress testing\n\nHistorical replays are **data-driven**: only the window dates are pinned\n(GFC: 2008-09-12 \u2192 2008-11-20; COVID: 2020-02-19 \u2192 2020-03-23; 2022 rate\nselloff: 2022-01-03 \u2192 2022-10-31). The shock vector is the sum of stored daily\nreturns over the window \u2014 additive for both log returns and bp changes \u2014\napplied instantaneously to today's book with full revaluation. Sanity anchors\nare pinned by tests against the committed snapshot (GFC window: SPX log return\n\u2248 \u22120.50, 2Y yield \u2248 \u2212118bp, JPY \u2248 +12% safe-haven move). Factors absent from a\nscenario are shocked by zero \u2014 the documented fill rule, until beta-fill rules\narrive with the CCAR-style scenarios. Post-shock yields floor at 1bp.\n\n**Where the hypothetical magnitudes come from.** The catalog separates two\nkinds of row, and the distinction is the answer to \"why those numbers\":\n\n- *Sensitivity ladders* (+100bp parallel, \u221220% equities with a +20pt vol bid,\n  +10% broad USD) are round on purpose \u2014 they read the book's directional\n  exposure the way a desk quotes it, and are not forecasts. Roundness is not\n  the same as arbitrary: each one's severity is measured against this book's\n  own history and cited in the catalog. On overlapping 20-business-day moves\n  (4,966 windows, 2007\u20132026) the +100bp shift sits at the 99.64th percentile\n  of 10Y moves and was reached in 18 windows; \u221220% equities at the 99.52nd\n  percentile of SPY moves, 24 windows; +10% USD at the 99.78th, 11 windows.\n  Because each ladder moves a class uniformly it understates a book that is\n  long high-beta names (NVDA's own p99 is roughly twice SPY's) and short\n  safe-haven currencies.\n- *Correlated scenarios* are calibrated, not chosen. `RISK_OFF` takes the\n  **conditional tail mean**: the average move of every factor over the 50\n  windows where 20-day SPY sat at or below its 1st percentile. That is where\n  the co-movement the ladders cannot express comes from \u2014 equities \u221223% with\n  vol +29pt, a flight-to-quality rally steepening from the front end (3M\n  \u221256bp, 30Y \u221229bp), the yen bid +2.3% and the peso sold \u221215.6%.\n\n`python -m risk.jobs.calibrate_stress` regenerates every number above into\n`docs/stress_calibration.md` from the committed snapshot, and unit tests\nrecompute the quantiles and assert the catalog's declared shock types match\neach factor's return convention \u2014 a bp value mislabeled as a log return would\nbe a 100\u00d7 error applied silently.\n\n**What the catalog was missing.** Both original replays are flight-to-quality\nepisodes in which this long-duration book *gains* on the rates leg, so the\nworst case on record was the GFC replay at ~\u2212$11.0M \u2014 FX-driven (\u2212$11.1M, the\nlong-MXN position the single largest loss at ~\u2212$3.9M) with rates *up* ~+$4.9M\nand the equity desk's protective put clawing back ~$2M. Adding 2022 \u2014 the\ncorrelated stock-bond selloff, 10Y +258bp with SPY \u221217.7% over the window \u2014\nproduces **\u2212$21.8M, roughly twice the GFC replay and the worst scenario in the\ncatalog**, concentrated in rates. A stress program of only 2008 and 2020 was\nsystematically blind to this book's adverse regime, which is the practical\nargument for choosing replay windows by what threatens the *current* book\nrather than by which crises are famous.\n\n*Questions an interviewer would ask:* Why is summing daily log returns over\nthe window legitimate but summing simple returns is not? An instantaneous\nreplay ignores path \u2014 when does that matter? Why does the *rates* desk make\nmoney in the GFC replay while the firm loses?\n\n### 3.5 Revaluation\n\nThe engine prices from a tidy positions frame (one row per position: ticker,\ndesk, factor, quantity, type, convention, and coupon/maturity for bonds); it\nnever touches the database.\n\n**Equities / FX (exact):** `P&L = qty * S0 * (exp(r) - 1)`.\n\n**Rates:** each position is a constant-maturity UST par-bond proxy priced with\nthe closed-form semiannual fixed-coupon formula\n\n    P(y) = face * (c/y) * (1 - (1 + y/2)^(-2T)) + face * (1 + y/2)^(-2T),\n\nwith the y\u21920 limit `face * (1 + cT)` substituted below |y| < 1e-9. Par coupons\nare struck at the anchor date's yields (so each bond prices at par on that\ndate \u2014 unit-tested to 1e-9). Under a scenario the bond is *fully repriced* at\nthe shocked yield; DV01 and dollar convexity exist only for the delta-gamma\npath, computed by central-difference bump-and-reprice (\u00b10.5bp; reference:\n10Y 4% par bond \u2248 $817.5 per bp per $1M face). The delta-gamma approximation\n`P&L \u2248 -DV01_bp * dy_bp + 0.5 * convexity * dy^2` (with `dy_bp` in basis\npoints and `dy` in decimal, matching the mixed units the two Greeks are quoted\nin) is reserved for risk-theoretical P&L, so the PLA test's HPL-RTPL gap is\nreal and internally generated, not simulated.\n\n**Options:** the collar legs are European SPY options priced with hand-rolled\nBlack-Scholes (d1/d2, scipy only for the normal distribution). Like the bond\nproxies they are constant-maturity, constant-moneyness instruments \u2014 struck\ndaily at moneyness times that day's spot, one month to expiry \u2014 so daily P&L\nis price P&L under the day's joint spot/vol/rate move, with no theta or roll\n(the same documented re-strike convention as the par bonds). Implied vol is\nthe VOL.SPX.IV30 factor (VIX as the 30-day SPX proxy for SPY, in points,\nflat across strikes), the discount rate is the 3M CMT, and q = 0 because the\nstored equity series is total-return. Shocked vols floor at one point. Under\nmode=\"full\" options fully reprice; the delta-gamma-vega Taylor lives only in\nthe risk-theoretical path.\n\nEach *linear* instrument maps to exactly one factor for VaR (SPY to its own\nprice series, the 10Y proxy to the 10Y constant-maturity yield); an option\nadds its vol and rate factors through instrument meta. The **curve view**\nexists alongside the proxy: a semiannual zero curve bootstrapped from the five\npar CMT nodes (brentq per node, linear interpolation in zero rates, flat\nextrapolation), bonds priced as cashflow strips off it, and par key-rate\nDV01s measured by bumping one input node at a time and re-bootstrapping. The\nnightly batch writes the per-desk KRD table (`risk_exposures`), served by the\nAPI and dashboard. One subtlety worth knowing cold: at the anchor date the\nbook's par coupons make each bond the bootstrap's own calibration instrument,\nso the KRD matrix is exactly diagonal *by construction* \u2014 cross-tenor risk\nappears (and grows) as coupons drift off par, which is also why the\ncurve-vs-proxy VaR basis is nonzero inside shocked scenarios (\u00a75.1 R7). VaR\npricing keeps the proxy, with the basis measured rather than assumed.\n\n*Questions an interviewer would ask (options):* Derive d1 and put-call\nparity. Why does a flat smile understate risk for the 95% put specifically?\nWhat does the constant-moneyness re-strike assume away (theta, pin risk,\nearly exercise), and why is that consistent with the bond proxies? Where does\nthe VIX-as-SPY-IV basis bite hardest?\n\n*Questions an interviewer would ask (curve):* Why is a node par bond's KRD\ndiagonal by construction? Derive the bootstrap fixed point at the 2Y node \u2014\nwhat makes it one-dimensional? What breaks with linear-in-zero interpolation\n(forward-rate kinks), and what would you use instead?\n\n*Questions an interviewer would ask:* Derive the closed form from the annuity\nsum. Why bump-and-reprice instead of the analytic duration formula? What does\nthe constant-maturity proxy ignore that a real bond position has (roll-down,\ncarry, financing)? Where would linearization bite hardest in this book \u2014 which\ndesk, which scenario?\n\n### 3.6 Model use\n\nA number's meaning depends on which path produced it, so the system runs three\ntiers and never lets them blur.\n\n**The official record** is the end-of-day batch. It alone writes `risk_results`,\n`pnl`, `scenario_results`, `risk_exposures` and `backtest_exceptions`; the API is\nread-only over what the batch wrote. Everything in \u00a74 is measured on this tier,\nand it is the only tier a limit is checked against.\n\n**The flash tier** re-marks the same book against delayed intraday quotes\nbetween closes. It is labelled indicative, it writes nothing to the official\ntables, its quote and revaluation caches expire in minutes, and it *refuses*\nrather than guesses: a quote implying a move past 150bp, 25% or 25 vol points is\nrejected, the prior close is carried, and the refusal is surfaced instead of\nbeing silently absorbed. That bound exists because a vendor changed the scale of\nits yield indices and the unguarded path fabricated a 416bp rally \u2014 the control\nis there because the failure happened, not in anticipation of it.\n\n**The sandbox** (`POST /api/v1/whatif`) is a documented exception to\nAPI-reads-only: it scales positions and applies factor shocks in one\nrevaluation, at full float precision, so a catalog preset posted back unedited\nreproduces the batch's scenario P&L to the cent. It persists nothing. It also\ndeclines to report one thing it could easily print \u2014 the VaR of the shocked\nbook \u2014 because re-marking levels while reusing the unshocked return vectors\nmakes equity VaR *fall* as the mark falls. Reporting it would be worse than\nomitting it, and the omission is named in the response rather than left for the\nreader to notice.\n\nThe guidance's point about using a model beyond its intended purpose is the live\nrisk here: the flash and sandbox tiers are exactly where a reader could mistake\nan indicative number for the record. Both are labelled at the point of use, in\nthe API payload and on the page, not only in this document.\n\n*Questions an interviewer would ask:* Which tier would you show a desk head at\n11am, and what would you refuse to tell them from it? Why is the VaR of a\nshocked book not reported \u2014 what goes wrong? If the flash tier and the batch\ndisagree at 4pm, which is wrong, and how would you tell?\n\n## 4. Validation and monitoring\n\n### 4.1 Conceptual soundness\n\nValidation of conceptual soundness is design evidence rather than performance\nevidence: whether the modelling choices, assumptions and construction are\ndefensible before any outcome is scored. Four kinds of evidence carry it here,\nand all four are executable rather than asserted.\n\n*Known answers from the literature.* Black-Scholes reproduces Hull's textbook\nexample, put-call parity holds to 1e-12, the par-bond identity holds exactly\n(coupon = yield \u21d2 price = face), DV01 matches the published $817.5 per $1M on a\n10Y 4% par bond, and Kupiec reproduces the worked n=250, x=5 case at p \u2248 0.16.\nA hand-rolled implementation that agrees with an independent published number is\nthe cheapest real evidence of construction available to a one-person project.\n\n*Analytic limits that pin the estimator.* Gaussian VaR99 = 2.326\u03c3 against\nES97.5 = 2.338\u03c3 (\u00a73.3) tells you the two measures are numerically almost\nidentical under normality, so any material gap between them on this book is\ntail shape rather than arithmetic \u2014 a sanity anchor on the ES path that no\namount of backtesting would supply.\n\n*Boundary equivalence between the champion and the challenger.* EWMA is exactly\nthe IGARCH boundary case, \u03c9=0, \u03b1=1\u2212\u03bb, \u03b2=\u03bb, and that identity is asserted\nbit-for-bit in a test rather than argued in prose. It makes the champion and\nchallenger provably the same family, which is what licenses comparing them on\noutcomes alone.\n\n*Design properties verified as invariants.* The key-rate DV01 matrix comes out\nexactly diagonal for the node par bonds at the anchor \u2014 not a coincidence but a\nconsequence of those bonds being the bootstrap's own calibration instruments \u2014\nand the test asserts the diagonality so the property cannot silently break. The\noff-node and off-par cases are tested to split across neighbouring nodes, which\nis the evidence that the diagonal case is structural rather than a bug.\n\nThe guidance notes that benchmarking to other models may be more practical than\nevaluating theoretical construction. \u00a73.2's champion/challenger run is that\nbenchmark, and \u00a76 records that it currently returns HOLD.\n\n### 4.2 Outcomes analysis\n\n**Clean P&L.** Each day's hypothetical P&L freezes the prior day's book and\nlevels and applies the realized factor returns \u2014 no fees, no intraday, no new\ntrades. An exception on day t+1 is `HPL_{t+1} < -VaR_t`: the comparison is\nstrictly out-of-sample (the VaR quoted on t never saw t+1's return).\n\n**Kupiec proportion-of-failures** tests coverage: with x exceptions in n days\nand target p = 1%,\n\n    LR_pof = -2 [ ln L(p) - ln L(x/n) ] ~ chi2(1),\n\nwith the 0\u00b7ln 0 := 0 convention guarding the zero-exception case. Published\nworked example, encoded as a known-answer test: n=250, x=5 gives LR \u2248 1.96,\np \u2248 0.16 \u2014 five exceptions against 2.5 expected and the test *cannot* reject.\n\n**Christoffersen independence** fits a first-order Markov chain to the\nexception indicator sequence and likelihood-ratio-tests whether an exception\ntoday changes tomorrow's exception probability. This is the test that sees\n*clustering*: ten consecutive exceptions in 500 days reject overwhelmingly\nwhile the same ten spread evenly do not \u2014 Kupiec, by construction, scores both\nidentically (unit-tested pair). Conditional coverage adds the two statistics:\nLR_cc = LR_pof + LR_ind ~ chi2(2). Clustered exceptions are precisely the\nvol-regime failure mode of equal-weight HS, which is why both tests run\nnightly.\n\n**Basel traffic light**, 250-day window: green at 0\u20134 exceptions, amber 5\u20139\nwith multiplier add-ons rising 0.40 \u2192 0.85, red at 10+ (add-on 1.00, model\npresumed flawed). The regulatory response is deliberately *not* hypothesis\ntesting: at x=5 Kupiec's p-value is 0.16, yet the capital multiplier already\npenalizes \u2014 supervisors price the asymmetry of accepting a bad model rather\nthan the Type-I error rate.\n\n**Out-of-sample results** (750 trading days ending 2026-08-06, firm book):\n\n| Method | Exceptions | Expected | Kupiec p | CC p | 250d zone |\n|---|---|---|---|---|---|\n| HS | 6 | 7.5 | 0.57 | 0.81 | GREEN |\n| FHS | 10 | 7.5 | 0.38 | 0.60 | GREEN |\n\nBoth models pass everything \u2014 the difference is *where* the risk shows. Going\ninto the April-2025 vol spike the lagging HS window under-covers at desk\nlevel: every desk takes exceptions in the first days of April, and only the\n~40% diversification benefit keeps the firm aggregate clean (its six HS\nexceptions sit elsewhere \u2014 two in late 2023, two in 2024, two in\nmid-2026). After the spike's scenarios enter the window, firm HS VaR runs\nconservatively wide for months of calm. FHS spends its near-nominal-rate\nexceptions across regimes and re-tightens where HS cannot. Coverage alone\ndoes not separate the two; the exception *timing* chart in the README and\ndashboard does. That comparison \u2014 champion/challenger on identical scenarios,\ndiffering only in the vol filter \u2014 is the model-selection argument in one\npicture.\n\n**P&L attribution.** Spearman rank correlation and the two-sample KS\nstatistic between daily hypothetical P&L (full revaluation) and\nrisk-theoretical P&L (the linearized path), zoned at the MAR32.41 thresholds\n(green requires rho >= 0.80 and KS <= 0.09). Over the trailing 250 paired\ndays the equity desk sits at rho 0.9999, KS 0.020 \u2014 GREEN. The gap\n*decomposes*, and knowing the decomposition is the point: the linear legs\nalone produce KS 0.016 (their RTPL is `qty*S0*r` against an HPL of\n`qty*S0*(exp(r)-1)` \u2014 the log-linearization convexity, a mean gap of about\n$1.8k/day), and the collar adds its Taylor error on top (about $1.2k/day;\noptions-only KS 0.024 from gamma, vanna, and the excluded rho). So the\npre-options test was never strictly vacuous \u2014 it was nearly degenerate, its\nonly content being the log-linearization \u2014 and the sleeve is what gives the\nstatistic something structural to see. A desk that failed would lose IMA\neligibility at a real bank; here it would fail the promotion gate the same\nway the GARCH challenger did. Served at `/backtest/pla` with the HPL-vs-RTPL\nscatter on the dashboard.\n\n### 4.3 Ongoing monitoring\n\nOngoing monitoring is the nightly cycle itself: every batch writes exceptions\nagainst the prior run's VaR, the dashboard recomputes rolling zones, DQ issues\npersist with severities, and CI reruns the known-answer suite (engine math,\nKupiec/Christoffersen worked examples, bond-pricing identities) on every commit.\nThe day-over-day flash check raises a WARN when either VaR measure moves more\nthan 25% against the prior run, which is monitoring for model *deterioration*\nrather than for coverage \u2014 the failure the outcomes tests are least able to see\nquickly, because a coverage test needs hundreds of days to say anything.\n\nScheduled next: the Acerbi\u2013Sz\u00e9kely ES backtest with simulated critical values.\nNote what its absence means precisely \u2014 every statistic in \u00a74.2 tests the VaR\npath, and nothing yet tests ES97.5 or the stressed ES, which are the measures\n\u00a73 actually leads with.\n\n*Questions an interviewer would ask:* Write the Kupiec statistic from memory\nand evaluate the n=250, x=5 case. Why does PLA need BOTH Spearman and KS \u2014\nwhat failure does each see that the other cannot? Why does Christoffersen catch what Kupiec\ncannot, and what does its n11 count mean? Why does the Basel multiplier start\nat five exceptions when the hypothesis test can't reject there? Why must the\nVaR in an exception check come from the *prior* run?\n\n## 5. Assumptions and limitations\n\n*The load-bearing section: each entry names the assumption, its consequence,\nand the mitigation or roadmap item. Where a limitation is measurable it is\n**measured**: [docs/rniv.md](rniv.md) is a risks-not-in-VaR inventory\nregenerated from the snapshot by `python -m risk.jobs.rniv`, and \u00a75.1 below\nsummarizes it.*\n\n1. **sqrt(10) horizon scaling assumes iid daily P&L.** Under volatility\n   clustering it under-scales in stressed regimes; on trending or\n   mean-reverting windows it over-scales. Measured (R1): on the current\n   500-day window, overlapping 10-day revaluation gives $2.87M firm VaR\n   against $3.60M scaled \u2014 the scaled figure currently *overstates* by ~20%.\n   The 10-day figures are reported as scaled, never as modeled, with the\n   overlapping estimator kept as a standing check.\n2. **One factor per instrument in the VaR path.** Each bond proxy loads on a\n   single constant-maturity yield. Measured (R7): repricing the bond book on\n   the bootstrapped curve under the same scenarios moves rates-desk VaR by\n   +1.9% ($885k vs $868k) \u2014 the pricing-model basis; the key-rate DV01 table\n   is written nightly and is diagonal at the anchor by construction, with\n   off-diagonals growing as coupons drift off par. Adequate for a five-point\n   node book; wrong for real curve trading.\n3. **Constant-maturity par proxies ignore aging, roll-down, carry, and\n   financing.** Positions are re-struck at par conceptually every day; clean\n   P&L is price P&L only.\n4. **Non-synchronous closes bias cross-asset correlation.** FRED H.10 FX is a\n   noon-ET fixing; equities close 16:00 ET; yields are afternoon CMT reads.\n   Same-day cross-asset correlations are attenuated, and the diversification\n   benefit inherits that bias. Measured (R2): the benefit is 40.4% on 1-day\n   returns and 38.4% on 2-day aggregation \u2014 two percentage points of\n   co-movement hide in the close-time gaps (SPY leads next-day GBP at +0.23\n   vs +0.14 same-day). Named and measured, not fixed \u2014 production desks fight\n   the same issue with synchronization overlays.\n5. **Forward-filled days imprint zero returns** (bounded at 3 days, 7 for\n   H.10 FX), damping vol for affected factors. Measured (R3): fills are 3.6%\n   of factor-days in the window; correcting each factor's EWMA forecast to\n   print-days-only raises firm FHS VaR by 3.0% (~$38k), concentrated in the\n   H.10 FX factors (forecast ratios ~1.15). The fill count per factor per run\n   is recorded; beyond-cap gaps block the run.\n6. **The attribution test is only as sharp as the book's nonlinearity.** The\n   collar's gamma is modest, so today's GREEN PLA discriminates weakly \u2014 a\n   larger options book would stress the Taylor harder \u2014 and the statistic's\n   decomposition (\u00a74) shows the linear legs' log-linearization still carries\n   most of it. The RTPL exclusions (rho, cross terms) are design choices; the\n   nearly-degenerate pre-options history is preserved in git, not rewritten.\n7. **FRTB scope is the ES piece only.** Stressed calibration follows the FRTB\n   idea; there is no liquidity-horizon cascade (a `liquidity_horizon` column\n   exists on `risk_factors` as a placeholder for the MAR33.12 mapping, still\n   uniform at its 10-day default), no NMRF/RFET, no IMA capital arithmetic.\n   The phrase \"FRTB-compliant\" is deliberately banned from this repository.\n8. **The stressed window is fixed (2008-09-12 \u2192 2009-09-11).** A book can\n   have its true worst regime elsewhere. Measured (R4): stressed ES on this\n   book is $2.61M under the in-force window vs $2.06M for the 2022 hiking\n   year and $1.80M for the COVID year \u2014 the fixed choice is currently the\n   most conservative of the candidates, but that is checked, not assumed. The\n   programmatic argmax search over 2007+ full-reval history is the scheduled\n   replacement.\n9. **Post-shock yields floor at 1bp**, which would truncate the rates desk's\n   convexity gain in scenarios that drive short yields toward zero. No shipped\n   scenario currently binds it \u2014 GFC-replay post-shock yields bottom out near\n   2.3% \u2014 but a 2020-style front-end shock from today's levels would.\n10. **Equal-weight HS dilutes new information by design**; the FHS comparison\n    exists to quantify exactly that cost (\u00a74). Equity risk is total-return\n    (adjusted close), so dividend timing is smeared across history.\n11. **No idiosyncratic-risk model, and tail risk is concentrated.** Single\n    names carry only their own history; there is no factor model and no\n    name-level shrinkage. Measured (R5): Euler allocation of firm ES puts\n    37.3% on the top position and 86.6% on the top three (the 30Y/10Y\n    duration proxies dominate; NVDA is the largest single-name component).\n    Seven liquid mega-caps make the missing idio model tolerable; the\n    concentration is monitored via the component table.\n\n12. **The options sleeve prices on a flat smile with proxy inputs.** VIX\n    stands in for SPY 1-month implied vol (an index-vs-ETF, 30d-vs-1M basis),\n    a single vol level covers every strike (no skew risk \u2014 precisely where a\n    95% put lives), q = 0 leans on the total-return spot series, and the\n    constant-moneyness re-strike removes theta, pin risk, and early exercise.\n    Each is the options sibling of a limitation already carried by the bond\n    proxies, and the parametric-IV VaR on the roadmap addresses the vol-risk\n    piece first.\n\n### 5.1 Quantified impacts (risks-not-in-VaR inventory)\n\nSummary of [docs/rniv.md](rniv.md), regenerated by `python -m risk.jobs.rniv`\n(as of 2026-08-06; Material \u2265 5% of the base measure, Monitor \u2265 1%):\n\n| ID | Limitation | Measured impact | Class |\n|---|---|---|---|\n| R1 | sqrt(10) scaling vs overlapping 10-day reval | \u2212$729k on the 10-day VaR (\u221220.3%) | Material |\n| R2 | Asynchronous closes hide co-movement | diversification 40.4% (1d) \u2192 38.4% (2d) | Monitor |\n| R3 | Forward-fill vol damping | +$38k on FHS VaR (+3.0%) | Monitor |\n| R4 | Fixed stressed window | in-force $2.61M is the max of candidates ($1.80M\u2013$2.06M) | Immaterial |\n| R5 | Position concentration of firm ES | top position 37.3%, top 3 86.6% | Monitor |\n| R6 | 1bp post-shock yield floor | unbinding; 230bp of headroom | Immaterial |\n| R7 | One-factor ytm proxy vs bootstrapped curve | rates VaR +1.9% curve-priced; KRDs diagonal at anchor by construction | Monitor |\n\nThe point of the exercise is the discipline, not the add-ons: every \u00a75 claim\nthat could be a number *is* a number, with the measurement code in the\nrepository and the classification rule stated up front.\n\n## 6. Governance and controls\n\nEvery tunable lives in one frozen dataclass (`RiskConfig`) \u2014 lookback 500,\nlambda 0.94, confidence pair (0.99, 0.975), forward-fill caps, the stressed\nwindow. Each batch run records the git SHA and a hash of that config on its\n`risk_runs` row, so any number in the results tables traces to exact code and\nparameters. The committed snapshot makes the whole history a fixture: on every\npush, CI rebuilds the database from scratch and asserts the firm 1-day VaR99\nequals $1,137,118.30 to the cent, runs the known-answer suite (worked examples\nfrom the literature encoded as tests), and executes the one-command demo path\nend-to-end. Data\nquality is enforced in-pipeline with persisted, severity-graded findings, and\nbatch runs are idempotent under an advisory-lock claim \u2014 a re-run can replace\na failed run but never silently duplicate a successful one.\n\nModel change control exists in miniature: a candidate model runs in parallel\nwith the champion over a regulatory window and is judged by pre-registered\npromotion criteria \u2014 fit health first, then outcomes, then adoption stability\n\u2014 with the change pack carrying the candidate's parameter hash and the git\nSHA (\u00a73.2's GARCH challenger is the live example, currently HOLD on the\nfit-health gate).\n\n**Effective challenge, and the one place this project cannot supply it.** The\n2026 guidance keeps \"effective challenge\" and defines it as critical analysis by\nobjective experts with the expertise to challenge, \"sufficient independence to\nmaintain objectivity,\" and the standing to force a change. Two of those three\nare demonstrable here and one is not. The expertise and the standing are\nevidenced by the harness overruling its author: the challenger gate returned\nHOLD on a candidate the author wanted to promote, the sandbox refuses to report\na VaR it could trivially have printed, and the flash tier refuses a quote rather\nthan trusting it. The independence is not: development and validation are the\nsame person, and no amount of tooling changes that. It is worth being precise\nabout what the guidance now says on this, because it is the one clause that\nmoves in this project's favour \u2014 \"the quality of validation process depends on\nthe rigor and effectiveness of the review rather than on organizational\nstructure of the banking organization's risk management function.\" Rigor is\ndemonstrable by a single author; the organizational half is not, and is recorded\nin \u00a75 as a limitation rather than papered over.\n\n**Model materiality.** The guidance ties the depth of oversight to materiality,\nwhich it derives from model exposure and purpose. `docs/rniv.md` already applies\nthat logic to limitations rather than to models, with a coded rule stated up\nfront: Material at \u22655% of the base measure, Monitor at \u22651%, otherwise\nImmaterial. Every entry carries a measured number and a class, so the register\nsorts by consequence instead of by how easy the item was to notice.\n\n**Mapped to the 2026 guidance:** \u00a7\u00a71\u20133 are model development and use (\u00a71 the\npurpose and perimeter, \u00a72 the inputs and data risk, \u00a73 the development and\nmethodology); \u00a74.1 is the conceptual-soundness evidence, \u00a74.2 the outcomes\nanalysis \u2014 the 750-day out-of-sample backtest, the coverage and independence\ntests, the traffic light, and the attribution test \u2014 and \u00a74.3 the ongoing\nmonitoring, which the nightly exception writes, DQ gate, flash check and\nrevision log implement; this section is governance and controls; \u00a75 is the\nlimitations inventory, maintained with the same seriousness as the code. The\nguidance's vendor and third-party section has no analogue here and does not need\none: every model in this repository is hand-rolled, with only optimizers and\nstatistical distributions imported, so there is no third-party model whose\nconceptual soundness would have to be taken on trust. That is a scope fact, not\na control.\n"
+    "markdown": "# RiskDesk \u2014 Model Documentation\n\n*Structured along the April 2026 interagency Supervisory Guidance on Model Risk\nManagement \u2014 Fed SR 26-2, OCC Bulletin 2026-13, FDIC FIL-15-2026, all issued\n17 April 2026, superseding SR 11-7 \u2014 so: model development and use, validation\nand monitoring, governance and controls, and a standing limitations inventory.\nThat guidance is explicit that it \"does not set forth enforceable standards or\nprescriptive requirements.\" For a trading book the text that binds is the market\nrisk capital rule at 12 CFR 217 subpart F, which requires a validation process\nindependent of model development covering conceptual soundness, ongoing\nmonitoring, and outcomes analysis including backtesting. \u00a74 is organized on\nthose three. Where the two differ this document follows the rule and says so.\nEvery methodology section ends with \"questions an interviewer would ask\" \u2014 this\ndocument doubles as the walkthrough script for anyone probing the model. The\nfigures quoted below are reproducible from the committed market snapshot:\n`docker compose up` rebuilds the database and reprints the headline risk\nnumbers (CI asserts the firm VaR to the cent on every push); the 750-day\nbacktest table regenerates with `python -m risk.jobs.backfill`.*\n\n## 1. Model purpose and scope\n\nRiskDesk measures the daily market risk of a mock three-desk trading book \u2014\ncash equities, FX spot, and US Treasuries \u2014 the way a bank's risk function runs\nits nightly cycle. Per desk and firm-wide, the nightly batch produces:\n\n- **1-day 99% VaR** under two methods: equal-weight historical simulation (HS)\n  and EWMA-filtered historical simulation (FHS), plus 10-day figures by\n  sqrt-of-time scaling;\n- **97.5% Expected Shortfall**, and a **stressed ES** calibrated on a fixed\n  2008\u201309 window (FRTB-style; see the scope note below);\n- **scenario P&L** for three historical replays (GFC 2008, COVID 2020, the 2022\n  rate selloff) and four hypothetical shocks whose magnitudes are measured\n  against the book's own history (\u00a73.4);\n- **backtest inputs** against clean P&L \u2014 daily hypothetical AND\n  risk-theoretical P&L plus exceptions versus the prior run's VaR \u2014 from which\n  the API computes Kupiec, Christoffersen, the Basel traffic light, and the\n  P&L-attribution test (Spearman + KS with MAR32-style zones) on demand.\n\nThe book is sized so the standalone-VaR mix across desks is roughly\nrates 45 / equity 30 / fx 25 \u2014 the risk-class mix large dealers disclose in\ntheir FY2025 trading-VaR tables (measured on the snapshot: 46/28/26). The\nequity desk carries a 1-month SPY collar (long 95% put, short 103% call, 78\ncontracts against the ~7,800-share holding) \u2014 the options sleeve that gives\nthe book gamma and vega and makes the attribution test real. On the\n2026-08-06 snapshot the firm 1-day VaR99 is ~$1.14M, 57% of its $2M limit,\nwith a ~40% diversification benefit, net rates DV01 of ~$83k/bp, and net\nvega of about -$2.7k per vol point.\n\n**Out of scope, deliberately:** trade pricing, official intraday risk\nmeasurement, counterparty and credit risk, and regulatory capital. The\nend-of-day batch is the record. A flash tier does re-mark the book against\ndelayed quotes between closes, and \u00a73.6 states what it is and is not: indicative\nonly, never written to the official tables, and refused outright when a quote\nimplies an implausible move. The stressed-ES piece follows FRTB's\n*idea* (ES 97.5, stressed-period calibration) and the attribution test follows\nthe PLA *metrics*; neither is an FRTB implementation \u2014 no liquidity-horizon\ncascade, no NMRF, no IMA capital arithmetic (\u00a75).\n\n## 2. Model inputs and data\n\n### 2.1 Risk factors and sources\n\nSeventeen factors drive the book: seven equity adjusted closes\n(yfinance, Stooq fallback), four USD FX rates (FRED H.10, normalized at ingest\nto USD per unit of foreign currency; the weekly publication lag is absorbed by\na 7-day forward-fill cap), five constant-\nmaturity Treasury par yields in percent (FRED: 3M, 2Y, 5Y, 10Y, 30Y), and\nVIX, which prices the options sleeve as its (flat) implied vol. History runs from\n2007 \u2014 deep enough to contain every stress window used in \u00a73.4.\n\nA frozen snapshot of all 17 series (~84k observations) is committed to the\nrepository. Tests, CI, and the demo never make a network call: every number in\nthis document is reproducible bit-for-bit from the snapshot. Live fetches\nhappen only in the nightly batch, with per-factor source fallbacks.\n\n### 2.2 Return conventions\n\nThe return convention is a property of the factor, stored on the\n`risk_factors` table \u2014 never an `if` statement in engine code:\n\n| Convention | Applied to | Definition | Why |\n|---|---|---|---|\n| `LOG` | equities, FX | log price relative | multiplicative, additive over time |\n| `ABS_BP` | yields | day-over-day change in basis points | log returns on yields explode as yields approach zero (2020: 3M bills under 10bp) |\n| `ABS` | vol indices | plain difference in points | vol points are already the natural unit |\n\nScenario P&L is exact under each convention: `qty * S0 * (exp(r) - 1)` for LOG\nfactors, full bond revaluation for bp shocks (\u00a73.5). Linearization exists only\nin the delta-gamma path reserved for risk-theoretical P&L.\n\n### 2.3 Alignment and forward-fill policy\n\nFactors publish on different calendars (FRED H.10 FX has a weekly publication\nlag; FRED yields miss bond-market holidays that equities trade through). Each\nfactor forward-fills up to its own cap \u2014 3 business days by default, 7 for\nH.10 FX. A filled day produces a zero return downstream: a mild, *measured*\nvol damping, recorded per factor per run rather than hidden. Gaps beyond the\ncap are never filled silently \u2014 they block (\u00a72.4).\n\nEquity levels are the **adjusted** close, so equity positions are total-return\npositions; share counts were struck from the unadjusted close on the anchor\ndate (where adjusted equals unadjusted by construction).\n\n### 2.4 Data-quality gate\n\nChecks run nightly before the risk step; findings persist to `dq_issues` with\na severity that decides the run's fate. The policy is **flag, never delete**:\nauto-scrubbing genuine crash days would destroy the very tail VaR feeds on.\n\n| Check | Trigger | Severity |\n|---|---|---|\n| `OUTLIER_RETURN` | LOG: \\|r\\| > 6\u00d7 trailing EWMA vol **and** \\|r\\| > 3%; yields: \\|\u0394y\\| > 75bp/day | WARN \u2014 investigate, keep |\n| `STALE` | a PRICE/FX factor repeats the identical value 5 sessions | WARN \u2014 dead source suspected |\n| `UNIT_BOUND` | yield outside [\u22122%, 25%]; price/vol \u2264 0; FX > 50% from its 1-year median | BLOCK \u2014 structurally impossible, unit error |\n| `GAP` / `FFILL_LIMIT` | missing beyond the factor's forward-fill cap | BLOCK / INFO within cap |\n\nAny BLOCK downgrades the run to `PARTIAL` \u2014 results write, but the run is\nvisibly impaired; there is no silent green.\n\nFills are **provisional**: ingest windows anchor at each factor's last *real*\nprint, not its last row, so a filled date stays in the request until the\nvendor publishes it, and staleness ages are measured against real prints \u2014 a\ndead source runs into its cap and blocks rather than forward-filling forever\nbehind self-resetting fills.\n\nTwo controls extend the gate beyond the inputs. A **flash check** compares\neach firm VaR measure (HS and FHS) to the prior run before the number is read\nas final: a move beyond \u00b125% writes a `FLASH_DOD` warning carrying its own\nexplanation \u2014 per-desk VaR deltas, plus the largest vol-forecast movers where\nthe vol filter is the actual driver (FHS; an HS move comes from scenario\nturnover and level changes). A large move is not an error; an *unexplained*\nlarge move is. And a **revision log** (`data_revisions`) records every\ningested value that differs from what is stored \u2014 compared at the database's\nown precision \u2014 classified: a synthetic fill replaced by the vendor's late\nprint is routine (`FFILL_REPLACED`, the H.10 publication cycle produces\nthese); a changed real print is a vendor restatement (`VENDOR_REVISION`) and\nthe reason yesterday's VaR may no longer be reproducible from today's\ndatabase. The log preserves the before-image, and\n`run --date <d> --force` is the restatement path \u2014 an EOD restatement\noutranks a backfill run for the same date in every read.\n\n*Questions an interviewer would ask:* Why absolute bp shocks for rates \u2014 what\nbreaks with log returns on 2020 yields? Why flag rather than delete an outlier\nreturn? What does a forward-filled day do to EWMA vol, and where would you see\nthat effect? Why is the FX bound relative to a median but the yield bound\nabsolute?\n\n## 3. Model development and methodology\n\n### 3.1 Historical-simulation VaR\n\nThe scenario set is the trailing **500** daily joint return vectors. The full\nbook is revalued under each vector (\u00a73.5), scenario P&Ls are aggregated per\ndesk, and\n\n    VaR_a = -Quantile_{1-a}(P&L),   linear interpolation between order statistics.\n\nAt n=500 and a=0.99 the estimator interpolates between the 5th and 6th worst\nlosses, with almost all weight on the 6th. 500 days rather than the Basel\nminimum 250 is a variance-versus-staleness trade: at 250 the same quantile\nsits between the 3rd and 4th worst losses \u2014 an estimator that jumps when a\nsingle scenario ages out of the window.\n\n**And the number carries an interval, not just a point.** The count of\nobservations at or below the true 99% quantile is Binomial(n, 0.01), so a pair\nof order statistics brackets it with exactly computable, distribution-free\ncoverage: at n=500 the 95% interval is the **1st to the 10th worst loss** \u2014\nfirm VaR $1,137,118 with an interval of $1,067,437 to $1,402,543, or 53% to\n70% of the $2M limit (served at `/api/v1/risk/uncertainty`, shown under the\nfirm tiles, CI-pinned to the cent). The precision the number is printed with\nis not the precision it is known to. This is also the sharper argument for the\n500-day window: at n=250 the widest possible pair of order statistics reaches\nonly ~91.9% coverage, so a 95% interval for the 99% quantile *does not exist*\nat Basel's minimum window \u2014 it becomes attainable at n=299 (unit-tested). A\nseeded moving-block bootstrap rides along for ES and the diversification\nbenefit, reported as spreads rather than intervals because the percentile\nbootstrap under-covers a tail quantile \u2014 its endpoints are themselves observed\norder statistics and cannot reach past the sample extremes (measured 89%\nrealized against 95% nominal at n=500 during the build; the property is\nunit-tested with a realized-coverage bound at n=250).\n\nThe known weakness of equal weights is regime lag, and it is quantified rather\nthan asserted: over the 750-day out-of-sample backfill, the HS VaR line lags\nthe April-2025 vol spike on the way in \u2014 every desk takes exceptions in the\nfirst days of April \u2014 and then, once the spike's scenarios enter the window,\nstays conservatively wide through the calm regime that follows (\u00a74).\n\n*Questions an interviewer would ask:* Why 500 days and not 250? Which order\nstatistics does the 99% estimate sit between at each window length? What\nhappens to HS VaR in the weeks after a vol-regime shift, and in the months\nafter the spike leaves the window (\"ghosting\")?\n\n### 3.2 Filtered historical simulation (EWMA)\n\nPer-factor conditional variance follows the RiskMetrics recursion\n\n    sigma^2_t = lambda * sigma^2_{t-1} + (1 - lambda) * r^2_{t-1},   lambda = 0.94,\n\nseeded with the population variance of the first 30 returns; the half-life is\nln 0.5 / ln 0.94 \u2248 11 days. lambda = 0.94 is a convention, not an estimate \u2014\ndefended as such, and tested against a fitted GARCH(1,1) rather than left\nimplied \u2014 see the champion/challenger run below.\n\nScenario construction devolatilizes and revolatilizes:\n\n    z_s = r_s / sigma_s          (standardized joint historical vector, per factor)\n    r~_s = z_s * sigma_{T+1}     (rescaled by the next-day vol forecast)\n\nCross-factor correlation survives because the scenarios remain *joint*\nhistorical z-vectors \u2014 only the per-factor vol scale updates. The same 500\nscenarios then price the same book through the same revaluation path as HS;\nthe only difference between the methods is the scenario matrix.\n\nFailure modes, named: standardized residuals are assumed stationary (a\ncorrelation-regime break violates this); a one-day vol overshoot inflates the\nnext day's entire scenario set (revol overshoot); forward-filled zero returns\ndamp sigma. The DQ gate bounds the third; the backfill chart shows the net\neffect of the first two is still a large improvement in regime tracking.\n\n**Champion/challenger.** The GARCH(1,1) question is answered with a parallel\nrun, not an opinion: a hand-rolled Gaussian-QMLE GARCH filter runs beside the\nEWMA champion over the trailing 250 days on the same historical windows, book,\nand clean P&L \u2014 the scenario sets differ only by each model's vol rescaling,\nwhich is the treatment under test \u2014 judged\nagainst promotion criteria pre-registered before any result is computed\n([docs/challenger_garch.md](challenger_garch.md), regenerated by\n`python -m risk.jobs.challenger`). Current verdict: **HOLD** \u2014 outcomes are\nindistinguishable (the same four exceptions, +6.4% mean VaR delta), and four\nfactors (the short-rate complex and EURUSD) fit at the stationarity boundary,\nwhere the unconditional level is meaningless \u2014 IGARCH by accident. EWMA *is*\nthe IGARCH boundary case (omega 0, alpha 1\u2212lambda, beta lambda; unit-tested\nequivalence), so the champion deliberately imposes the infinite persistence\nthose degenerate fits stumble into \u2014 a defensible convention until a\nchallenger clears the health gate.\n\n*Questions an interviewer would ask:* Derive the recursion from exponential\nweights. Why does FHS preserve cross-correlations when scaling per-factor?\nWhat breaks if sigma_s is near zero for some historical date? Derive the\nGARCH(1,1) likelihood; why does persistence at the boundary make the\nunconditional variance meaningless, and why must promotion criteria be\nregistered before results exist?\n\n### 3.3 Expected Shortfall 97.5% and stressed calibration\n\n    ES_a = -mean( P&L | P&L <= Quantile_{1-a}(P&L) )\n\n\u2014 the empirical mean of the tail at or beyond the 2.5% quantile; at n=500 that\naverages roughly the 13 worst scenario losses. ES is reported at 97.5% beside\nVaR 99% because that is Basel's calibration-neutral pair: under normality\nVaR99 = 2.326 sigma and ES97.5 = 2.338 sigma \u2014 numerically almost identical,\nbut ES is coherent (subadditive) and sees tail *shape*, not just one quantile.\nBoth reference constants are encoded as unit tests.\n\n**Stressed ES** revalues *today's* book on the daily shocks of a fixed\n2008-09-12 \u2192 2009-09-11 window and takes the same ES functional. On the\nsnapshot date it is ~2.3\u00d7 the current-window ES ($2.61M vs $1.15M firm) \u2014 the\ngap being exactly the point: current-regime ES understates what this book does\nin a crisis regime. The window is fixed in the MVP; the programmatic\nworst-window search over the full 2007+ history (FRTB's \"period of significant\nstress *for this portfolio*\") is scheduled, with an integration test asserting\nit lands in 2008\u201309 or 2020.\n\nFirm ES can be allocated to desks by Euler allocation \u2014 each desk's mean P&L\nover the firm's tail scenarios. Components sum exactly to firm ES and go\n*negative* for hedging desks, which is the feature: it answers \"which desk to\ncut\". The allocation is exercised per position in the RNIV concentration\nmeasurement (R5, [docs/rniv.md](rniv.md)) and served per desk at\n`/api/v1/desks/{desk}/decomposition`, whose waterfall reconciles the standalone\nbucket VaRs and the diversification term to the desk total.\n\n*Questions an interviewer would ask:* Prove ES is subadditive and give the\ntwo-position example where VaR is not. Why did Basel pick 97.5% ES to replace\n99% VaR? What makes a stressed window \"right\" for this portfolio, and why can\na fixed window rot? Show the Euler allocation sums to firm ES.\n\n### 3.4 Stress testing\n\nHistorical replays are **data-driven**: only the window dates are pinned\n(GFC: 2008-09-12 \u2192 2008-11-20; COVID: 2020-02-19 \u2192 2020-03-23; 2022 rate\nselloff: 2022-01-03 \u2192 2022-10-31). The shock vector is the sum of stored daily\nreturns over the window \u2014 additive for both log returns and bp changes \u2014\napplied instantaneously to today's book with full revaluation. Sanity anchors\nare pinned by tests against the committed snapshot (GFC window: SPX log return\n\u2248 \u22120.50, 2Y yield \u2248 \u2212118bp, JPY \u2248 +12% safe-haven move). Factors absent from a\nscenario are shocked by zero \u2014 the documented fill rule, until beta-fill rules\narrive with the CCAR-style scenarios. Post-shock yields floor at 1bp.\n\n**Where the hypothetical magnitudes come from.** The catalog separates two\nkinds of row, and the distinction is the answer to \"why those numbers\":\n\n- *Sensitivity ladders* (+100bp parallel, \u221220% equities with a +20pt vol bid,\n  +10% broad USD) are round on purpose \u2014 they read the book's directional\n  exposure the way a desk quotes it, and are not forecasts. Roundness is not\n  the same as arbitrary: each one's severity is measured against this book's\n  own history and cited in the catalog. On overlapping 20-business-day moves\n  (4,966 windows, 2007\u20132026) the +100bp shift sits at the 99.64th percentile\n  of 10Y moves and was reached in 18 windows; \u221220% equities at the 99.52nd\n  percentile of SPY moves, 24 windows; +10% USD at the 99.78th, 11 windows.\n  Because each ladder moves a class uniformly it understates a book that is\n  long high-beta names (NVDA's own p99 is roughly twice SPY's) and short\n  safe-haven currencies.\n- *Correlated scenarios* are calibrated, not chosen. `RISK_OFF` takes the\n  **conditional tail mean**: the average move of every factor over the 50\n  windows where 20-day SPY sat at or below its 1st percentile. That is where\n  the co-movement the ladders cannot express comes from \u2014 equities \u221223% with\n  vol +29pt, a flight-to-quality rally steepening from the front end (3M\n  \u221256bp, 30Y \u221229bp), the yen bid +2.3% and the peso sold \u221215.6%.\n\n`python -m risk.jobs.calibrate_stress` regenerates every number above into\n`docs/stress_calibration.md` from the committed snapshot, and unit tests\nrecompute the quantiles and assert the catalog's declared shock types match\neach factor's return convention \u2014 a bp value mislabeled as a log return would\nbe a 100\u00d7 error applied silently.\n\n**What the catalog was missing.** Both original replays are flight-to-quality\nepisodes in which this long-duration book *gains* on the rates leg, so the\nworst case on record was the GFC replay at ~\u2212$11.0M \u2014 FX-driven (\u2212$11.1M, the\nlong-MXN position the single largest loss at ~\u2212$3.9M) with rates *up* ~+$4.9M\nand the equity desk's protective put clawing back ~$2M. Adding 2022 \u2014 the\ncorrelated stock-bond selloff, 10Y +258bp with SPY \u221217.7% over the window \u2014\nproduces **\u2212$21.8M, roughly twice the GFC replay and the worst scenario in the\ncatalog**, concentrated in rates. A stress program of only 2008 and 2020 was\nsystematically blind to this book's adverse regime, which is the practical\nargument for choosing replay windows by what threatens the *current* book\nrather than by which crises are famous.\n\n*Questions an interviewer would ask:* Why is summing daily log returns over\nthe window legitimate but summing simple returns is not? An instantaneous\nreplay ignores path \u2014 when does that matter? Why does the *rates* desk make\nmoney in the GFC replay while the firm loses?\n\n### 3.5 Revaluation\n\nThe engine prices from a tidy positions frame (one row per position: ticker,\ndesk, factor, quantity, type, convention, and coupon/maturity for bonds); it\nnever touches the database.\n\n**Equities / FX (exact):** `P&L = qty * S0 * (exp(r) - 1)`.\n\n**Rates:** each position is a constant-maturity UST par-bond proxy priced with\nthe closed-form semiannual fixed-coupon formula\n\n    P(y) = face * (c/y) * (1 - (1 + y/2)^(-2T)) + face * (1 + y/2)^(-2T),\n\nwith the y\u21920 limit `face * (1 + cT)` substituted below |y| < 1e-9. Par coupons\nare struck at the anchor date's yields (so each bond prices at par on that\ndate \u2014 unit-tested to 1e-9). Under a scenario the bond is *fully repriced* at\nthe shocked yield; DV01 and dollar convexity exist only for the delta-gamma\npath, computed by central-difference bump-and-reprice (\u00b10.5bp; reference:\n10Y 4% par bond \u2248 $817.5 per bp per $1M face). The delta-gamma approximation\n`P&L \u2248 -DV01_bp * dy_bp + 0.5 * convexity * dy^2` (with `dy_bp` in basis\npoints and `dy` in decimal, matching the mixed units the two Greeks are quoted\nin) is reserved for risk-theoretical P&L, so the PLA test's HPL-RTPL gap is\nreal and internally generated, not simulated.\n\n**Options:** the collar legs are European SPY options priced with hand-rolled\nBlack-Scholes (d1/d2, scipy only for the normal distribution). Like the bond\nproxies they are constant-maturity, constant-moneyness instruments \u2014 struck\ndaily at moneyness times that day's spot, one month to expiry \u2014 so daily P&L\nis price P&L under the day's joint spot/vol/rate move, with no theta or roll\n(the same documented re-strike convention as the par bonds). Implied vol is\nthe VOL.SPX.IV30 factor (VIX as the 30-day SPX proxy for SPY, in points,\nflat across strikes), the discount rate is the 3M CMT, and q = 0 because the\nstored equity series is total-return. Shocked vols floor at one point. Under\nmode=\"full\" options fully reprice; the delta-gamma-vega Taylor lives only in\nthe risk-theoretical path.\n\nEach *linear* instrument maps to exactly one factor for VaR (SPY to its own\nprice series, the 10Y proxy to the 10Y constant-maturity yield); an option\nadds its vol and rate factors through instrument meta. The **curve view**\nexists alongside the proxy: a semiannual zero curve bootstrapped from the five\npar CMT nodes (brentq per node, linear interpolation in zero rates, flat\nextrapolation), bonds priced as cashflow strips off it, and par key-rate\nDV01s measured by bumping one input node at a time and re-bootstrapping. The\nnightly batch writes the per-desk KRD table (`risk_exposures`), served by the\nAPI and dashboard. One subtlety worth knowing cold: at the anchor date the\nbook's par coupons make each bond the bootstrap's own calibration instrument,\nso the KRD matrix is exactly diagonal *by construction* \u2014 cross-tenor risk\nappears (and grows) as coupons drift off par, which is also why the\ncurve-vs-proxy VaR basis is nonzero inside shocked scenarios (\u00a75.1 R7). VaR\npricing keeps the proxy, with the basis measured rather than assumed.\n\n*Questions an interviewer would ask (options):* Derive d1 and put-call\nparity. Why does a flat smile understate risk for the 95% put specifically?\nWhat does the constant-moneyness re-strike assume away (theta, pin risk,\nearly exercise), and why is that consistent with the bond proxies? Where does\nthe VIX-as-SPY-IV basis bite hardest?\n\n*Questions an interviewer would ask (curve):* Why is a node par bond's KRD\ndiagonal by construction? Derive the bootstrap fixed point at the 2Y node \u2014\nwhat makes it one-dimensional? What breaks with linear-in-zero interpolation\n(forward-rate kinks), and what would you use instead?\n\n*Questions an interviewer would ask:* Derive the closed form from the annuity\nsum. Why bump-and-reprice instead of the analytic duration formula? What does\nthe constant-maturity proxy ignore that a real bond position has (roll-down,\ncarry, financing)? Where would linearization bite hardest in this book \u2014 which\ndesk, which scenario?\n\n### 3.6 Model use\n\nA number's meaning depends on which path produced it, so the system runs three\ntiers and never lets them blur.\n\n**The official record** is the end-of-day batch. It alone writes `risk_results`,\n`pnl`, `scenario_results`, `risk_exposures` and `backtest_exceptions`; the API is\nread-only over what the batch wrote. Everything in \u00a74 is measured on this tier,\nand it is the only tier a limit is checked against.\n\n**The flash tier** re-marks the same book against delayed intraday quotes\nbetween closes. It is labelled indicative, it writes nothing to the official\ntables, its quote and revaluation caches expire in minutes, and it *refuses*\nrather than guesses: a quote implying a move past 150bp, 25% or 25 vol points is\nrejected, the prior close is carried, and the refusal is surfaced instead of\nbeing silently absorbed. That bound exists because a vendor changed the scale of\nits yield indices and the unguarded path fabricated a 416bp rally \u2014 the control\nis there because the failure happened, not in anticipation of it.\n\n**The sandbox** (`POST /api/v1/whatif`) is a documented exception to\nAPI-reads-only: it scales positions and applies factor shocks in one\nrevaluation, at full float precision, so a catalog preset posted back unedited\nreproduces the batch's scenario P&L to the cent. It persists nothing. It also\ndeclines to report one thing it could easily print \u2014 the VaR of the shocked\nbook \u2014 because re-marking levels while reusing the unshocked return vectors\nmakes equity VaR *fall* as the mark falls. Reporting it would be worse than\nomitting it, and the omission is named in the response rather than left for the\nreader to notice.\n\nThe guidance's point about using a model beyond its intended purpose is the live\nrisk here: the flash and sandbox tiers are exactly where a reader could mistake\nan indicative number for the record. Both are labelled at the point of use, in\nthe API payload and on the page, not only in this document.\n\n*Questions an interviewer would ask:* Which tier would you show a desk head at\n11am, and what would you refuse to tell them from it? Why is the VaR of a\nshocked book not reported \u2014 what goes wrong? If the flash tier and the batch\ndisagree at 4pm, which is wrong, and how would you tell?\n\n## 4. Validation and monitoring\n\n### 4.1 Conceptual soundness\n\nValidation of conceptual soundness is design evidence rather than performance\nevidence: whether the modelling choices, assumptions and construction are\ndefensible before any outcome is scored. Four kinds of evidence carry it here,\nand all four are executable rather than asserted.\n\n*Known answers from the literature.* Black-Scholes reproduces Hull's textbook\nexample, put-call parity holds to 1e-12, the par-bond identity holds exactly\n(coupon = yield \u21d2 price = face), DV01 matches the published $817.5 per $1M on a\n10Y 4% par bond, and Kupiec reproduces the worked n=250, x=5 case at p \u2248 0.16.\nA hand-rolled implementation that agrees with an independent published number is\nthe cheapest real evidence of construction available to a one-person project.\n\n*Analytic limits that pin the estimator.* Gaussian VaR99 = 2.326\u03c3 against\nES97.5 = 2.338\u03c3 (\u00a73.3) tells you the two measures are numerically almost\nidentical under normality, so any material gap between them on this book is\ntail shape rather than arithmetic \u2014 a sanity anchor on the ES path that no\namount of backtesting would supply.\n\n*Boundary equivalence between the champion and the challenger.* EWMA is exactly\nthe IGARCH boundary case, \u03c9=0, \u03b1=1\u2212\u03bb, \u03b2=\u03bb, and that identity is asserted\nbit-for-bit in a test rather than argued in prose. It makes the champion and\nchallenger provably the same family, which is what licenses comparing them on\noutcomes alone.\n\n*Design properties verified as invariants.* The key-rate DV01 matrix comes out\nexactly diagonal for the node par bonds at the anchor \u2014 not a coincidence but a\nconsequence of those bonds being the bootstrap's own calibration instruments \u2014\nand the test asserts the diagonality so the property cannot silently break. The\noff-node and off-par cases are tested to split across neighbouring nodes, which\nis the evidence that the diagonal case is structural rather than a bug.\n\nThe guidance notes that benchmarking to other models may be more practical than\nevaluating theoretical construction. \u00a73.2's champion/challenger run is that\nbenchmark, and \u00a76 records that it currently returns HOLD.\n\n### 4.2 Outcomes analysis\n\n**Clean P&L.** Each day's hypothetical P&L freezes the prior day's book and\nlevels and applies the realized factor returns \u2014 no fees, no intraday, no new\ntrades. An exception on day t+1 is `HPL_{t+1} < -VaR_t`: the comparison is\nstrictly out-of-sample (the VaR quoted on t never saw t+1's return).\n\n**Kupiec proportion-of-failures** tests coverage: with x exceptions in n days\nand target p = 1%,\n\n    LR_pof = -2 [ ln L(p) - ln L(x/n) ] ~ chi2(1),\n\nwith the 0\u00b7ln 0 := 0 convention guarding the zero-exception case. Published\nworked example, encoded as a known-answer test: n=250, x=5 gives LR \u2248 1.96,\np \u2248 0.16 \u2014 five exceptions against 2.5 expected and the test *cannot* reject.\n\n**Christoffersen independence** fits a first-order Markov chain to the\nexception indicator sequence and likelihood-ratio-tests whether an exception\ntoday changes tomorrow's exception probability. This is the test that sees\n*clustering*: ten consecutive exceptions in 500 days reject overwhelmingly\nwhile the same ten spread evenly do not \u2014 Kupiec, by construction, scores both\nidentically (unit-tested pair). Conditional coverage adds the two statistics:\nLR_cc = LR_pof + LR_ind ~ chi2(2). Clustered exceptions are precisely the\nvol-regime failure mode of equal-weight HS, which is why both tests run\nnightly.\n\n**Basel traffic light**, 250-day window: green at 0\u20134 exceptions, amber 5\u20139\nwith multiplier add-ons rising 0.40 \u2192 0.85, red at 10+ (add-on 1.00, model\npresumed flawed). The regulatory response is deliberately *not* hypothesis\ntesting: at x=5 Kupiec's p-value is 0.16, yet the capital multiplier already\npenalizes \u2014 supervisors price the asymmetry of accepting a bad model rather\nthan the Type-I error rate.\n\n**Out-of-sample results** (750 trading days ending 2026-08-06, firm book):\n\n| Method | Exceptions | Expected | Kupiec p | CC p | 250d zone |\n|---|---|---|---|---|---|\n| HS | 6 | 7.5 | 0.57 | 0.81 | GREEN |\n| FHS | 10 | 7.5 | 0.38 | 0.60 | GREEN |\n\n**What \"pass\" resolves to, measured on the tests as implemented** (the numbers\nbelow are computed at the 750-day backfill window this section reports;\n`/api/v1/backtest/power` serves the same facts at whatever window the stored\nhistory realizes \u2014 327 days on the demo database \u2014 and the dashboard shows\nthem under the stat cards): at 750 days Kupiec's\nacceptance band is **3 to 13 exceptions** against 7.5 expected \u2014 a realized\nexception rate anywhere from 0.40% to 1.73% survives \u2014 its realized size is\n4.1% (and 9.5% at n=250, nearly double the nominal 5%: the region is a set of\ninteger counts, so its mass lands where it lands), and its power against an\nexception rate 20% above target is **7.9%**, on the order of the size itself.\nUnits matter here: that alternative is a *rate* error, and under normality it\ncorresponds to a VaR understated by only ~3% in dollars \u2014 a genuine 20% dollar\nunderstatement produces a 3.1% rate, which the test catches with power near\none. So the backtest sees gross miscalibration and is nearly blind to\nordinary-sized error; resolving 1.2% from 1.0% at 80% power needs ~20,800\ndaily observations, about 83 years. That asymmetry \u2014 not hypothesis-testing\netiquette \u2014 is why Basel penalizes on the raw exception count from five\nexceptions even though Kupiec cannot reject there. The Christoffersen\nindependence test at a 1% rate is badly under-sized (realized ~1.5% at n=250\nagainst nominal 5% under the shipped simulation config), and the mechanism is measured: everything it knows about\nP(exception | exception) comes from the ~2.5 days that follow an exception.\nAgainst genuine clustering at p11 = 0.25 it still rejects ~69% of the time at\n750 days, which is the failure mode it exists for.\n\nBoth models pass everything \u2014 the difference is *where* the risk shows. Going\ninto the April-2025 vol spike the lagging HS window under-covers at desk\nlevel: every desk takes exceptions in the first days of April, and only the\n~40% diversification benefit keeps the firm aggregate clean (its six HS\nexceptions sit elsewhere \u2014 two in late 2023, two in 2024, two in\nmid-2026). After the spike's scenarios enter the window, firm HS VaR runs\nconservatively wide for months of calm. FHS spends its near-nominal-rate\nexceptions across regimes and re-tightens where HS cannot. Coverage alone\ndoes not separate the two; the exception *timing* chart in the README and\ndashboard does. That comparison \u2014 champion/challenger on identical scenarios,\ndiffering only in the vol filter \u2014 is the model-selection argument in one\npicture.\n\n**P&L attribution.** Spearman rank correlation and the two-sample KS\nstatistic between daily hypothetical P&L (full revaluation) and\nrisk-theoretical P&L (the linearized path), zoned at the MAR32.41 thresholds\n(green requires rho >= 0.80 and KS <= 0.09). Over the trailing 250 paired\ndays the equity desk sits at rho 0.9999, KS 0.020 \u2014 GREEN. The gap\n*decomposes*, and knowing the decomposition is the point: the linear legs\nalone produce KS 0.016 (their RTPL is `qty*S0*r` against an HPL of\n`qty*S0*(exp(r)-1)` \u2014 the log-linearization convexity, a mean gap of about\n$1.8k/day), and the collar adds its Taylor error on top (about $1.2k/day;\noptions-only KS 0.024 from gamma, vanna, and the excluded rho). So the\npre-options test was never strictly vacuous \u2014 it was nearly degenerate, its\nonly content being the log-linearization \u2014 and the sleeve is what gives the\nstatistic something structural to see. A desk that failed would lose IMA\neligibility at a real bank; here it would fail the promotion gate the same\nway the GARCH challenger did. Served at `/backtest/pla` with the HPL-vs-RTPL\nscatter on the dashboard.\n\n### 4.3 Ongoing monitoring\n\nOngoing monitoring is the nightly cycle itself: every batch writes exceptions\nagainst the prior run's VaR, the dashboard recomputes rolling zones, DQ issues\npersist with severities, and CI reruns the known-answer suite (engine math,\nKupiec/Christoffersen worked examples, bond-pricing identities) on every commit.\nThe day-over-day flash check raises a WARN when either VaR measure moves more\nthan 25% against the prior run, which is monitoring for model *deterioration*\nrather than for coverage \u2014 the failure the outcomes tests are least able to see\nquickly, because a coverage test needs hundreds of days to say anything.\n\nScheduled next: the Acerbi\u2013Sz\u00e9kely ES backtest with simulated critical values.\nNote what its absence means precisely \u2014 every statistic in \u00a74.2 tests the VaR\npath, and nothing yet tests ES97.5 or the stressed ES, which are the measures\n\u00a73 actually leads with.\n\n*Questions an interviewer would ask:* Write the Kupiec statistic from memory\nand evaluate the n=250, x=5 case. Why does PLA need BOTH Spearman and KS \u2014\nwhat failure does each see that the other cannot? Why does Christoffersen catch what Kupiec\ncannot, and what does its n11 count mean? Why does the Basel multiplier start\nat five exceptions when the hypothesis test can't reject there? Why must the\nVaR in an exception check come from the *prior* run?\n\n## 5. Assumptions and limitations\n\n*The load-bearing section: each entry names the assumption, its consequence,\nand the mitigation or roadmap item. Where a limitation is measurable it is\n**measured**: [docs/rniv.md](rniv.md) is a risks-not-in-VaR inventory\nregenerated from the snapshot by `python -m risk.jobs.rniv`, and \u00a75.1 below\nsummarizes it.*\n\n1. **sqrt(10) horizon scaling assumes iid daily P&L.** Under volatility\n   clustering it under-scales in stressed regimes; on trending or\n   mean-reverting windows it over-scales. Measured (R1): on the current\n   500-day window, overlapping 10-day revaluation gives $2.87M firm VaR\n   against $3.60M scaled \u2014 the scaled figure currently *overstates* by ~20%.\n   The 10-day figures are reported as scaled, never as modeled, with the\n   overlapping estimator kept as a standing check.\n2. **One factor per instrument in the VaR path.** Each bond proxy loads on a\n   single constant-maturity yield. Measured (R7): repricing the bond book on\n   the bootstrapped curve under the same scenarios moves rates-desk VaR by\n   +1.9% ($885k vs $868k) \u2014 the pricing-model basis; the key-rate DV01 table\n   is written nightly and is diagonal at the anchor by construction, with\n   off-diagonals growing as coupons drift off par. Adequate for a five-point\n   node book; wrong for real curve trading.\n3. **Constant-maturity par proxies ignore aging, roll-down, carry, and\n   financing.** Positions are re-struck at par conceptually every day; clean\n   P&L is price P&L only.\n4. **Non-synchronous closes bias cross-asset correlation.** FRED H.10 FX is a\n   noon-ET fixing; equities close 16:00 ET; yields are afternoon CMT reads.\n   Same-day cross-asset correlations are attenuated, and the diversification\n   benefit inherits that bias. Measured (R2): the benefit is 40.4% on 1-day\n   returns and 38.4% on 2-day aggregation \u2014 two percentage points of\n   co-movement hide in the close-time gaps (SPY leads next-day GBP at +0.23\n   vs +0.14 same-day). Named and measured, not fixed \u2014 production desks fight\n   the same issue with synchronization overlays.\n5. **Forward-filled days imprint zero returns** (bounded at 3 days, 7 for\n   H.10 FX), damping vol for affected factors. Measured (R3): fills are 3.6%\n   of factor-days in the window; correcting each factor's EWMA forecast to\n   print-days-only raises firm FHS VaR by 3.0% (~$38k), concentrated in the\n   H.10 FX factors (forecast ratios ~1.15). The fill count per factor per run\n   is recorded; beyond-cap gaps block the run.\n6. **The attribution test is only as sharp as the book's nonlinearity.** The\n   collar's gamma is modest, so today's GREEN PLA discriminates weakly \u2014 a\n   larger options book would stress the Taylor harder \u2014 and the statistic's\n   decomposition (\u00a74) shows the linear legs' log-linearization still carries\n   most of it. The RTPL exclusions (rho, cross terms) are design choices; the\n   nearly-degenerate pre-options history is preserved in git, not rewritten.\n7. **FRTB scope is the ES piece only.** Stressed calibration follows the FRTB\n   idea; there is no liquidity-horizon cascade (a `liquidity_horizon` column\n   exists on `risk_factors` as a placeholder for the MAR33.12 mapping, still\n   uniform at its 10-day default), no NMRF/RFET, no IMA capital arithmetic.\n   The phrase \"FRTB-compliant\" is deliberately banned from this repository.\n8. **The stressed window is fixed (2008-09-12 \u2192 2009-09-11).** A book can\n   have its true worst regime elsewhere. Measured (R4): stressed ES on this\n   book is $2.61M under the in-force window vs $2.06M for the 2022 hiking\n   year and $1.80M for the COVID year \u2014 the fixed choice is currently the\n   most conservative of the candidates, but that is checked, not assumed. The\n   programmatic argmax search over 2007+ full-reval history is the scheduled\n   replacement.\n9. **Post-shock yields floor at 1bp**, which would truncate the rates desk's\n   convexity gain in scenarios that drive short yields toward zero. No shipped\n   scenario currently binds it \u2014 GFC-replay post-shock yields bottom out near\n   2.3% \u2014 but a 2020-style front-end shock from today's levels would.\n10. **Equal-weight HS dilutes new information by design**; the FHS comparison\n    exists to quantify exactly that cost (\u00a74). Equity risk is total-return\n    (adjusted close), so dividend timing is smeared across history.\n11. **No idiosyncratic-risk model, and tail risk is concentrated.** Single\n    names carry only their own history; there is no factor model and no\n    name-level shrinkage. Measured (R5): Euler allocation of firm ES puts\n    37.3% on the top position and 86.6% on the top three (the 30Y/10Y\n    duration proxies dominate; NVDA is the largest single-name component).\n    Seven liquid mega-caps make the missing idio model tolerable; the\n    concentration is monitored via the component table.\n\n12. **The options sleeve prices on a flat smile with proxy inputs.** VIX\n    stands in for SPY 1-month implied vol (an index-vs-ETF, 30d-vs-1M basis),\n    a single vol level covers every strike (no skew risk \u2014 precisely where a\n    95% put lives), q = 0 leans on the total-return spot series, and the\n    constant-moneyness re-strike removes theta, pin risk, and early exercise.\n    Each is the options sibling of a limitation already carried by the bond\n    proxies, and the parametric-IV VaR on the roadmap addresses the vol-risk\n    piece first.\n\n13. **The backtest values today's book on every historical date.** `read_book`\n    takes no date argument, so the 750-day backfill freezes one composition and\n    walks history past it. The book actually held in 2023 never existed \u2014 there\n    is no position history to reconstruct \u2014 so this is not a bias against a\n    knowable truth but a dependence of the published verdict on a chosen\n    composition. Re-backfilling across ten defensible compositions leaves\n    coverage robust (HS 5\u20138 exceptions against 6 published, Kupiec never\n    rejects) and the traffic-light zone fragile: the published FHS run sits one\n    exception short of amber, and three variants cross \u2014 including the peer risk-\n    class mix that \u00a71 cites as the book's own realism reference. At a bank that\n    is a capital multiplier moving 3.00 \u2192 3.40, so R8 carries it as Material.\n    The fix is a bitemporal position store, which needs a trade feed this\n    project has no source for; it is disclosed rather than repaired, and the\n    honest reading of \u00a74.2 is that it tests the model on a fixed book rather\n    than the book that was held.\n\n14. **Every number here is an estimate from ~500 scenarios, and its sampling\n    error bounds every other entry.** The firm VaR's exact 95% interval spans\n    the 1st to 10th worst loss \u2014 $1,067,437 to $1,402,543, a 29% wide band on a\n    number printed to the cent \u2014 and some RNIV impacts are *smaller than the\n    sampling error of the base they adjust*: R2's ~1pp of hidden\n    diversification sits inside the benefit's own measured \u00b14.6pp bootstrap\n    spread. The register keeps such entries because they are directional and\n    mechanistic, not because each is individually resolvable.\n    \u00a73.1 carries the interval construction, \u00a74.2 the power analysis, and the\n    limitation this entry cannot remove is the one it names: with 500 scenarios\n    the tail is known to tens of percent, and no amount of methodology changes\n    that without more data.\n\n### 5.1 Quantified impacts (risks-not-in-VaR inventory)\n\nSummary of [docs/rniv.md](rniv.md), regenerated by `python -m risk.jobs.rniv`\n(as of 2026-08-06; Material \u2265 5% of the base measure, Monitor \u2265 1%):\n\n| ID | Limitation | Measured impact | Class |\n|---|---|---|---|\n| R1 | sqrt(10) scaling vs overlapping 10-day reval | \u2212$729k on the 10-day VaR (\u221220.3%) | Material |\n| R2 | Asynchronous closes hide co-movement | diversification 40.4% (1d) \u2192 38.4% (2d) | Monitor |\n| R3 | Forward-fill vol damping | +$38k on FHS VaR (+3.0%) | Monitor |\n| R4 | Fixed stressed window | in-force $2.61M is the max of candidates ($1.80M\u2013$2.06M) | Immaterial |\n| R5 | Position concentration of firm ES | top position 37.3%, top 3 86.6% | Monitor |\n| R6 | 1bp post-shock yield floor | unbinding; 230bp of headroom | Immaterial |\n| R7 | One-factor ytm proxy vs bootstrapped curve | rates VaR +1.9% curve-priced; KRDs diagonal at anchor by construction | Monitor |\n| R8 | Backtest values today's book on every date | FHS 1 exception from amber (4/250); 3 of 10 compositions cross, multiplier 3.00 \u2192 3.40 (+13.3%) | Material |\n\nThe point of the exercise is the discipline, not the add-ons: every \u00a75 claim\nthat could be a number *is* a number, with the measurement code in the\nrepository and the classification rule stated up front.\n\n## 6. Governance and controls\n\nEvery tunable lives in one frozen dataclass (`RiskConfig`) \u2014 lookback 500,\nlambda 0.94, confidence pair (0.99, 0.975), forward-fill caps, the stressed\nwindow. Each batch run records the git SHA and a hash of that config on its\n`risk_runs` row, so any number in the results tables traces to exact code and\nparameters. The committed snapshot makes the whole history a fixture: on every\npush, CI rebuilds the database from scratch and asserts the firm 1-day VaR99\nequals $1,137,118.30 to the cent, runs the known-answer suite (worked examples\nfrom the literature encoded as tests), and executes the one-command demo path\nend-to-end. Data\nquality is enforced in-pipeline with persisted, severity-graded findings, and\nbatch runs are idempotent under an advisory-lock claim \u2014 a re-run can replace\na failed run but never silently duplicate a successful one.\n\nModel change control exists in miniature: a candidate model runs in parallel\nwith the champion over a regulatory window and is judged by pre-registered\npromotion criteria \u2014 fit health first, then outcomes, then adoption stability\n\u2014 with the change pack carrying the candidate's parameter hash and the git\nSHA (\u00a73.2's GARCH challenger is the live example, currently HOLD on the\nfit-health gate).\n\n**Effective challenge, and the one place this project cannot supply it.** The\n2026 guidance keeps \"effective challenge\" and defines it as critical analysis by\nobjective experts with the expertise to challenge, \"sufficient independence to\nmaintain objectivity,\" and the standing to force a change. Two of those three\nare demonstrable here and one is not. The expertise and the standing are\nevidenced by the harness overruling its author: the challenger gate returned\nHOLD on a candidate the author wanted to promote, the sandbox refuses to report\na VaR it could trivially have printed, and the flash tier refuses a quote rather\nthan trusting it. The independence is not: development and validation are the\nsame person, and no amount of tooling changes that. It is worth being precise\nabout what the guidance now says on this, because it is the one clause that\nmoves in this project's favour \u2014 \"the quality of validation process depends on\nthe rigor and effectiveness of the review rather than on organizational\nstructure of the banking organization's risk management function.\" Rigor is\ndemonstrable by a single author; the organizational half is not, and is recorded\nin \u00a75 as a limitation rather than papered over.\n\n**Model materiality.** The guidance ties the depth of oversight to materiality,\nwhich it derives from model exposure and purpose. `docs/rniv.md` already applies\nthat logic to limitations rather than to models, with a coded rule stated up\nfront: Material at \u22655% of the base measure, Monitor at \u22651%, otherwise\nImmaterial. Every entry carries a measured number and a class, so the register\nsorts by consequence instead of by how easy the item was to notice.\n\n**Mapped to the 2026 guidance:** \u00a7\u00a71\u20133 are model development and use (\u00a71 the\npurpose and perimeter, \u00a72 the inputs and data risk, \u00a73 the development and\nmethodology); \u00a74.1 is the conceptual-soundness evidence, \u00a74.2 the outcomes\nanalysis \u2014 the 750-day out-of-sample backtest, the coverage and independence\ntests, the traffic light, and the attribution test \u2014 and \u00a74.3 the ongoing\nmonitoring, which the nightly exception writes, DQ gate, flash check and\nrevision log implement; this section is governance and controls; \u00a75 is the\nlimitations inventory, maintained with the same seriousness as the code. The\nguidance's vendor and third-party section has no analogue here and does not need\none: every model in this repository is hand-rolled, with only optimizers and\nstatistical distributions imported, so there is no third-party model whose\nconceptual soundness would have to be taken on trust. That is a scope fact, not\na control.\n"
   },
   "/api/v1/risk/history?scope=FIRM&window=250": {
     "scope": "FIRM",
@@ -4276,6 +4276,81 @@
         "pnl": 51681.7,
         "exception_hs": false,
         "exception_fhs": false
+      }
+    ]
+  },
+  "/api/v1/risk/uncertainty": {
+    "as_of": "2026-08-06",
+    "run_id": 332,
+    "method": "HS",
+    "horizon_days": 1,
+    "confidence": 0.95,
+    "n_scenarios": 500,
+    "n_boot": 2000,
+    "block_days": 10,
+    "seed": 42,
+    "diversification": {
+      "estimate": 0.4038614926368729,
+      "low": 0.323490547574592,
+      "high": 0.4977505280325701,
+      "se": 0.04560400525130386
+    },
+    "desks": [
+      {
+        "desk_code": "FIRM",
+        "is_aggregate": true,
+        "var_hs_1d": 1137118.2961286998,
+        "ci_low": 1067437.3787546225,
+        "ci_high": 1402543.0209642907,
+        "rank_low": 1,
+        "rank_high": 10,
+        "coverage": 0.9623274103090975,
+        "se_asymptotic": 73166.2154319674,
+        "se_bootstrap": 86401.2481341329,
+        "es_975_1d": 1148026.47018666,
+        "es_se_bootstrap": 77318.03721116677
+      },
+      {
+        "desk_code": "EQUITY",
+        "is_aggregate": false,
+        "var_hs_1d": 541030.4447970551,
+        "ci_low": 462160.9820083664,
+        "ci_high": 889897.0296470914,
+        "rank_low": 1,
+        "rank_high": 10,
+        "coverage": 0.9623274103090975,
+        "se_asymptotic": 61356.68489457178,
+        "se_bootstrap": 79266.56472899111,
+        "es_975_1d": 569250.5121002857,
+        "es_se_bootstrap": 58488.47988603618
+      },
+      {
+        "desk_code": "FX",
+        "is_aggregate": false,
+        "var_hs_1d": 497987.8055873546,
+        "ci_low": 451312.6814733181,
+        "ci_high": 726547.335433442,
+        "rank_low": 1,
+        "rank_high": 10,
+        "coverage": 0.9623274103090975,
+        "se_asymptotic": 33013.04686287934,
+        "se_bootstrap": 52027.99553834673,
+        "es_975_1d": 524349.9056087804,
+        "es_se_bootstrap": 39468.25799558975
+      },
+      {
+        "desk_code": "RATES",
+        "is_aggregate": false,
+        "var_hs_1d": 868455.0667788524,
+        "ci_low": 825161.7095617615,
+        "ci_high": 1314070.150838364,
+        "rank_low": 1,
+        "rank_high": 10,
+        "coverage": 0.9623274103090975,
+        "se_asymptotic": 56774.37579538122,
+        "se_bootstrap": 82571.19299772456,
+        "es_975_1d": 920191.408033338,
+        "es_se_bootstrap": 80759.96320649706
       }
     ]
   },
@@ -8568,6 +8643,28 @@
       }
     ]
   },
+  "/api/v1/backtest/power?model=HS&scope=FIRM&window=250": {
+    "scope": "FIRM",
+    "model": "HS",
+    "window": 250,
+    "n_obs": 250,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 6,
+    "implied_rate_low": 0.004,
+    "implied_rate_high": 0.024,
+    "realized_size": 0.09475996401738507,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.08149090131561287,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.015333333333333332,
+    "christoffersen_power": 0.344,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 2.525333333333333
+  },
   "/api/v1/backtest/summary?model=FHS&scope=FIRM&window=250": {
     "scope": "FIRM",
     "model": "FHS",
@@ -8645,6 +8742,28 @@
         "pnl_value": -1073013.88
       }
     ]
+  },
+  "/api/v1/backtest/power?model=FHS&scope=FIRM&window=250": {
+    "scope": "FIRM",
+    "model": "FHS",
+    "window": 250,
+    "n_obs": 250,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 6,
+    "implied_rate_low": 0.004,
+    "implied_rate_high": 0.024,
+    "realized_size": 0.09475996401738507,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.08149090131561287,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.015333333333333332,
+    "christoffersen_power": 0.344,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 2.525333333333333
   },
   "/api/v1/risk/history?scope=FIRM&window=750": {
     "scope": "FIRM",
@@ -13320,6 +13439,28 @@
       }
     ]
   },
+  "/api/v1/backtest/power?model=HS&scope=FIRM&window=500": {
+    "scope": "FIRM",
+    "model": "HS",
+    "window": 500,
+    "n_obs": 327,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 7,
+    "implied_rate_low": 0.0030581039755351682,
+    "implied_rate_high": 0.021406727828746176,
+    "realized_size": 0.05568151502671659,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.0649948285182339,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.017333333333333333,
+    "christoffersen_power": 0.404,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 3.3
+  },
   "/api/v1/backtest/summary?model=FHS&scope=FIRM&window=500": {
     "scope": "FIRM",
     "model": "FHS",
@@ -13397,6 +13538,28 @@
         "pnl_value": -1073013.88
       }
     ]
+  },
+  "/api/v1/backtest/power?model=FHS&scope=FIRM&window=500": {
+    "scope": "FIRM",
+    "model": "FHS",
+    "window": 500,
+    "n_obs": 327,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 7,
+    "implied_rate_low": 0.0030581039755351682,
+    "implied_rate_high": 0.021406727828746176,
+    "realized_size": 0.05568151502671659,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.0649948285182339,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.017333333333333333,
+    "christoffersen_power": 0.404,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 3.3
   },
   "/api/v1/risk/history?scope=FIRM&window=1000": {
     "scope": "FIRM",
@@ -18072,6 +18235,28 @@
       }
     ]
   },
+  "/api/v1/backtest/power?model=HS&scope=FIRM&window=750": {
+    "scope": "FIRM",
+    "model": "HS",
+    "window": 750,
+    "n_obs": 327,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 7,
+    "implied_rate_low": 0.0030581039755351682,
+    "implied_rate_high": 0.021406727828746176,
+    "realized_size": 0.05568151502671659,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.0649948285182339,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.017333333333333333,
+    "christoffersen_power": 0.404,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 3.3
+  },
   "/api/v1/backtest/summary?model=FHS&scope=FIRM&window=750": {
     "scope": "FIRM",
     "model": "FHS",
@@ -18149,6 +18334,28 @@
         "pnl_value": -1073013.88
       }
     ]
+  },
+  "/api/v1/backtest/power?model=FHS&scope=FIRM&window=750": {
+    "scope": "FIRM",
+    "model": "FHS",
+    "window": 750,
+    "n_obs": 327,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 7,
+    "implied_rate_low": 0.0030581039755351682,
+    "implied_rate_high": 0.021406727828746176,
+    "realized_size": 0.05568151502671659,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.0649948285182339,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.017333333333333333,
+    "christoffersen_power": 0.404,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 3.3
   },
   "/api/v1/scenarios/COVID_2020/shocks": {
     "scenario_code": "COVID_2020",
@@ -23387,7 +23594,7 @@
   },
   "/api/v1/desks/EQUITY/decomposition": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "desk_code": "EQUITY",
     "desk_name": "Cash Equities",
     "var_hs_1d": 541030.44,
@@ -23451,7 +23658,7 @@
   },
   "/api/v1/desks/EQUITY/positions": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "desk_code": "EQUITY",
     "desk_name": "Cash Equities",
     "positions": [
@@ -23640,6 +23847,28 @@
     },
     "exceptions": []
   },
+  "/api/v1/backtest/power?model=HS&scope=EQUITY&window=250": {
+    "scope": "EQUITY",
+    "model": "HS",
+    "window": 250,
+    "n_obs": 250,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 6,
+    "implied_rate_low": 0.004,
+    "implied_rate_high": 0.024,
+    "realized_size": 0.09475996401738507,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.08149090131561287,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.015333333333333332,
+    "christoffersen_power": 0.344,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 2.525333333333333
+  },
   "/api/v1/backtest/summary?model=FHS&scope=EQUITY&window=250": {
     "scope": "EQUITY",
     "model": "FHS",
@@ -23707,6 +23936,28 @@
         "pnl_value": -370548.39
       }
     ]
+  },
+  "/api/v1/backtest/power?model=FHS&scope=EQUITY&window=250": {
+    "scope": "EQUITY",
+    "model": "FHS",
+    "window": 250,
+    "n_obs": 250,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 6,
+    "implied_rate_low": 0.004,
+    "implied_rate_high": 0.024,
+    "realized_size": 0.09475996401738507,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.08149090131561287,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.015333333333333332,
+    "christoffersen_power": 0.344,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 2.525333333333333
   },
   "/api/v1/risk/history?scope=desk:FX&window=60": {
     "scope": "FX",
@@ -28478,7 +28729,7 @@
   },
   "/api/v1/desks/FX/decomposition": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "desk_code": "FX",
     "desk_name": "FX Spot",
     "var_hs_1d": 497987.81,
@@ -28518,7 +28769,7 @@
   },
   "/api/v1/desks/FX/positions": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "desk_code": "FX",
     "desk_name": "FX Spot",
     "positions": [
@@ -28637,6 +28888,28 @@
     },
     "exceptions": []
   },
+  "/api/v1/backtest/power?model=HS&scope=FX&window=250": {
+    "scope": "FX",
+    "model": "HS",
+    "window": 250,
+    "n_obs": 250,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 6,
+    "implied_rate_low": 0.004,
+    "implied_rate_high": 0.024,
+    "realized_size": 0.09475996401738507,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.08149090131561287,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.015333333333333332,
+    "christoffersen_power": 0.344,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 2.525333333333333
+  },
   "/api/v1/backtest/summary?model=FHS&scope=FX&window=250": {
     "scope": "FX",
     "model": "FHS",
@@ -28709,6 +28982,28 @@
         "pnl_value": -389801.03
       }
     ]
+  },
+  "/api/v1/backtest/power?model=FHS&scope=FX&window=250": {
+    "scope": "FX",
+    "model": "FHS",
+    "window": 250,
+    "n_obs": 250,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 6,
+    "implied_rate_low": 0.004,
+    "implied_rate_high": 0.024,
+    "realized_size": 0.09475996401738507,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.08149090131561287,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.015333333333333332,
+    "christoffersen_power": 0.344,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 2.525333333333333
   },
   "/api/v1/risk/history?scope=desk:RATES&window=60": {
     "scope": "RATES",
@@ -33480,7 +33775,7 @@
   },
   "/api/v1/desks/RATES/decomposition": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "desk_code": "RATES",
     "desk_name": "US Rates",
     "var_hs_1d": 868455.07,
@@ -33526,7 +33821,7 @@
   },
   "/api/v1/desks/RATES/positions": {
     "as_of": "2026-08-06",
-    "run_id": 331,
+    "run_id": 332,
     "desk_code": "RATES",
     "desk_name": "US Rates",
     "positions": [
@@ -33651,6 +33946,28 @@
       }
     ]
   },
+  "/api/v1/backtest/power?model=HS&scope=RATES&window=250": {
+    "scope": "RATES",
+    "model": "HS",
+    "window": 250,
+    "n_obs": 250,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 6,
+    "implied_rate_low": 0.004,
+    "implied_rate_high": 0.024,
+    "realized_size": 0.09475996401738507,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.08149090131561287,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.015333333333333332,
+    "christoffersen_power": 0.344,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 2.525333333333333
+  },
   "/api/v1/backtest/summary?model=FHS&scope=RATES&window=250": {
     "scope": "RATES",
     "model": "FHS",
@@ -33723,5 +34040,27 @@
         "pnl_value": -846408.83
       }
     ]
+  },
+  "/api/v1/backtest/power?model=FHS&scope=RATES&window=250": {
+    "scope": "RATES",
+    "model": "FHS",
+    "window": 250,
+    "n_obs": 250,
+    "p": 0.01,
+    "alpha": 0.05,
+    "accept_low": 1,
+    "accept_high": 6,
+    "implied_rate_low": 0.004,
+    "implied_rate_high": 0.024,
+    "realized_size": 0.09475996401738507,
+    "p_alternative": 0.012,
+    "var_understatement_equiv": 0.029754204144190943,
+    "power": 0.08149090131561287,
+    "n_obs_for_80pct_power": 20814,
+    "years_for_80pct_power": 82.5952380952381,
+    "christoffersen_realized_size": 0.015333333333333332,
+    "christoffersen_power": 0.344,
+    "p11_alternative": 0.25,
+    "mean_obs_after_exception": 2.525333333333333
   }
 }

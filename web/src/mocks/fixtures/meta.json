@@ -2,9 +2,9 @@
   "latest_as_of": "2026-08-06",
   "batch_status": "SUCCESS",
   "batch_type": "EOD",
-  "batch_completed_at": "2026-08-09T16:07:43.791317-04:00",
-  "code_version": "2cf164b",
-  "build_version": "2cf164b",
+  "batch_completed_at": "2026-08-09T20:25:05.142328-04:00",
+  "code_version": "bc6666b",
+  "build_version": "bc6666b",
   "available_dates": [
     "2025-05-01",
     "2025-05-02",

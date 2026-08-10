@@ -1,0 +1,75 @@
+{
+  "as_of": "2026-08-06",
+  "run_id": 332,
+  "method": "HS",
+  "horizon_days": 1,
+  "confidence": 0.95,
+  "n_scenarios": 500,
+  "n_boot": 2000,
+  "block_days": 10,
+  "seed": 42,
+  "diversification": {
+    "estimate": 0.4038614926368729,
+    "low": 0.323490547574592,
+    "high": 0.4977505280325701,
+    "se": 0.04560400525130386
+  },
+  "desks": [
+    {
+      "desk_code": "FIRM",
+      "is_aggregate": true,
+      "var_hs_1d": 1137118.2961286998,
+      "ci_low": 1067437.3787546225,
+      "ci_high": 1402543.0209642907,
+      "rank_low": 1,
+      "rank_high": 10,
+      "coverage": 0.9623274103090975,
+      "se_asymptotic": 73166.2154319674,
+      "se_bootstrap": 86401.2481341329,
+      "es_975_1d": 1148026.47018666,
+      "es_se_bootstrap": 77318.03721116677
+    },
+    {
+      "desk_code": "EQUITY",
+      "is_aggregate": false,
+      "var_hs_1d": 541030.4447970551,
+      "ci_low": 462160.9820083664,
+      "ci_high": 889897.0296470914,
+      "rank_low": 1,
+      "rank_high": 10,
+      "coverage": 0.9623274103090975,
+      "se_asymptotic": 61356.68489457178,
+      "se_bootstrap": 79266.56472899111,
+      "es_975_1d": 569250.5121002857,
+      "es_se_bootstrap": 58488.47988603618
+    },
+    {
+      "desk_code": "FX",
+      "is_aggregate": false,
+      "var_hs_1d": 497987.8055873546,
+      "ci_low": 451312.6814733181,
+      "ci_high": 726547.335433442,
+      "rank_low": 1,
+      "rank_high": 10,
+      "coverage": 0.9623274103090975,
+      "se_asymptotic": 33013.04686287934,
+      "se_bootstrap": 52027.99553834673,
+      "es_975_1d": 524349.9056087804,
+      "es_se_bootstrap": 39468.25799558975
+    },
+    {
+      "desk_code": "RATES",
+      "is_aggregate": false,
+      "var_hs_1d": 868455.0667788524,
+      "ci_low": 825161.7095617615,
+      "ci_high": 1314070.150838364,
+      "rank_low": 1,
+      "rank_high": 10,
+      "coverage": 0.9623274103090975,
+      "se_asymptotic": 56774.37579538122,
+      "se_bootstrap": 82571.19299772456,
+      "es_975_1d": 920191.408033338,
+      "es_se_bootstrap": 80759.96320649706
+    }
+  ]
+}

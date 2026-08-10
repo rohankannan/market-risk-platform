@@ -1,0 +1,22 @@
+{
+  "scope": "FX",
+  "model": "FHS",
+  "window": 250,
+  "n_obs": 250,
+  "p": 0.01,
+  "alpha": 0.05,
+  "accept_low": 1,
+  "accept_high": 6,
+  "implied_rate_low": 0.004,
+  "implied_rate_high": 0.024,
+  "realized_size": 0.09475996401738507,
+  "p_alternative": 0.012,
+  "var_understatement_equiv": 0.029754204144190943,
+  "power": 0.08149090131561287,
+  "n_obs_for_80pct_power": 20814,
+  "years_for_80pct_power": 82.5952380952381,
+  "christoffersen_realized_size": 0.015333333333333332,
+  "christoffersen_power": 0.344,
+  "p11_alternative": 0.25,
+  "mean_obs_after_exception": 2.525333333333333
+}
